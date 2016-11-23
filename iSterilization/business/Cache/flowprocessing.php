@@ -247,14 +247,14 @@ class flowprocessing extends \Smart\Data\Cache {
                 inner join cmesubareas csa on ( csa.cmeareasid = e.cmeareasid )
                 inner join cmeareas ca on ( ca.id = csa.cmeareasid )
             where csa.id = @areasid
-              and ec.id not in ( 
-                    select
-                        fpc.equipmentcycleid
-                    from
-                        flowprocessingcharge fpc
-                    where fpc.equipmentcycleid = ec.id
-                      and fpc.chargeflag = '001'
-               )";
+            --  and ec.id not in (
+            --        select
+            --            fpc.equipmentcycleid
+            --        from
+            --            flowprocessingcharge fpc
+            --        where fpc.equipmentcycleid = ec.id
+            --          and fpc.chargeflag = '001'
+            --   )";
 
         try {
             $pdo = $proxy->prepare($sql);

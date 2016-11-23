@@ -13,7 +13,7 @@
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
 
-require_once realpath('../PHPMailerAutoload.php');
+require_once '../PHPMailerAutoload.php';
 
 /**
  * PHPMailer - PHP email transport unit test class
@@ -50,6 +50,12 @@ class PHPMailerTest extends PHPUnit_Framework_TestCase
     public $NoteLog = array();
 
     /**
+     * Default include path
+     * @var string
+     */
+    public $INCLUDE_DIR = '../';
+
+    /**
      * PIDs of any processes we need to kill
      * @var array
      * @access private
@@ -57,18 +63,12 @@ class PHPMailerTest extends PHPUnit_Framework_TestCase
     private $pids = array();
 
     /**
-     * Default include path
-     * @var string
-     */
-    const INCLUDE_DIR = '../';
-
-    /**
      * Run before each test is started.
      */
     public function setUp()
     {
-        if (file_exists('testbootstrap.php')) {
-            include 'testbootstrap.php'; //Overrides go in here
+        if (file_exists('./testbootstrap.php')) {
+            include './testbootstrap.php'; //Overrides go in here
         }
         $this->Mail = new PHPMailer;
         $this->Mail->SMTPDebug = 3; //Full debug output
@@ -100,6 +100,7 @@ class PHPMailerTest extends PHPUnit_Framework_TestCase
         $this->Mail->SMTPAuth = false;
         $this->Mail->Username = '';
         $this->Mail->Password = '';
+        $this->Mail->PluginDir = $this->INCLUDE_DIR;
         $this->Mail->addReplyTo('no_reply@phpmailer.example.com', 'Reply Guy');
         $this->Mail->Sender = 'unit_test@phpmailer.example.com';
         if (strlen($this->Mail->Host) > 0) {
@@ -299,7 +300,7 @@ class PHPMailerTest extends PHPUnit_Framework_TestCase
     public function testBootstrap()
     {
         $this->assertTrue(
-            file_exists('testbootstrap.php'),
+            file_exists('./testbootstrap.php'),
             'Test config params missing - copy testbootstrap.php to testbootstrap-dist.php and change as appropriate'
         );
     }
@@ -606,9 +607,7 @@ class PHPMailerTest extends PHPUnit_Framework_TestCase
             'first.last@[IPv6:a1:a2:a3:a4:b1:b2:b3:]',
             'first.last@[IPv6::a2:a3:a4:b1:b2:b3:b4]',
             'first.last@[IPv6:a1:a2:a3:a4::b1:b2:b3:b4]',
-            //This is a valid RCC5322 address, but we don't want to allow it for obvious reasons!
-            "(\r\n RCPT TO:user@example.com\r\n DATA \\\nSubject: spam10\\\n\r\n Hello,\r\n".
-                " this is a spam mail.\\\n.\r\n QUIT\r\n ) a@example.net"
+            "(\r\n RCPT TO:user@example.com\r\n DATA \\\nSubject: spam10\\\n\r\n Hello,\r\n this is a spam mail.\\\n.\r\n QUIT\r\n ) a@example.net" //This is valid RCC5322, but we don't want to allow it
         );
         // IDNs in Unicode and ASCII forms.
         $unicodeaddresses = array(
@@ -657,53 +656,6 @@ class PHPMailerTest extends PHPUnit_Framework_TestCase
         $this->assertFalse(PHPMailer::validateAddress('test@example.com.', 'php'));
         $this->assertTrue(PHPMailer::validateAddress('test@example.com', 'noregex'));
         $this->assertFalse(PHPMailer::validateAddress('bad', 'noregex'));
-    }
-
-    /**
-     * Test injecting a custom validator.
-     */
-    public function testCustomValidator()
-    {
-        //Inject a one-off custom validator
-        $this->assertTrue(
-            PHPMailer::validateAddress(
-                'user@example.com',
-                function ($address) {
-                    return (strpos($address, '@') !== false);
-                }
-            ),
-            'Custom validator false negative'
-        );
-        $this->assertFalse(
-            PHPMailer::validateAddress(
-                'userexample.com',
-                function ($address) {
-                    return (strpos($address, '@') !== false);
-                }
-            ),
-            'Custom validator false positive'
-        );
-        //Set the default validator to an injected function
-        PHPMailer::$validator = function ($address) {
-            return ('user@example.com' === $address);
-        };
-        $this->assertTrue(
-            $this->Mail->addAddress('user@example.com'),
-            'Custom default validator false negative'
-        );
-        $this->assertFalse(
-            //Need to pick a failing value which would pass all other validators
-            //to be sure we're using our custom one
-            $this->Mail->addAddress('bananas@example.com'),
-            'Custom default validator false positive'
-        );
-        //Set default validator to PHP built-in
-        PHPMailer::$validator = 'php';
-        $this->assertFalse(
-            //This is a valid address that FILTER_VALIDATE_EMAIL thinks is invalid
-            $this->Mail->addAddress('first.last@example.123'),
-            'PHP validator not behaving as expected'
-        );
     }
 
     /**
@@ -773,7 +725,7 @@ class PHPMailerTest extends PHPUnit_Framework_TestCase
         $this->Mail->Body = 'Here is the text body';
         $this->Mail->Subject .= ': Plain + Multiple FileAttachments';
 
-        if (!$this->Mail->addAttachment(realpath(self::INCLUDE_DIR . 'examples/images/phpmailer.png'))) {
+        if (!$this->Mail->addAttachment('../examples/images/phpmailer.png')) {
             $this->assertTrue(false, $this->Mail->ErrorInfo);
             return;
         }
@@ -879,7 +831,7 @@ EOT;
 
         //This file is in ISO-8859-1 charset
         //Needs to be external because this file is in UTF-8
-        $content = file_get_contents(realpath('../examples/contents.html'));
+        $content = file_get_contents('../examples/contents.html');
         // This is the string 'éèîüçÅñæß' in ISO-8859-1, base-64 encoded
         $check = base64_decode('6eju/OfF8ebf');
         //Make sure it really is in ISO-8859-1!
@@ -889,7 +841,7 @@ EOT;
                 "ISO-8859-1",
                 mb_detect_encoding($content, "UTF-8, ISO-8859-1, ISO-8859-15", true)
             ),
-            realpath(self::INCLUDE_DIR . 'examples')
+            '../examples'
         );
         $this->buildBody();
         $this->assertTrue(
@@ -953,7 +905,7 @@ EOT;
 </html>
 EOT;
         $this->Mail->addEmbeddedImage(
-            realpath(self::INCLUDE_DIR . 'examples/images/phpmailer.png'),
+            '../examples/images/phpmailer.png',
             'my-attach',
             'phpmailer.png',
             'base64',
@@ -989,12 +941,12 @@ EOT;
      */
     public function testMsgHTML()
     {
-        $message = file_get_contents(realpath(self::INCLUDE_DIR . 'examples/contentsutf8.html'));
+        $message = file_get_contents('../examples/contentsutf8.html');
         $this->Mail->CharSet = 'utf-8';
         $this->Mail->Body = '';
         $this->Mail->AltBody = '';
         //Uses internal HTML to text conversion
-        $this->Mail->msgHTML($message, realpath(self::INCLUDE_DIR . 'examples'));
+        $this->Mail->msgHTML($message, '../examples');
         $this->Mail->Subject .= ': msgHTML';
 
         $this->assertNotEmpty($this->Mail->Body, 'Body not set by msgHTML');
@@ -1003,7 +955,7 @@ EOT;
 
         //Again, using a custom HTML to text converter
         $this->Mail->AltBody = '';
-        $this->Mail->msgHTML($message, realpath(self::INCLUDE_DIR . 'examples'), function ($html) {
+        $this->Mail->msgHTML($message, '../examples', function ($html) {
             return strtoupper(strip_tags($html));
         });
         $this->Mail->Subject .= ' + custom html2text';
@@ -1021,9 +973,7 @@ EOT;
         $this->Mail->Subject .= ': HTML + Attachment';
         $this->Mail->isHTML(true);
 
-        if (!$this->Mail->addAttachment(
-            realpath(self::INCLUDE_DIR . 'examples/images/phpmailer_mini.png'), 'phpmailer_mini.png')
-        ) {
+        if (!$this->Mail->addAttachment('../examples/images/phpmailer_mini.png', 'phpmailer_mini.png')) {
             $this->assertTrue(false, $this->Mail->ErrorInfo);
             return;
         }
@@ -1045,7 +995,7 @@ EOT;
         $this->Mail->isHTML(true);
 
         if (!$this->Mail->addStringEmbeddedImage(
-            file_get_contents(realpath(self::INCLUDE_DIR . 'examples/images/phpmailer_mini.png')),
+            file_get_contents('../examples/images/phpmailer_mini.png'),
             md5('phpmailer_mini.png').'@phpmailer.0',
             '', //intentionally empty name
             'base64',
@@ -1069,12 +1019,12 @@ EOT;
         $this->Mail->Subject .= ': HTML + multiple Attachment';
         $this->Mail->isHTML(true);
 
-        if (!$this->Mail->addAttachment(realpath(self::INCLUDE_DIR . 'examples/images/phpmailer_mini.png'), 'phpmailer_mini.png')) {
+        if (!$this->Mail->addAttachment('../examples/images/phpmailer_mini.png', 'phpmailer_mini.png')) {
             $this->assertTrue(false, $this->Mail->ErrorInfo);
             return;
         }
 
-        if (!$this->Mail->addAttachment(realpath(self::INCLUDE_DIR . 'examples/images/phpmailer.png'), 'phpmailer.png')) {
+        if (!$this->Mail->addAttachment('../examples/images/phpmailer.png', 'phpmailer.png')) {
             $this->assertTrue(false, $this->Mail->ErrorInfo);
             return;
         }
@@ -1094,7 +1044,7 @@ EOT;
         $this->Mail->isHTML(true);
 
         if (!$this->Mail->addEmbeddedImage(
-            realpath(self::INCLUDE_DIR . 'examples/images/phpmailer.png'),
+            '../examples/images/phpmailer.png',
             'my-attach',
             'phpmailer.png',
             'base64',
@@ -1123,7 +1073,7 @@ EOT;
         $this->Mail->isHTML(true);
 
         if (!$this->Mail->addEmbeddedImage(
-            realpath(self::INCLUDE_DIR . 'examples/images/phpmailer.png'),
+            '../examples/images/phpmailer.png',
             'my-attach',
             'phpmailer.png',
             'base64',
@@ -1177,6 +1127,11 @@ EOT;
 
         $this->buildBody();
         $this->assertTrue($this->Mail->send(), $this->Mail->ErrorInfo);
+        if (is_writable('.')) {
+            file_put_contents('message.txt', $this->Mail->createHeader() . $this->Mail->createBody());
+        } else {
+            $this->assertTrue(false, 'Could not write local file - check permissions');
+        }
     }
 
     /**
@@ -1185,7 +1140,7 @@ EOT;
     public function testIcal()
     {
         //Standalone ICS tests
-        require_once realpath(self::INCLUDE_DIR . 'extras/EasyPeasyICS.php');
+        require_once '../extras/EasyPeasyICS.php';
         $ICS = new EasyPeasyICS("PHPMailer test calendar");
         $this->assertNotEmpty(
             $ICS->addEvent(
@@ -1311,22 +1266,20 @@ EOT;
     }
 
     /**
-     * Test constructing a multipart message that contains lines that are too long for RFC compliance.
+     * Test constructing a message that contains lines that are too long for RFC compliance.
      */
     public function testLongBody()
     {
-        $oklen = str_repeat(str_repeat('0', PHPMailer::MAX_LINE_LENGTH) . PHPMailer::CRLF, 2);
+        $oklen = str_repeat(str_repeat('0', PHPMailer::MAX_LINE_LENGTH) . PHPMailer::CRLF, 10);
         $badlen = str_repeat(str_repeat('1', PHPMailer::MAX_LINE_LENGTH + 1) . PHPMailer::CRLF, 2);
 
         $this->Mail->Body = "This message contains lines that are too long.".
-            PHPMailer::CRLF . $oklen . $badlen . $oklen;
+            PHPMailer::CRLF . PHPMailer::CRLF . $oklen . $badlen . $oklen;
         $this->assertTrue(
             PHPMailer::hasLineLongerThanMax($this->Mail->Body),
             'Test content does not contain long lines!'
         );
-        $this->Mail->isHTML();
         $this->buildBody();
-        $this->Mail->AltBody = $this->Mail->Body;
         $this->Mail->Encoding = '8bit';
         $this->Mail->preSend();
         $message = $this->Mail->getSentMIMEMessage();
@@ -1346,7 +1299,7 @@ EOT;
         $oklen = str_repeat(str_repeat('0', PHPMailer::MAX_LINE_LENGTH) . PHPMailer::CRLF, 10);
 
         $this->Mail->Body = "This message does not contain lines that are too long.".
-            PHPMailer::CRLF . $oklen;
+            PHPMailer::CRLF . PHPMailer::CRLF . $oklen;
         $this->assertFalse(
             PHPMailer::hasLineLongerThanMax($this->Mail->Body),
             'Test content contains long lines!'
@@ -1467,19 +1420,6 @@ EOT;
                 'Joe User <joe@example.com>, Jill User <jill@example.net>'
             ),
             'Failed to recognise address list (IMAP parser)'
-        );
-        $this->assertEquals(
-            array(
-                array("name" => 'Joe User', 'address' => 'joe@example.com'),
-                array("name" => 'Jill User', 'address' => 'jill@example.net'),
-                array("name" => '', 'address' => 'frank@example.com'),
-            ),
-            $this->Mail->parseAddresses(
-                'Joe User <joe@example.com>,'
-                    . 'Jill User <jill@example.net>,'
-                    . 'frank@example.com,'
-            ),
-            'Parsed addresses'
         );
         //Test simple address parser
         $this->assertCount(
@@ -1667,8 +1607,8 @@ EOT;
             "private_key_type" => OPENSSL_KEYTYPE_RSA,
         );
         $password = 'password';
-        $certfile = 'certfile.pem';
-        $keyfile = 'keyfile.pem';
+        $certfile = 'certfile.txt';
+        $keyfile = 'keyfile.txt';
 
         //Make a new key pair
         $pk = openssl_pkey_new($keyconfig);
@@ -1828,7 +1768,7 @@ EOT;
      */
     public function testLineLength()
     {
-        $oklen = str_repeat(str_repeat('0', PHPMailer::MAX_LINE_LENGTH)."\r\n", 2);
+        $oklen = str_repeat(str_repeat('0', PHPMailer::MAX_LINE_LENGTH)."\r\n", 10);
         $badlen = str_repeat(str_repeat('1', PHPMailer::MAX_LINE_LENGTH + 1) . "\r\n", 2);
         $this->assertTrue(PHPMailer::hasLineLongerThanMax($badlen), 'Long line not detected (only)');
         $this->assertTrue(PHPMailer::hasLineLongerThanMax($oklen . $badlen), 'Long line not detected (first)');
@@ -2092,8 +2032,8 @@ EOT;
     }
 
     /**
-     * Use a fake POP3 server to test POP-before-SMTP auth
-     * with a known-bad login.
+     * Use a fake POP3 server to test POP-before-SMTP auth.
+     * With a known-bad login
      */
     public function testPopBeforeSmtpBad()
     {

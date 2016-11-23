@@ -1130,14 +1130,14 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 inner join cmeareas ca on ( ca.id = csa.cmeareasid )
             where csa.id = @areasid
               and ib.barcode = @barcode
-              and ec.id not in ( 
-                    select
-                        fpc.equipmentcycleid
-                    from
-                        flowprocessingcharge fpc
-                    where fpc.equipmentcycleid = ec.id
-                      and fpc.chargeflag = '001'
-               )";
+              --and ec.id not in (
+              --      select
+              --          fpc.equipmentcycleid
+              --      from
+              --          flowprocessingcharge fpc
+              --      where fpc.equipmentcycleid = ec.id
+              --        and fpc.chargeflag = '001'
+              -- )";
 
         try {
             $pdo = $this->prepare($sql);
@@ -2277,13 +2277,13 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $rows = $this->removeAccents($pdo->fetchAll());
 
             $entityname = $rows[0]['entityname'];
-            $proprietaryname = $rows[0]['proprietaryname'];
+            $proprietaryname = $this->removeAccents($rows[0]['proprietaryname']);
             $dateof = $rows[0]['dateof'];
             $username = $rows[0]['username'];
-            $sterilizationtypename = $rows[0]['sterilizationtypename'];
+            $sterilizationtypename = $this->removeAccents($rows[0]['sterilizationtypename']);
             $validity = $rows[0]['validity'];
             $days = $rows[0]['days'];
-            $materialboxname = $rows[0]['materialboxname'];
+            $materialboxname = $this->removeAccents($rows[0]['materialboxname']);
             $quantity = $rows[0]['quantity'];
             $barcode = $rows[0]['barcode'];
 

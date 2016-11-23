@@ -1,5 +1,5 @@
 $app-name:  dynamic( 'iSterilization' );
-$image-search-path: 'C:/Palindrome/SATOR/build/production/iSterilization/classic/resources';
+$image-search-path: 'C:/Palindrome/SATORCME/build/production/iSterilization/classic/resources';
 $theme-name:  dynamic( 'theme-triton' );
 $include-ext-abstractcomponent: dynamic(true);;
 $include-ext-abstractcontainer: dynamic(true);;

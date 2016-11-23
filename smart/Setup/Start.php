@@ -8,11 +8,28 @@ class Start {
 
     private static $usr = "sa";
     private static $sch = "dbo";
+    private static $pwd = "ms128";
+
+//    private static $dtb = "CMENEW";
+//    private static $log = "CMENEW_LOG";
+
+    private static $dtb = "CMENEW_TEST";
+    private static $log = "CMENEW_LOG_TEST";
+
+    private static $tmz = "America/Manaus";
+    //private static $dns = "sqlsrv:server=(local);database=dtb";
+    private static $dns = "sqlsrv:server=(local)\\sqlexpress;database=dtb";
+
+
+/*
+    private static $usr = "sa";
+    private static $sch = "dbo";
     private static $pwd = "1844";
-    private static $dtb = "CME";
-    private static $log = "CME_LOG";
-    private static $tmz = "America/Sao_Paulo";
-	private static $dns = "sqlsrv:server=(local);database=dtb";
+    private static $dtb = "CMENEW";
+    private static $log = "CMENEW_LOG";
+    private static $tmz = "America/Manaus";
+    private static $dns = "sqlsrv:server=10.51.26.2;database=dtb";
+*/
 
     public static function tableSchema() {
         return self::$sch;

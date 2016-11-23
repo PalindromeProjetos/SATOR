@@ -1,2 +1,2 @@
 // @tag full-page
-// @require C:\Palindrome\SATOR\iAdmin\app.js
+// @require C:\Palindrome\SATORCME\iAdmin\app.js

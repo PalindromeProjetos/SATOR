@@ -352,7 +352,6 @@ class PHPMailer
     /**
      * Whether to split multiple to addresses into multiple messages
      * or send them all in one message.
-     * Only supported in `mail` and `sendmail` transports, not in SMTP.
      * @var boolean
      */
     public $SingleTo = false;
@@ -646,7 +645,9 @@ class PHPMailer
     public function __destruct()
     {
         //Close any open SMTP connection nicely
-        $this->smtpClose();
+        if ($this->Mailer == 'smtp') {
+            $this->smtpClose();
+        }
     }
 
     /**
@@ -712,7 +713,7 @@ class PHPMailer
             case 'echo':
             default:
                 //Normalize line breaks
-                $str = preg_replace('/\r\n?/ms', "\n", $str);
+                $str = preg_replace('/(\r\n|\r|\n)/ms', "\n", $str);
                 echo gmdate('Y-m-d H:i:s') . "\t" . str_replace(
                     "\n",
                     "\n                   \t                  ",
@@ -1633,7 +1634,7 @@ class PHPMailer
      */
     public function smtpClose()
     {
-        if (is_a($this->smtp, 'SMTP')) {
+        if ($this->smtp !== null) {
             if ($this->smtp->connected()) {
                 $this->smtp->quit();
                 $this->smtp->close();
@@ -3296,7 +3297,7 @@ class PHPMailer
                             $message
                         );
                     }
-                } elseif (substr($url, 0, 4) !== 'cid:' && !preg_match('#^[a-z][a-z0-9+.-]*://#i', $url)) {
+                } elseif (substr($url, 0, 4) !== 'cid:' && !preg_match('#^[A-z]+://#', $url)) {
                     // Do not change urls for absolute images (thanks to corvuscorax)
                     // Do not change urls that are already inline images
                     $filename = basename($url);
@@ -3657,13 +3658,11 @@ class PHPMailer
         if ($this->DKIM_passphrase != '') {
             $privKey = openssl_pkey_get_private($privKeyStr, $this->DKIM_passphrase);
         } else {
-            $privKey = openssl_pkey_get_private($privKeyStr);
+            $privKey = $privKeyStr;
         }
-        if (openssl_sign($signHeader, $signature, $privKey, 'sha256WithRSAEncryption')) { //sha1WithRSAEncryption
-            openssl_pkey_free($privKey);
+        if (openssl_sign($signHeader, $signature, $privKey)) {
             return base64_encode($signature);
         }
-        openssl_pkey_free($privKey);
         return '';
     }
 
@@ -3680,7 +3679,7 @@ class PHPMailer
         foreach ($lines as $key => $line) {
             list($heading, $value) = explode(':', $line, 2);
             $heading = strtolower($heading);
-            $value = preg_replace('/\s{2,}/', ' ', $value); // Compress useless spaces
+            $value = preg_replace('/\s+/', ' ', $value); // Compress useless spaces
             $lines[$key] = $heading . ':' . trim($value); // Don't forget to remove WSP around the value
         }
         $signHeader = implode("\r\n", $lines);
@@ -3718,7 +3717,7 @@ class PHPMailer
      */
     public function DKIM_Add($headers_line, $subject, $body)
     {
-        $DKIMsignatureType = 'rsa-sha256'; // Signature & hash algorithms
+        $DKIMsignatureType = 'rsa-sha1'; // Signature & hash algorithms
         $DKIMcanonicalization = 'relaxed/simple'; // Canonicalization of header/body
         $DKIMquery = 'dns/txt'; // Query method
         $DKIMtime = time(); // Signature Timestamp = seconds since 00:00:00 - Jan 1, 1970 (UTC time zone)
@@ -3726,7 +3725,6 @@ class PHPMailer
         $headers = explode($this->LE, $headers_line);
         $from_header = '';
         $to_header = '';
-        $date_header = '';
         $current = '';
         foreach ($headers as $header) {
             if (strpos($header, 'From:') === 0) {
@@ -3735,9 +3733,6 @@ class PHPMailer
             } elseif (strpos($header, 'To:') === 0) {
                 $to_header = $header;
                 $current = 'to_header';
-            } elseif (strpos($header, 'Date:') === 0) {
-                $date_header = $header;
-                $current = 'date_header';
             } else {
                 if (!empty($$current) && strpos($header, ' =?') === 0) {
                     $$current .= $header;
@@ -3748,7 +3743,6 @@ class PHPMailer
         }
         $from = str_replace('|', '=7C', $this->DKIM_QP($from_header));
         $to = str_replace('|', '=7C', $this->DKIM_QP($to_header));
-        $date = str_replace('|', '=7C', $this->DKIM_QP($date_header));
         $subject = str_replace(
             '|',
             '=7C',
@@ -3756,7 +3750,7 @@ class PHPMailer
         ); // Copied header fields (dkim-quoted-printable)
         $body = $this->DKIM_BodyC($body);
         $DKIMlen = strlen($body); // Length of body
-        $DKIMb64 = base64_encode(pack('H*', hash('sha256', $body))); // Base64 of packed binary SHA-256 hash of body
+        $DKIMb64 = base64_encode(pack('H*', sha1($body))); // Base64 of packed binary SHA-1 hash of body
         if ('' == $this->DKIM_identity) {
             $ident = '';
         } else {
@@ -3769,18 +3763,16 @@ class PHPMailer
             $this->DKIM_selector .
             ";\r\n" .
             "\tt=" . $DKIMtime . '; c=' . $DKIMcanonicalization . ";\r\n" .
-            "\th=From:To:Date:Subject;\r\n" .
+            "\th=From:To:Subject;\r\n" .
             "\td=" . $this->DKIM_domain . ';' . $ident . "\r\n" .
             "\tz=$from\r\n" .
             "\t|$to\r\n" .
-            "\t|$date\r\n" .
             "\t|$subject;\r\n" .
             "\tbh=" . $DKIMb64 . ";\r\n" .
             "\tb=";
         $toSign = $this->DKIM_HeaderC(
             $from_header . "\r\n" .
             $to_header . "\r\n" .
-            $date_header . "\r\n" .
             $subject_header . "\r\n" .
             $dkimhdrs
         );

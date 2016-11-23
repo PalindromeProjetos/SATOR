@@ -1,4 +1,4 @@
-﻿(function(){
+﻿﻿(function(){
 	window.addEventListener('load', function(){
 		
         var json = {
