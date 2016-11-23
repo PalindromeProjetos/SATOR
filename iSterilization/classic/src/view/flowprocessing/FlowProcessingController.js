@@ -279,7 +279,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                                             Smart.Msg.showToast(resultSet.getMessage(), 'error');
                                             return false;
                                         }
-
+console.info(view.master);
                                         var url = 'business/Calls/Quick/DispensingReport.php?id={0}';
                                         window.open(Ext.String.format(url,data.get('id')));
 

@@ -1,6 +1,6 @@
 {
     "name": "iAdmin",
-    "version": "1.0.0.432",
+    "version": "1.0.0.431",
     "indexHtmlPath": "index.html",
     "classpath": [
         "app",
@@ -195,7 +195,7 @@
     "id": "a2937d8d-e2e5-4a28-a361-d076f2e55e41",
     "buildby": {
         "application": "production",
-        "logusername": "Optimal-PC",
-        "lastdateapp": "2016-11-22 21:27"
+        "logusername": "DSADES21",
+        "lastdateapp": "2016-11-23 20:45"
     }
 }
