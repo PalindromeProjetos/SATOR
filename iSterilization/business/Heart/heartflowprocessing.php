@@ -1795,7 +1795,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                     where a.id = fp.id
                 ) t
             where a.armorystatus = 'A'
-                and fp.barcode = @barcode";
+              and fp.barcode = @barcode";
 
         try {
             $pdo = $this->prepare($sql);

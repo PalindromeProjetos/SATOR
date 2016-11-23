@@ -241,7 +241,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                     return false;
                 }
 
+                this.close();
+
                 Ext.widget('call_SATOR_ENCERRAR_MOVIMENTO', {
+                    scope: me,
                     doCallBack: function () {
                         var value = this.down('form').getValues(),
                             store = Ext.create('iSterilization.store.armory.ArmoryMovement');
