@@ -8,8 +8,8 @@ class armorymovementitem extends \Smart\Data\Cache {
 
     public function selectItem(array $data) {
         $query = $data['query'];
-        $start = $data['start'];
-        $limit = $data['limit'];
+        $start = isset($data['start']) ? $data['start'] : 0;
+        $limit = isset($data['limit']) ? $data['limit'] : 10;
         $proxy = $this->getStore()->getProxy();
 
         $sql = "

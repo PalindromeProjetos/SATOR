@@ -140,15 +140,15 @@ class armorymovement extends \Smart\Data\Event {
                             declare
                                 @flowprocessingid int,
                                 @flowprocessingstepid int = {$flowprocessingstepid};
-                            
+
                             select
                                 @flowprocessingid = flowprocessingid
                             from
                                 flowprocessingstep
                             where id = @flowprocessingstepid;
-                             
+
                             update flowprocessing set flowstatus = 'E' where id = @flowprocessingid;
-                             
+
                             update flowprocessingstepaction set isactive = 0 where flowprocessingstepid = @flowprocessingstepid;";
 
                         $proxy->exec($sql);
@@ -162,7 +162,7 @@ class armorymovement extends \Smart\Data\Event {
 
                     if($newmovementtype == '003') {
                         $sql = "
-                            update 
+                            update
                               armorystock
                             set
                               armorystatus = 'A'
