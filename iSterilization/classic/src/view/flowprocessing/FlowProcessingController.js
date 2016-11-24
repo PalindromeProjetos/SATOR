@@ -2844,6 +2844,15 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         }
     },
 
+    printerTagItem: function(grid, rowIndex, colIndex) {
+        var me = this,
+            store = grid.getStore(),
+            record = store.getAt(rowIndex),
+            url = 'business/Calls/Quick/ExceptionByFlow.php?id={0}';
+// console.info(grid.getColumns(),colIndex);
+        // window.open(Ext.String.format(url,record.get('id')));
+    },
+
     /**
      * Imprmir etiqueta
      *

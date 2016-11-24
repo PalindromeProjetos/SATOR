@@ -161,7 +161,6 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                 params = {
                                                     query: record.get('id')
                                                 };
-                                            console.info(record.data);
                                             newCard.down('gridpanel').getStore().removeAll();
                                             newCard.down('gridpanel').getStore().load({params: params});
                                         }
@@ -285,26 +284,57 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                     }, {
                                                         name: 'dateof',
                                                         type: 'auto'
-                                                        // serializeType: 'date'
-                                                        // convert: function (value, record) {
-                                                        //     return ( !value || value.length == 0) ? null : Ext.util.Format.date(Ext.Date.parse(value,'Y-m-d'),'d/m/Y');
-                                                        // }
+                                                    }, {
+                                                        name: 'flowstatus',
+                                                        type: 'auto'
+                                                    }, {
+                                                        name: 'flowstatusdescription',
+                                                        type: 'auto'
                                                     }
                                                 ],
 
                                                 columns: [
                                                     {
-                                                        xtype: 'rownumberer'
-                                                    }, {
+                                                    //     xtype: 'rownumberer'
+                                                    // }, {
                                                         flex: 1,
                                                         sortable: false,
                                                         dataIndex: 'barcode',
                                                         text: 'Código'
                                                     }, {
-                                                        width: 160,
+                                                        width: 120,
                                                         sortable: false,
                                                         dataIndex: 'dateof',
-                                                        text: 'Data'
+                                                        text: 'Data',
+                                                        renderer: function (value) {
+                                                            var readValue = Ext.util.Format.date(Ext.Date.parse(value.substring(0, 10),'Y-m-d'),'d/m/Y');
+                                                            return (readValue.length != 0) ? readValue: value;
+                                                        }
+                                                    }, {
+                                                        width: 120,
+                                                        sortable: false,
+                                                        dataIndex: 'flowstatusdescription',
+                                                        text: 'Status'
+                                                    }, {
+                                                        width: 80,
+                                                        align: 'center',
+                                                        xtype: 'actioncolumn',
+                                                        items: [
+                                                            {
+                                                                stepsettings: '001',
+                                                                handler: 'printerTagItem',
+                                                                iconCls: "fa fa-print action-delete-color-font",
+                                                                tooltip: 'Imprimir etiqueta pequena!'
+                                                            }, {
+                                                                disabled: true,
+                                                                xtype: 'splitter'
+                                                            }, {
+                                                                stepsettings: '001',
+                                                                handler: 'printerTagItem',
+                                                                iconCls: "fa fa-print action-delete-color-font",
+                                                                tooltip: 'Imprimir etiqueta grande!'
+                                                            }
+                                                        ]
                                                     }
                                                 ]
                                             }

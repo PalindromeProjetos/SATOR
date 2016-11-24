@@ -162,7 +162,9 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
             select distinct
                 fp.id, 
                 fp.barcode,
-                fp.dateof
+                fp.flowstatus,
+                fp.dateof,
+                dbo.getEnum('flowstatus',fp.flowstatus) as flowstatusdescription
             from
                 flowprocessingstepmaterial fpm
                 inner join flowprocessingstep fps on ( fps.id = fpm.flowprocessingstepid )
