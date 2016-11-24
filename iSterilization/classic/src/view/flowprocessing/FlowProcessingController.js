@@ -2859,7 +2859,11 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 break;
         }
 
-        console.info(Ext.encode({ stepsettings: tagprinter }));
+        if(!Smart.workstation.printlocate) {
+            Smart.ion.sound.play("computer_error");
+            Smart.Msg.showToast('Não foi possivel completar a sua solicitação, não existe uma impressora consfigurada!');
+            return false;
+        }
 
         Ext.Ajax.request({
             scope: me,
@@ -2869,7 +2873,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 method: 'imprimeEtiqueta',
                 id: record.get('id'),
                 printlocate: Smart.workstation.printlocate,
-                stepsettings: Ext.encode({ stepsettings: tagprinter })
+                stepsettings: Ext.encode(tagprinter)
             },
             callback: function (options, success, response) {
                 var result = Ext.decode(response.responseText);

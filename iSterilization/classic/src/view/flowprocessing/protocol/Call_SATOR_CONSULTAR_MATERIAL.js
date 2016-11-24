@@ -243,11 +243,13 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                         xtype: 'rownumberer'
                                                     }, {
                                                         width: 120,
+                                                        align: 'left',
                                                         sortable: false,
                                                         dataIndex: 'barcode',
                                                         text: 'Código'
                                                     }, {
                                                         flex: 1,
+                                                        align: 'left',
                                                         sortable: false,
                                                         dataIndex: 'materialname',
                                                         text: 'Material'
@@ -296,11 +298,13 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                 columns: [
                                                     {
                                                         flex: 1,
+                                                        align: 'left',
                                                         sortable: false,
                                                         dataIndex: 'barcode',
                                                         text: 'Código'
                                                     }, {
                                                         width: 120,
+                                                        align: 'center',
                                                         sortable: false,
                                                         dataIndex: 'dateof',
                                                         text: 'Data',
@@ -309,23 +313,23 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                             return (readValue.length != 0) ? readValue: value;
                                                         }
                                                     }, {
-                                                        width: 120,
+                                                        width: 160,
                                                         sortable: false,
                                                         dataIndex: 'flowstatusdescription',
                                                         text: 'Status'
                                                     }, {
-                                                        width: 30,
+                                                        width: 40,
                                                         align: 'center',
                                                         xtype: 'actioncolumn',
                                                         handler: 'printerTagItem',
-                                                        iconCls: "fa fa-print action-delete-color-font",
+                                                        iconCls: "fa fa-tags action-delete-color-font",
                                                         tooltip: 'Imprimir etiqueta pequena!'
                                                     }, {
-                                                        width: 30,
+                                                        width: 40,
                                                         align: 'center',
                                                         xtype: 'actioncolumn',
                                                         handler: 'printerTagItem',
-                                                        iconCls: "fa fa-print action-delete-color-font",
+                                                        iconCls: "fa fa-tags action-delete-color-font",
                                                         tooltip: 'Imprimir etiqueta grande!'
                                                     }
                                                 ]

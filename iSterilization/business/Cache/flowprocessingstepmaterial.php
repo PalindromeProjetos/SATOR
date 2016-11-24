@@ -159,8 +159,8 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
             declare
                 @materialid int = :materialid;
                 
-            select distinct
-                fp.id, 
+            select top 1
+                fps.id, 
                 fp.barcode,
                 fp.flowstatus,
                 fp.dateof,
@@ -169,7 +169,8 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
                 flowprocessingstepmaterial fpm
                 inner join flowprocessingstep fps on ( fps.id = fpm.flowprocessingstepid )
                 inner join flowprocessing fp on ( fp.id = fps.flowprocessingid ) 
-            where fpm.materialid = @materialid";
+            where fpm.materialid = @materialid
+            order by fp.dateof desc";
 
         try {
             $pdo = $proxy->prepare($sql);
