@@ -314,25 +314,19 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                         dataIndex: 'flowstatusdescription',
                                                         text: 'Status'
                                                     }, {
-                                                        width: 80,
+                                                        width: 30,
                                                         align: 'center',
                                                         xtype: 'actioncolumn',
-                                                        items: [
-                                                            {
-                                                                stepsettings: '001',
-                                                                handler: 'printerTagItem',
-                                                                iconCls: "fa fa-print action-delete-color-font",
-                                                                tooltip: 'Imprimir etiqueta pequena!'
-                                                            }, {
-                                                                disabled: true,
-                                                                xtype: 'splitter'
-                                                            }, {
-                                                                stepsettings: '001',
-                                                                handler: 'printerTagItem',
-                                                                iconCls: "fa fa-print action-delete-color-font",
-                                                                tooltip: 'Imprimir etiqueta grande!'
-                                                            }
-                                                        ]
+                                                        handler: 'printerTagItem',
+                                                        iconCls: "fa fa-print action-delete-color-font",
+                                                        tooltip: 'Imprimir etiqueta pequena!'
+                                                    }, {
+                                                        width: 30,
+                                                        align: 'center',
+                                                        xtype: 'actioncolumn',
+                                                        handler: 'printerTagItem',
+                                                        iconCls: "fa fa-print action-delete-color-font",
+                                                        tooltip: 'Imprimir etiqueta grande!'
                                                     }
                                                 ]
                                             }

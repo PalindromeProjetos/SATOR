@@ -2846,11 +2846,41 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
     printerTagItem: function(grid, rowIndex, colIndex) {
         var me = this,
+            tagprinter = {},
             store = grid.getStore(),
-            record = store.getAt(rowIndex),
-            url = 'business/Calls/Quick/ExceptionByFlow.php?id={0}';
-// console.info(grid.getColumns(),colIndex);
-        // window.open(Ext.String.format(url,record.get('id')));
+            record = store.getAt(rowIndex);
+
+        switch (colIndex) {
+            case 3:
+                tagprinter = { tagprinter: '001' };
+                break;
+            case 4:
+                tagprinter = { tagprinter: '002' };
+                break;
+        }
+
+        console.info(Ext.encode({ stepsettings: tagprinter }));
+
+        Ext.Ajax.request({
+            scope: me,
+            url: me.url,
+            params: {
+                action: 'select',
+                method: 'imprimeEtiqueta',
+                id: record.get('id'),
+                printlocate: Smart.workstation.printlocate,
+                stepsettings: Ext.encode({ stepsettings: tagprinter })
+            },
+            callback: function (options, success, response) {
+                var result = Ext.decode(response.responseText);
+
+                if(!success || !result.success) {
+                    Smart.ion.sound.play("computer_error");
+                    Smart.Msg.showToast('Não foi possivel completar a sua solicitação!');
+                    return false;
+                }
+            }
+        });
     },
 
     /**
