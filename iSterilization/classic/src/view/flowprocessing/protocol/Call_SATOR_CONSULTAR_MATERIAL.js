@@ -295,8 +295,6 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
 
                                                 columns: [
                                                     {
-                                                    //     xtype: 'rownumberer'
-                                                    // }, {
                                                         flex: 1,
                                                         sortable: false,
                                                         dataIndex: 'barcode',

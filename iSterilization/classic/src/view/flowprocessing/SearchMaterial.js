@@ -159,8 +159,9 @@ Ext.define( 'iSterilization.view.flowprocessing.SearchMaterial', {
                 }
 
                 if ([e.ENTER].indexOf(e.getKey()) != -1) {
-                    var param = itemP.test(value) ? 'P' : 'C';
-                    field.getStore().setParams({ query: value, param: param }).load();
+                    var text = value.toUpperCase(),
+                        param = itemP.test(text) ? 'P' : 'C';
+                    field.getStore().setParams({ query: text, param: param }).load();
                 }
             }
         });
