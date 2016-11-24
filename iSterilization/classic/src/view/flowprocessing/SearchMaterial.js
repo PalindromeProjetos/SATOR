@@ -22,6 +22,7 @@ Ext.define( 'iSterilization.view.flowprocessing.SearchMaterial', {
     url: '../iSterilization/business/Calls/flowprocessing.php',
 
     params: {
+        param: 'C',
         action: 'select',
         method: 'selectOpenMaterial'
     },
@@ -150,11 +151,16 @@ Ext.define( 'iSterilization.view.flowprocessing.SearchMaterial', {
 
         me.setListeners({
             specialkey: function (field, e, eOpts) {
+                var value = field.getRawValue(),
+                    itemP = new RegExp(/(P\d{6})\w+/g);
+
                 if ([e.ESC].indexOf(e.getKey()) != -1) {
                     field.fireEvent('showclear', field);
                 }
+
                 if ([e.ENTER].indexOf(e.getKey()) != -1) {
-                    field.getStore().setParams({ query: field.getRawValue() }).load();
+                    var param = itemP.test(value) ? 'P' : 'C';
+                    field.getStore().setParams({ query: value, param: param }).load();
                 }
             }
         });

@@ -9,9 +9,45 @@ use iSterilization\Model\flowprocessing as Model;
 class flowprocessing extends \Smart\Data\Cache {
     use Traits\TuserHandler;
 
+    public function selectByProcess($query,$proxy) {
+        $sql = "
+            declare
+                @barcode varchar(20) = :barcode;
+
+            select
+                ib.barcode
+            from
+                flowprocessing fp
+                inner join itembase ib on ( ib.id = fp.materialid )
+            where fp.barcode = @barcode;";
+
+        try {
+            $pdo = $proxy->prepare($sql);
+            $pdo->bindValue(":barcode", $query, \PDO::PARAM_STR);
+            $pdo->execute();
+            $rows = $pdo->fetchAll();
+
+            self::_setRows($rows);
+
+        } catch ( \PDOException $e ) {
+            self::_setSuccess(false);
+            self::_setText($e->getMessage());
+        }
+
+        return self::getResultToJson();
+    }
+
     public function selectOpenMaterial(array $data) {
         $query = $data['query'];
+        $param = $data['param'];
         $proxy = $this->getStore()->getProxy();
+
+        if ($param == 'P') {
+            $result = self::jsonToObject($this->selectByProcess($query,$proxy));
+            if($result->records != 0) {
+                $query = $result->rows[0]->barcode;
+            }
+        }
 
         $sql = "
             declare

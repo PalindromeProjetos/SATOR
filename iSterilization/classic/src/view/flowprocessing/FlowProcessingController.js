@@ -1071,7 +1071,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         field.reset();
 
         if(value && value.length != 0) {
-            if( value.search(/SATOR/i) != -1 || value.search(/MOV/i) != -1) {
+            if( value.indexOf('SATOR') != -1 || value.indexOf('MOV') != -1) {
                 me.loadProtocol(value);
                 return false;
             }

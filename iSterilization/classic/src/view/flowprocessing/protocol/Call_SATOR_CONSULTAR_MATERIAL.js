@@ -153,8 +153,17 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                     query: record.get('materialboxid'),
                                                     limit: record.get('materialboxitems')
                                                 };
-                                            view.down('gridpanel').getStore().removeAll();
-                                            view.down('gridpanel').getStore().load({params: params});
+                                            newCard.down('gridpanel').getStore().removeAll();
+                                            newCard.down('gridpanel').getStore().load({params: params});
+                                        }
+                                        if(newCard.tabIndex == 2 && store.getCount() != 0) {
+                                            var record = store.getAt(0),
+                                                params = {
+                                                    query: record.get('id')
+                                                };
+                                            console.info(record.data);
+                                            newCard.down('gridpanel').getStore().removeAll();
+                                            newCard.down('gridpanel').getStore().load({params: params});
                                         }
                                     }
                                 },
@@ -196,7 +205,6 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                             }
                                         ]
                                     }, {
-
                                         tabIndex: 1,
                                         title: 'Kit',
                                         xtype: 'panel',
@@ -244,6 +252,59 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                         sortable: false,
                                                         dataIndex: 'materialname',
                                                         text: 'Material'
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }, {
+                                        tabIndex: 2,
+                                        title: 'Processos',
+                                        xtype: 'panel',
+                                        layout: 'fit',
+                                        items: [
+                                            {
+                                                xtype: 'gridpanel',
+                                                cls: 'update-grid',
+                                                hideHeaders: false,
+                                                headerBorders: false,
+
+                                                params: {
+                                                    action: 'select',
+                                                    method: 'selectByMaterial'
+                                                },
+
+                                                url: '../iSterilization/business/Calls/flowprocessingstepmaterial.php',
+
+                                                fields: [
+                                                    {
+                                                        name: 'id',
+                                                        type: 'int'
+                                                    }, {
+                                                        name: 'barcode',
+                                                        type: 'auto'
+                                                    }, {
+                                                        name: 'dateof',
+                                                        type: 'auto'
+                                                        // serializeType: 'date'
+                                                        // convert: function (value, record) {
+                                                        //     return ( !value || value.length == 0) ? null : Ext.util.Format.date(Ext.Date.parse(value,'Y-m-d'),'d/m/Y');
+                                                        // }
+                                                    }
+                                                ],
+
+                                                columns: [
+                                                    {
+                                                        xtype: 'rownumberer'
+                                                    }, {
+                                                        flex: 1,
+                                                        sortable: false,
+                                                        dataIndex: 'barcode',
+                                                        text: 'Código'
+                                                    }, {
+                                                        width: 160,
+                                                        sortable: false,
+                                                        dataIndex: 'dateof',
+                                                        text: 'Data'
                                                     }
                                                 ]
                                             }

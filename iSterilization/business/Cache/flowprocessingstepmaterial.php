@@ -151,4 +151,40 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
         return self::getResultToJson();
     }
 
+    public function selectByMaterial(array $data) {
+        $query = $data['query'];
+        $proxy = $this->getStore()->getProxy();
+
+        $sql = "
+            declare
+                @materialid int = :materialid;
+                
+            select distinct
+                fp.id, 
+                fp.barcode,
+                fp.dateof
+            from
+                flowprocessingstepmaterial fpm
+                inner join flowprocessingstep fps on ( fps.id = fpm.flowprocessingstepid )
+                inner join flowprocessing fp on ( fp.id = fps.flowprocessingid ) 
+            where fpm.materialid = @materialid";
+
+        try {
+            $pdo = $proxy->prepare($sql);
+
+            $pdo->bindValue(":materialid", $query, \PDO::PARAM_INT);
+
+            $pdo->execute();
+            $rows = $pdo->fetchAll();
+
+            self::_setRows($rows);
+
+        } catch ( \PDOException $e ) {
+            self::_setSuccess(false);
+            self::_setText($e->getMessage());
+        }
+
+        return self::getResultToJson();
+    }
+
 }
