@@ -153,28 +153,42 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
 
     public function selectByMaterial(array $data) {
         $query = $data['query'];
+        $areasid = $data['areasid'];
         $proxy = $this->getStore()->getProxy();
 
         $sql = "
             declare
+                @areasid int = :areasid,
                 @materialid int = :materialid;
-                
-            select top 1
-                fps.id, 
+                            
+            select distinct
+                fp.id, 
                 fp.barcode,
                 fp.flowstatus,
                 fp.dateof,
-                dbo.getEnum('flowstatus',fp.flowstatus) as flowstatusdescription
+                dbo.getEnum('flowstatus',fp.flowstatus) as flowstatusdescription,
+                b.stepsettings,
+                b.flowprocessingstepid
             from
                 flowprocessingstepmaterial fpm
                 inner join flowprocessingstep fps on ( fps.id = fpm.flowprocessingstepid )
-                inner join flowprocessing fp on ( fp.id = fps.flowprocessingid ) 
+                inner join flowprocessing fp on ( fp.id = fps.flowprocessingid )
+                outer apply (
+                    select
+                        a.stepsettings,
+                        a.id as flowprocessingstepid
+                    from
+                        flowprocessingstep a
+                    where a.flowprocessingid = fp.id
+                      and a.areasid = @areasid
+                ) b
             where fpm.materialid = @materialid
             order by fp.dateof desc";
 
         try {
             $pdo = $proxy->prepare($sql);
 
+            $pdo->bindValue(":areasid", $areasid, \PDO::PARAM_INT);
             $pdo->bindValue(":materialid", $query, \PDO::PARAM_INT);
 
             $pdo->execute();

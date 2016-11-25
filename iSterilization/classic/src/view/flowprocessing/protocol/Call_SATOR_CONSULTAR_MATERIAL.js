@@ -41,7 +41,8 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
             materialdetail.update('');
             materialmessage.update('');
             searchmaterial.getStore().removeAll();
-            view.down('gridpanel').getStore().removeAll();
+            view.down('gridpanel[name=materialbox]').getStore().removeAll();
+            view.down('gridpanel[name=flowprocessing]').getStore().removeAll();
             portrait.update('<div style="position: absolute; padding: 10px 0 0 10px;">...</div>');
             return false;
         }
@@ -159,7 +160,8 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                         if(newCard.tabIndex == 2 && store.getCount() != 0) {
                                             var record = store.getAt(0),
                                                 params = {
-                                                    query: record.get('id')
+                                                    query: record.get('id'),
+                                                    areasid: Smart.workstation.areasid
                                                 };
                                             newCard.down('gridpanel').getStore().removeAll();
                                             newCard.down('gridpanel').getStore().load({params: params});
@@ -214,7 +216,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                 cls: 'update-grid',
                                                 hideHeaders: false,
                                                 headerBorders: false,
-
+                                                name: 'materialbox',
                                                 params: {
                                                     action: 'select',
                                                     method: 'selectCode'
@@ -268,7 +270,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                 cls: 'update-grid',
                                                 hideHeaders: false,
                                                 headerBorders: false,
-
+                                                name: 'flowprocessing',
                                                 params: {
                                                     action: 'select',
                                                     method: 'selectByMaterial'
@@ -292,6 +294,12 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                     }, {
                                                         name: 'flowstatusdescription',
                                                         type: 'auto'
+                                                    }, {
+                                                        name: 'stepsettings',
+                                                        type: 'auto'
+                                                    }, {
+                                                        name: 'flowprocessingstepid',
+                                                        type: 'int'
                                                     }
                                                 ],
 
@@ -322,15 +330,22 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                         align: 'center',
                                                         xtype: 'actioncolumn',
                                                         handler: 'printerTagItem',
-                                                        iconCls: "fa fa-tags action-delete-color-font",
-                                                        tooltip: 'Imprimir etiqueta pequena!'
-                                                    }, {
-                                                        width: 40,
-                                                        align: 'center',
-                                                        xtype: 'actioncolumn',
-                                                        handler: 'printerTagItem',
-                                                        iconCls: "fa fa-tags action-delete-color-font",
-                                                        tooltip: 'Imprimir etiqueta grande!'
+                                                        getClass: function(value, metaData, record, rowIndex, colIndex, store) {
+                                                            var stepsettings = record.get('stepsettings'),
+                                                                tagprinter = (stepsettings) ? Ext.decode(stepsettings).tagprinter : "";
+
+                                                            return tagprinter.length != 0 ? "fa fa-tags action-delete-color-font" : "";
+                                                        },
+                                                        isDisabled: function (view, rowIdx, colIdx, item, rec) {
+                                                            var stepsettings = rec.get('stepsettings'),
+                                                                tagprinter = (stepsettings) ? Ext.decode(stepsettings).tagprinter : "";
+                                                            return tagprinter.length == 0;
+                                                        },
+                                                        getTip: function(v, meta, rec) {
+                                                            var stepsettings = rec.get('stepsettings'),
+                                                                tagprinterdescription = (stepsettings) ? Ext.decode(stepsettings).tagprinterdescription : "";
+                                                            return tagprinterdescription;
+                                                        }
                                                     }
                                                 ]
                                             }

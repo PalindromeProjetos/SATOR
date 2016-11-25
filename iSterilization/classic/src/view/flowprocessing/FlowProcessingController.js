@@ -2848,7 +2848,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         var me = this,
             tagprinter = {},
             store = grid.getStore(),
-            record = store.getAt(rowIndex);
+            record = store.getAt(rowIndex),
+            stepsettings = record.get('stepsettings'),
+            tagprinter = (stepsettings) ? Ext.decode(stepsettings).tagprinter : "{}";
 
         switch (colIndex) {
             case 3:
