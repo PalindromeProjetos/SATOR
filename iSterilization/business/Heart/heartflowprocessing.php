@@ -1468,40 +1468,40 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         return self::getResultToJson();
     }
 
-	public function selectClientId(array $data) {
-		$clientid = str_replace('HAM-C','',$data['clientid']);
+    public function selectClientId(array $data) {
+        $clientid = str_replace('HAM-C','',$data['clientid']);
 
-		$sql = "
+        $sql = "
 			declare
 				@clientid int = :clientid;
 
             select c.id as clientid, c.name as clientname from client c where c.id = @clientid";
 
-		try {
-			$pdo = $this->prepare($sql);
-			$pdo->bindValue(":clientid", $clientid, \PDO::PARAM_INT);
-			$pdo->execute();
-			$rows = $pdo->fetchAll();
-			
-			$success = (count($rows) != 0);
-			
-			self::_setRows($rows);
-			self::_setSuccess($success);
+        try {
+            $pdo = $this->prepare($sql);
+            $pdo->bindValue(":clientid", $clientid, \PDO::PARAM_INT);
+            $pdo->execute();
+            $rows = $pdo->fetchAll();
 
-		} catch ( \PDOException $e ) {
-			self::_setSuccess(false);
-			self::_setText($e->getMessage());
-		}
+            $success = (count($rows) != 0);
 
-		return self::getResultToJson();
-	}
+            self::_setRows($rows);
+            self::_setSuccess($success);
 
-	public function selectOpenClient (array $data) {
-		$clientid = str_replace('HAM-C','',$data['query']);
+        } catch ( \PDOException $e ) {
+            self::_setSuccess(false);
+            self::_setText($e->getMessage());
+        }
+
+        return self::getResultToJson();
+    }
+
+    public function selectOpenClient (array $data) {
+        $clientid = str_replace('HAM-C','',$data['query']);
 
         $clientid = $this->tryNumeric($clientid) ? intval($clientid) : $clientid;
 
-		$sql = "
+        $sql = "
 			declare
 				@id varchar(20) = :id,
 				@name varchar(60) = :name;
@@ -1512,26 +1512,26 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 			from 
 				client c 
 			where convert(varchar(20),c.id) = @id or c.name COLLATE Latin1_General_CI_AI LIKE @name";
-		
-		try {
-			$pdo = $this->prepare($sql);
-			$pdo->bindValue(":id", $clientid, \PDO::PARAM_STR);
-			$pdo->bindValue(":name", "{$clientid}%", \PDO::PARAM_STR);
-			$pdo->execute();
-			$rows = $pdo->fetchAll();
-			
-			$success = (count($rows) != 0);
-			
-			self::_setRows($rows);
-			self::_setSuccess($success);
 
-		} catch ( \PDOException $e ) {
-			self::_setSuccess(false);
-			self::_setText($e->getMessage());
-		}
+        try {
+            $pdo = $this->prepare($sql);
+            $pdo->bindValue(":id", $clientid, \PDO::PARAM_STR);
+            $pdo->bindValue(":name", "{$clientid}%", \PDO::PARAM_STR);
+            $pdo->execute();
+            $rows = $pdo->fetchAll();
 
-		return self::getResultToJson();		
-	}
+            $success = (count($rows) != 0);
+
+            self::_setRows($rows);
+            self::_setSuccess($success);
+
+        } catch ( \PDOException $e ) {
+            self::_setSuccess(false);
+            self::_setText($e->getMessage());
+        }
+
+        return self::getResultToJson();
+    }
 
     public function selectHold(array $data) {
         $areasid = $data['areasid'];

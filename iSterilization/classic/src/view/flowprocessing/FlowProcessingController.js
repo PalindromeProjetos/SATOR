@@ -2873,18 +2873,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             params: {
                 action: 'select',
                 method: 'imprimeEtiqueta',
-                id: record.get('id'),
+                id: record.get('flowprocessingstepid'),
                 printlocate: Smart.workstation.printlocate,
                 stepsettings: Ext.encode(tagprinter)
-            },
-            callback: function (options, success, response) {
-                var result = Ext.decode(response.responseText);
-
-                if(!success || !result.success) {
-                    Smart.ion.sound.play("computer_error");
-                    Smart.Msg.showToast('Não foi possivel completar a sua solicitação!');
-                    return false;
-                }
             }
         });
     },
