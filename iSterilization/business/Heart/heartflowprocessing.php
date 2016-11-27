@@ -2277,8 +2277,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
             $pdo->execute();
-            $rows = self::encodeUTF8($pdo->fetchAll());
-//            $rows = $this->removeAccents(self::encodeUTF8($pdo->fetchAll()));
+//            $rows = self::encodeUTF8($pdo->fetchAll());
+            $rows = $this->removeAccents(self::encodeUTF8($pdo->fetchAll()));
 
             $entityname = $rows[0]['entityname'];
             $proprietaryname = $rows[0]['proprietaryname'];
