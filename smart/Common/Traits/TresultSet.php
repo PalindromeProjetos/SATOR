@@ -17,6 +17,8 @@ use Smart\Utils\Session;
 trait TresultSet {
     public $UNEXPECTED_COMMAND = '{"success":false,"records":0,"rows":[],"errors":[],"text":"Pedido inesperado!"}';
 
+    //<editor-fold desc="sator.etimba">
+
     /**
      * Estrutura de retorno padrão
      *
@@ -31,6 +33,8 @@ trait TresultSet {
         'message'=>false,
         'restart'=>false,
         'records'=>0 );
+
+    //</editor-fold>
 
     /**
      * Pesquisa recursiva em um multidimensional array in key=>value
