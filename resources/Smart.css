@@ -616,11 +616,11 @@
 
 .action-select-color-font {
     cursor: pointer;
-    color: rgb(0, 227, 0) !important;
+    color: rgb(101, 133, 107) !important;
 }
 
 .action-select-color-font:hover {
-    color: rgb(0, 227, 0) !important;
+    color: rgb(38, 153, 23) !important;
 
     top: -7px;
     left: -7px;

@@ -168,9 +168,9 @@ trait TvalidField
 
     /**
      * Valida Xmlversion to Json
-     * @param string $xmlversion
      *
-     * @throws Exception
+     * @param $xmlversion
+     * @throws \Exception
      */
     public function tryXMLversion($xmlversion) {
         $errorCode = Errors::NOT_A_JSON_VALID;

@@ -33,10 +33,16 @@ class Start {
     private static $sch = "dbo";
     private static $pwd = "1844";
     private static $dtb = "CMENEW";
+<<<<<<< HEAD
     private static $log = "CMENEW_LOG";
     private static $tmz = "America/Manaus";
     private static $dns = "sqlsrv:server=10.51.26.2;database=dtb";
 */
+=======
+    private static $log = "CME_LOG";
+    private static $tmz = "America/Sao_Paulo";
+	private static $dns = "sqlsrv:server=(local);database=dtb";
+>>>>>>> origin/master
 
     public static function tableSchema() {
         return self::$sch;

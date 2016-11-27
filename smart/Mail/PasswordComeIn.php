@@ -11,13 +11,7 @@ class PasswordComeIn extends SendMail {
      * @param $body
      */
     public function configEmail (array $data, $body) {
-
-        foreach($data as $field=>$value) {
-            $body = str_replace( '$'.$field, $value, $body );
-        }
-
-        $this->MsgHTML($body);
+        parent::configEmail($data,$body);
         $this->Subject = 'Senha Convite!';
-        $this->AddAddress($data["mainmail"]);
     }
 }

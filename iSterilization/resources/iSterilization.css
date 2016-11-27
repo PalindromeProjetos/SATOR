@@ -563,16 +563,17 @@
 }
 
 .hold .items {
-    color: white;
+    color: black;
     width: 56px;
     font-size: 16px;
     font-weight: 700;
     text-align: center;
     line-height: 22px;
+    background: rgba(255, 237, 79, 1);
+    border-radius: 5px;
 }
 
 .hold .items:hover {
-    color: black;
     background: rgba(248, 202, 0, 1);
 }
 
@@ -618,7 +619,11 @@
     background: rgba(105, 112, 194, 1);
 }
 .hold-002 {
-    background: #ac8bff;
+    background: rgba(242, 225, 145, .4)
+}
+.hold-002:hover {
+    color: black;
+    background: rgba(222, 242, 150, .4);
 }
 .hold-003 {
     background: #fff73b;

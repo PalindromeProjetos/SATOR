@@ -292,10 +292,10 @@ trait TresultSet {
         self::$result['text'] = $param;
     }
 
-	/**
-     * Mensagem de retorno
+    /**
+     * Tipo de operação de CRUD
      *
-     * @param string $param operação de CRUD
+     * @return string
      */
     public static function _getCrud() {
         return isset(self::$result['crud']) ? self::$result['crud'] : '';

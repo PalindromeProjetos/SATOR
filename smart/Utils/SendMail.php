@@ -42,6 +42,12 @@ class SendMail extends PHPMailer {
      */
     public function configEmail (array $data, $body) {
 
+        foreach($data as $field=>$value) {
+            $body = str_replace( '$'.$field, $value, $body );
+        }
+
+        $this->MsgHTML($body);
+        $this->AddAddress($data["mainmail"]);
     }
 
 }
