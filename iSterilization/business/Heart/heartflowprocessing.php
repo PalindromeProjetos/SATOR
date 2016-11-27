@@ -2277,7 +2277,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
             $pdo->execute();
-            $rows = $this->removeAccents($pdo->fetchAll());
+            $rows = self::encodeUTF8($pdo->fetchAll());
+//            $rows = $this->removeAccents(self::encodeUTF8($pdo->fetchAll()));
 
             $entityname = $rows[0]['entityname'];
             $proprietaryname = $this->removeAccents($rows[0]['proprietaryname']);
@@ -2349,7 +2350,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
             $pdo->execute();
-            $rows = $this->removeAccents($pdo->fetchAll());
+            $rows = self::encodeUTF8($pdo->fetchAll());
+//            $rows = $this->removeAccents(self::encodeUTF8($pdo->fetchAll()));
 
             if($ph) {
 
@@ -2431,7 +2433,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
             $pdo->execute();
-            $rows = $this->removeAccents($pdo->fetchAll());
+            $rows = self::encodeUTF8($pdo->fetchAll());
+//            $rows = $this->removeAccents(self::encodeUTF8($pdo->fetchAll()));
 
             if($ph) {
 
