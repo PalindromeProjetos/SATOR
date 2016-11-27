@@ -97,7 +97,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
             }
         });
 
-        //Object.getPrototypeOf(holdview.getParams())
         Ext.Ajax.request({
             scope: me,
             url: holdview.getUrl(),
@@ -147,6 +146,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
     buildItems: function () {
         var me = this;
 
+        Ext.create('iSterilization.store.flowprocessing.FlowProcessingStepAction');
+
         me.items = [
             {
                 flex: 1,
@@ -159,7 +160,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
                 items: [
                     {
                         flex: 1,
-                        xtype: 'container',
+                        xtype: 'panel',
+                        showSmartTransparent: true,
                         layout: {
                             type: 'vbox',
                             align: 'stretch'
@@ -206,7 +208,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
                     }, {
                         xtype: 'splitter'
                     }, {
-                        width: 400,
+                        width: 385,
                         xtype: 'container',
                         layout: {
                             type: 'vbox',

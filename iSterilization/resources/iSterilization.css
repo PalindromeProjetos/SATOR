@@ -543,6 +543,14 @@
     font-size: 38px !important;
 }
 
+.flowprocessinghold .x-toolbar-default {
+    background-color: #d0d0d0;
+}
+
+.flow-processing .x-toolbar-default {
+    background-color: #d0d0d0;
+}
+
 /*
     dataview
 */

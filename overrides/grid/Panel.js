@@ -36,6 +36,10 @@ Ext.define( 'Ext.overrides.grid.Panel', {
                 })
             ).setParams(me.params);
         }
+    },
+
+    buildTools: function () {
+        
     }
 
 });

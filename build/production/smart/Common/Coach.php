@@ -92,7 +92,6 @@ class Coach {
         }
 
         return self::getResultToJson();
-
     }
 
     public function delete() {

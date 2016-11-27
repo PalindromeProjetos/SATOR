@@ -6,11 +6,8 @@ class Start {
 
     //http://php.net/manual/pt_BR/timezones.america.php
 
-    // private static $pwd = "";
-    // private static $usr = "root";
     // private static $sch = "bighero";
     // private static $dtb = "bighero";
-    // private static $tmz = "America/Manaus";
     // private static $dns = "mysql:host=localhost;dbname=dtb";	
 	
     private static $usr = "sa";

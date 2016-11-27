@@ -105,7 +105,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         field.reset();
 
         if(value && value.length != 0) {
-            if( value.search(/SATOR/i) != -1 || value.search(/MOV/i) != -1) {
+            if( value.indexOf('SATOR') != -1 || value.indexOf('MOV') != -1) {
                 me.holdProtocol(value);
                 return false;
             }
@@ -2846,20 +2846,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
     printerTagItem: function(grid, rowIndex, colIndex) {
         var me = this,
-            tagprinter = {},
             store = grid.getStore(),
             record = store.getAt(rowIndex),
-            stepsettings = record.get('stepsettings'),
-            tagprinter = (stepsettings) ? Ext.decode(stepsettings).tagprinter : "{}";
-
-        switch (colIndex) {
-            case 3:
-                tagprinter = { tagprinter: '001' };
-                break;
-            case 4:
-                tagprinter = { tagprinter: '002' };
-                break;
-        }
+            stepsettings = record.get('stepsettings');
 
         if(!Smart.workstation.printlocate) {
             Smart.ion.sound.play("computer_error");
@@ -2875,7 +2864,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 method: 'imprimeEtiqueta',
                 id: record.get('flowprocessingstepid'),
                 printlocate: Smart.workstation.printlocate,
-                stepsettings: Ext.encode(tagprinter)
+                stepsettings: Ext.encode(stepsettings)
             }
         });
     },

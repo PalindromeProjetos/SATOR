@@ -1535,6 +1535,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
     public function selectHold(array $data) {
         $areasid = $data['areasid'];
+        $start = isset($data['start']) ? $data['start'] : 0;
+        $limit = isset($data['limit']) ? $data['limit'] : 10;
 
         $sql = "
             declare
@@ -1578,7 +1580,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 ) m
             where fps.areasid = @areasid
               and fps.flowstepstatus = '001'
-			  AND fpsa.isactive = 1
+			  and fpsa.isactive = 1
               and a.hasstock = 1
 			  and fps.id not in (
 					select
@@ -1596,6 +1598,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $rows = $pdo->fetchAll();
 
             self::_setRows($rows);
+            self::_setPage($start,$limit);
 
         } catch ( \PDOException $e ) {
             self::_setSuccess(false);
