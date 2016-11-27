@@ -2848,7 +2848,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         var me = this,
             store = grid.getStore(),
             record = store.getAt(rowIndex),
-            stepsettings = record.get('stepsettings');
+            stepsettings = Ext.encode(record.get('stepsettings'));
 
         if(!Smart.workstation.printlocate) {
             Smart.ion.sound.play("computer_error");
@@ -2864,7 +2864,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 method: 'imprimeEtiqueta',
                 id: record.get('flowprocessingstepid'),
                 printlocate: Smart.workstation.printlocate,
-                stepsettings: Ext.encode(stepsettings)
+                stepsettings: Ext.encode({ tagprinter: stepsettings.tagprinter })
             }
         });
     },
