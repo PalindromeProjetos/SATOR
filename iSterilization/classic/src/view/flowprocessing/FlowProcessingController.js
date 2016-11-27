@@ -2848,25 +2848,38 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         var me = this,
             store = grid.getStore(),
             record = store.getAt(rowIndex),
-            stepsettings = Ext.decode(record.get('stepsettings'));
+            stepsettings = record.get('stepsettings');
+
+        stepsettings = stepsettings ? Ext.decode(stepsettings) : null;
 
         if(!Smart.workstation.printlocate) {
             Smart.ion.sound.play("computer_error");
-            Smart.Msg.showToast('Não foi possivel completar a sua solicitação, não existe uma impressora consfigurada!');
+            Smart.Msg.showToast('Não foi possivel completar a sua solicitação, não existe uma impressora configurada!');
             return false;
         }
 
-        Ext.Ajax.request({
-            scope: me,
-            url: me.url,
-            params: {
-                action: 'select',
-                method: 'imprimeEtiqueta',
-                id: record.get('flowprocessingstepid'),
-                printlocate: Smart.workstation.printlocate,
-                stepsettings: Ext.encode({ tagprinter: stepsettings.tagprinter })
-            }
-        });
+        if(stepsettings && ['001','002'].indexOf(stepsettings.tagprinter) != -1) {
+            Ext.Ajax.request({
+                scope: me,
+                url: me.url,
+                params: {
+                    action: 'select',
+                    method: 'imprimeEtiqueta',
+                    id: record.get('flowprocessingstepid'),
+                    printlocate: Smart.workstation.printlocate,
+                    stepsettings: Ext.encode({tagprinter: stepsettings.tagprinter})
+                },
+                callback: function (options, success, response) {
+                    var result = Ext.decode(response.responseText);
+
+                    if (!success || !result.success) {
+                        Smart.ion.sound.play("computer_error");
+                        Smart.Msg.showToast('Não foi possivel completar a sua solicitação!');
+                        return false;
+                    }
+                }
+            });
+        }
     },
 
     /**
