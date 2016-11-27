@@ -2224,6 +2224,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         return self::getResultToJson();
     }
 
+    //<editor-fold desc="Etiqueta">
+
     public function imprimeEtiqueta(array $data) {
         $stepsettings = isset($data['stepsettings']) ? $data['stepsettings'] : null;
 
@@ -2277,7 +2279,6 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
             $pdo->execute();
-//            $rows = self::encodeUTF8($pdo->fetchAll());
             $rows = $this->removeAccents(self::encodeUTF8($pdo->fetchAll()));
 
             $entityname = $rows[0]['entityname'];
@@ -2350,8 +2351,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
             $pdo->execute();
-            $rows = self::encodeUTF8($pdo->fetchAll());
-//            $rows = $this->removeAccents(self::encodeUTF8($pdo->fetchAll()));
+            $rows = $this->removeAccents(self::encodeUTF8($pdo->fetchAll()));
 
             if($ph) {
 
@@ -2433,8 +2433,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
             $pdo->execute();
-            $rows = self::encodeUTF8($pdo->fetchAll());
-//            $rows = $this->removeAccents(self::encodeUTF8($pdo->fetchAll()));
+            $rows = $this->removeAccents(self::encodeUTF8($pdo->fetchAll()));
 
             if($ph) {
 
@@ -2489,5 +2488,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         return self::getResultToJson();
 
     }
+
+    //</editor-fold>
 
 }
