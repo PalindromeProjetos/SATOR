@@ -2848,7 +2848,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         var me = this,
             store = grid.getStore(),
             record = store.getAt(rowIndex),
-            stepsettings = Ext.encode(record.get('stepsettings'));
+            stepsettings = Ext.decode(record.get('stepsettings'));
 
         if(!Smart.workstation.printlocate) {
             Smart.ion.sound.play("computer_error");
