@@ -300,6 +300,15 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                     }, {
                                                         name: 'flowprocessingstepid',
                                                         type: 'int'
+                                                    }, {
+                                                        name: 'charge',
+                                                        type: 'auto'
+                                                    }, {
+                                                        name: 'chargeflag',
+                                                        type: 'auto'
+                                                    }, {
+                                                        name: 'chargeflagdescription',
+                                                        type: 'auto'
                                                     }
                                                 ],
 
@@ -334,7 +343,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                             var stepsettings = record.get('stepsettings'),
                                                                 tagprinter = (stepsettings) ? Ext.decode(stepsettings).tagprinter : "";
 
-                                                            return tagprinter.length != 0 ? "fa fa-tags action-delete-color-font" : "";
+                                                            return tagprinter.length != 0 ? "fa fa-tag action-delete-color-font" : "";
                                                         },
                                                         isDisabled: function (view, rowIdx, colIdx, item, rec) {
                                                             var stepsettings = rec.get('stepsettings'),
