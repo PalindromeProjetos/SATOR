@@ -91,7 +91,11 @@ class Store {
                 return self::getResultToJson();
             }
 
-            $statement->execute();
+            $callback = $statement->execute();
+
+            if(!$callback) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
 
             $rows = $statement->fetchAll();
 
@@ -130,7 +134,11 @@ class Store {
                 return self::getResultToJson();
             }
 
-            $statement->execute();
+            $callback = $statement->execute();
+
+            if(!$callback) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
 
             new Logbook($this->model);
             $this->fireEvent('PosUpdate');
@@ -175,7 +183,11 @@ class Store {
                 return self::getResultToJson();
             }
 
-            $statement->execute();
+            $callback = $statement->execute();
+
+            if(!$callback) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
 
             $id = $this->proxy->lastInsertId();
 
@@ -229,7 +241,11 @@ class Store {
                 return self::getResultToJson();
             }
 
-            $statement->execute();
+            $callback = $statement->execute();
+
+            if(!$callback) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
 
             new Logbook($this->model);
             $this->fireEvent('PosDelete');

@@ -15,9 +15,12 @@ use Smart\Utils\Session;
  * @category traits
  */
 trait TresultSet {
+    static $FAILURE_STATEMENT = "Houve falha na execução da solicitação!";
     public $UNEXPECTED_COMMAND = '{"success":false,"records":0,"rows":[],"errors":[],"text":"Pedido inesperado!"}';
 
-    //<editor-fold desc="sator.etimba">
+
+
+    //<editor-fold desc="result">
 
     /**
      * Estrutura de retorno padrão

@@ -25,6 +25,11 @@ Ext.define( 'iAdmin.model.users.UsersMenu', {
             name: 'name',
             type: 'auto',
             persist: false
+        }, {
+            name: 'isfavorite',
+            type: 'int',
+            critical: true,
+            persist: true
         }
     ]
 

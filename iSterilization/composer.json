@@ -22,7 +22,7 @@
     ],
 
     "psr-4": {
-      "Smart\\": "../smart",
+      "Smart\\": "./smart",
       "iSterilization\\": "./business"
     }
 

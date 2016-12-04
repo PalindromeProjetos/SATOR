@@ -116,9 +116,11 @@ Ext.define('Smart.ux.TextMaskCore', {
             'A': /^[A-Za-z]$/,
             '_': /^.$/
 	},
+	
 	mask: function(v){
             return this.money ? this.maskMoney(v) : this.maskNormal(v);
 	},
+	
 	maskNormal: function(v){
             v = this.unmask(v);
             v = v.split('');

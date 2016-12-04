@@ -74,13 +74,14 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingDash', {
                 cls: "smart-background-transparent",
                 layout: 'anchor',
                 defaults: {
-                    anchor: '100%'
+                    anchor: '100%',
+                    useLabelBold: true
                 },
                 items: [
                     {
                         xtype: 'label',
                         cls: 'title-label',
-                        text: 'Leituras do Dia'
+                        text: 'Leituras'
                     }, {
                         margin: '10 0 0 0',
                         startDay: 0,
@@ -90,23 +91,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingDash', {
                         listeners: {
                             select: 'selectDatePicker'
                         }
-                    // }, {
-                    //     xtype: 'segmentedbutton',
-                    //     vertical: true,
-                    //     allowToggle: false,
-                    //     defaults: {
-                    //         height: 44,
-                    //         scale: 'large',
-                    //         iconAlign: 'left',
-                    //         textAlign: 'center',
-                    //         showSmartTheme: 'green'
-                    //     },
-                    //     items: [
-                    //         {
-                    //             text: 'Iniciar Nova Leitura',
-                    //             handler: 'flowProcessingRead'
-                    //         }
-                    //     ]
                     }, {
                         xtype: 'fieldcontainer',
                         margin: '10 0 0 0',
@@ -116,26 +100,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingDash', {
                         defaultType: 'textfield',
                         defaults: {
                             anchor: '100%'
-                        },
-                        items: [
-                            {
-                                fieldLabel: 'Kit',
-                                name: 'materialbox'
-                                // xtype: 'materialboxitemsearch'
-                            }, {
-                                fieldLabel: 'Área/Sub-Area'
-                                // xtype: 'cmeareassearch'
-                            }, {
-                                fieldLabel: 'Material'
-                                // xtype: 'materialsearch'
-                            }, {
-                                fieldLabel: 'Equipamento'
-                                // xtype: 'equipmentsearch'
-                                // }, {
-                                //     fieldLabel: 'Usuário',
-                                //     xtype: 'userssearch'
-                            }
-                        ]
+                        }
                     }
                 ]
             }, {
