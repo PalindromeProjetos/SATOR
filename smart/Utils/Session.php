@@ -21,7 +21,7 @@ class Session {
     use Traits\TresultSet;
 
     const _SESSION_NAME = 'smart';
-    const _SESSION_PATH = '/sator/';
+    const _SESSION_PATH = '/sator';
 
     const _SESSION_STARTED = true;
     const _SESSION_NOT_STARTED = false;
