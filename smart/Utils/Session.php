@@ -20,8 +20,8 @@ use Smart\Common\Traits as Traits;
 class Session {
     use Traits\TresultSet;
 
-    const _SESSION_PATH = '/';
     const _SESSION_NAME = 'smart';
+    const _SESSION_PATH = "/../tmp/sator/";
 
     const _SESSION_STARTED = true;
     const _SESSION_NOT_STARTED = false;
@@ -69,10 +69,17 @@ class Session {
      *    @return    bool    TRUE if the session has been initialized, else FALSE.
      */
     public function startSession() {
+        $path = $_SERVER['DOCUMENT_ROOT'] . self::$path;
 
         if ( $this->sessionState == self::_SESSION_NOT_STARTED ) {
             $expireto = 60*60*24*1; // 1 day
-            session_set_cookie_params($expireto,self::$path);
+
+            //session_save_path($path);
+
+            ini_set('session.save_path',$path);
+            ini_set('session.gc_maxlifetime', $expireto);
+
+            session_set_cookie_params($expireto,$path);
             session_name(isset($_SERVER["HTTP_REFERER"]) ? basename($_SERVER["HTTP_REFERER"]) : self::$name);
             $this->sessionState = session_start();
         }

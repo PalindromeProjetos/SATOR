@@ -156,12 +156,31 @@ Ext.define( 'Smart.ux.login.LoginController', {
             link.type = 'image/x-icon';
             link.rel = 'shortcut icon';
 
+            Ext.getBody().onBefore('unload', 'onUnLoad', this);
+
             document.getElementsByTagName('head')[0].appendChild(link);
 
             if(result.isTest == true) {
                 Ext.getBody().getById('marquee').show();
             }
         }
+    },
+
+    onUnLoad: function (e, t, eOpts) {
+        Ext.Ajax.request({
+            scope: this,
+            url: this.url,
+            method: 'post',
+            params: {
+                action: 'select',
+                method: 'selectLogout'
+            },
+            callback: function (options, success, response) {
+                if(success) {
+                    localStorage.removeItem(Ext.manifest.name + 'In');
+                }
+            }
+        });
     }
 
 });

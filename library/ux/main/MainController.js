@@ -135,12 +135,15 @@ Ext.define( 'Smart.ux.main.MainController', {
         treelist.setMicro(pressed);
 
         if (pressed) {
+            button.setPressed(true);
             navBtn.setPressed(true);
             navBtn.disable();
-            this.oldWidth = ct.width;
+            // this.oldWidth = ct.width;
             ct.setWidth(44);
         } else {
-            ct.setWidth(this.oldWidth);
+            button.setPressed(false);
+            ct.setWidth(250);
+            // ct.setWidth(this.oldWidth);
             navBtn.enable();
         }
 

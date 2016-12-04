@@ -16,37 +16,8 @@
     <script type="text/javascript">
         var Ext = Ext || {}; // Ext namespace won't be defined yet...
 
-        // This function is called by the Microloader after it has performed basic
-        // device detection. The results are provided in the "tags" object. You can
-        // use these tags here or even add custom tags. These can be used by platform
-        // filters in your manifest or by platformConfig expressions in your app.
-        //
         Ext.beforeLoad = function (tags) {
-            var s = location.search,  // the query string (ex "?foo=1&bar")
-                    profile = 'classic';
-
-            // For testing look for "?classic" or "?modern" in the URL to override
-            // device detection default.
-            //
-//            if (s.match(/\bclassic\b/)) {
-//                profile = 'classic';
-//            }
-//            else if (s.match(/\bmodern\b/)) {
-//                profile = 'modern';
-//            }
-//            else {
-//                profile = tags.desktop ? 'classic' : 'modern';
-//                //profile = tags.phone ? 'modern' : 'classic';
-//            }
-
-            Ext.manifest = profile; // this name must match a build profile name
-
-            // This function is called once the manifest is available but before
-            // any data is pulled from it.
-            //
-            //return function (manifest) {
-                // peek at / modify the manifest object
-            //};
+            Ext.manifest = 'classic';
         };
     </script>    
     
@@ -54,25 +25,25 @@
     <script id="microloader" data-app="3bab7068-1bf6-40c7-b473-b9f76862105a" type="text/javascript" src="bootstrap.js"></script>
 
 </head>
-<body>
+    <body>
 
-    <a class="buildapp" id="buildapp"></a>
+        <a class="buildapp" id="buildapp"></a>
 
-    <div id="preloader">
-        <div class="loader">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
+        <div id="preloader">
+            <div class="loader">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
-    </div>
 
-    <audio id="audio" src="../resources/sounds/pipe5.wav" ></audio>
+        <audio id="audio" src="../resources/sounds/pipe5.wav" ></audio>
 
-    <div id="marquee" class="marquee down">
-        <p><a class="one"></a></p>
-        <p><a class="two"></a></p>
-    </div>
+        <div id="marquee" class="marquee down">
+            <p><a class="one"></a></p>
+            <p><a class="two"></a></p>
+        </div>
 
-</body>
+    </body>
 </html>

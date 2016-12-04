@@ -25,6 +25,12 @@ class usersmenu extends \Smart\Data\Model {
      * @Column {"description":"", "type":"integer", "policy":true, "logallow":true, "default":""}
      */
     private $menuid;
+	
+	/**
+	 * @Policy {"nullable":false}
+	 * @Column {"description":"", "type":"boolean", "policy":true, "logallow":true, "default":"0"}
+	 */
+	private $isfavorite;
 
     /**
      * @return type integer
@@ -73,5 +79,21 @@ class usersmenu extends \Smart\Data\Model {
         $this->menuid = $menuid;
         return $this;
     }
+
+	/**
+	 * @return type boolean
+	 */
+	public function getIsfavorite() {
+		return $this->isfavorite;
+	}
+
+	/**
+	 * @param type $isfavorite
+	 * @return \iAdmin\Model\usersmenu
+	 */
+	public function setIsfavorite($isfavorite) {
+		$this->isfavorite = $isfavorite;
+		return $this;
+	}
 
 }

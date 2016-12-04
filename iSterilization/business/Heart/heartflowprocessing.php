@@ -71,10 +71,18 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         }
 
         try {
+
+            $this->beginTransaction();
+
             $pdo = $this->prepare("select dataflowstep from sterilizationtype where id = :sterilizationtypeid");
             $pdo->bindValue(":sterilizationtypeid", $sterilizationtypeid, \PDO::PARAM_INT);
 
-            $pdo->execute();
+            $callback = $pdo->execute();
+
+            if(!$callback) {
+                throw new \PDOException(self::FAILURE_STATEMENT);
+            }
+
             $rows = self::encodeUTF8($pdo->fetchAll());
             $flow = self::jsonToObject($rows[0]['dataflowstep']);
 
@@ -143,7 +151,17 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
             $rows = $this->query($sql)->fetchAll();
 
+            $error_text = $rows[0]['error_text'];
+            $error_code = intval($rows[0]['error_code']);
+
+            if($error_code != 0) {
+                throw new \PDOException(self::FAILURE_STATEMENT);
+            }
+
             $sql = "
+                declare
+                    @id int = {$id};
+                    
                 update
                     flowprocessingstep
                     set
@@ -163,18 +181,27 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                             where a.flowprocessingid = flowprocessingstep.flowprocessingid
                               and a.steplevel = flowprocessingstep.target
                         )
-                where flowprocessingid = {$id}";
+                where flowprocessingid = @id";
 
-            $this->exec($sql);
+            $affected = $this->exec($sql);
 
-            $message = $rows[0]['error_text'];
-            $success = intval($rows[0]['error_code']) == 0;
+            if ($affected === false) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
+
+            $message = $error_text;
+            $success = $error_code == 0;
+
+            $this->commit();
 
             self::_setRows($rows);
             self::_setText($message);
             self::_setSuccess($success);
 
         } catch ( \PDOException $e ) {
+            if ($this->inTransaction()) {
+                $this->rollBack();
+            }
             self::_setSuccess(false);
             self::_setText($e->getMessage());
         }
@@ -186,13 +213,32 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         $query = self::jsonToObject($data['query']);
 
         try {
+            $this->beginTransaction();
 
             //Gerando BarCode
+            $sql = "
+                declare
+                    @dateof varchar(20) = :dateof;
+                     
+                select 
+                    dbo.getLeftPad(6,'0',count(*)+1) as newcode
+                from
+                    flowprocessing
+                where convert(varchar(6),dateof,112) = @dateof";
+
+
             $dateof = date("Ym");
-            $pdo = $this->prepare("select dbo.getLeftPad(6,'0',count(*)+1) as newcode  from flowprocessing where convert(varchar(6),dateof,112) = :dateof;");
+            $pdo = $this->prepare($sql);
             $pdo->bindValue(":dateof", $dateof, \PDO::PARAM_STR);
-            $pdo->execute();
+
+            $callback = $pdo->execute();
+
+            if(!$callback) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
+
             $rows = $pdo->fetchAll();
+
             $barcode = "P". $dateof . $rows[0]['newcode'];
             unset($pdo);
             unset($rows);
@@ -213,18 +259,18 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             }
 
             if($query->clienttype == '004') {
-//                $coach->getStore()->getModel()->set('placeid',$query->placeid);
-//                $coach->getStore()->getModel()->set('flowingid',$query->flowingid);
                 $coach->getStore()->getModel()->set('patientname',$query->patientname);
-//                $coach->getStore()->getModel()->set('healthinsurance',$query->healthinsurance);
                 $coach->getStore()->getModel()->set('surgicalwarning',$query->surgicalwarning);
-//                $coach->getStore()->getModel()->set('instrumentatorid',$query->instrumentatorid);
             }
 
             $model = $coach->getStore()->getModel();
             $this->preInsert($model);
 
-            $result = self::jsonToObject($coach->getStore()->insert());
+            $result = self::jsonToObject($coach->getStore()->insert(false));
+
+            if(!$result->success) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
 
             if($result->success) {
                 $model = $coach->getStore()->getModel();
@@ -236,12 +282,20 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $step['flowprocessingid'] = $result->rows->id;
 
             if($result->success) {
-                $this->newFlowStep($step);
+                $resultStep = self::jsonToObject($this->newFlowStep($step));
+                if(!$resultStep->success) {
+                    throw new \PDOException(self::$FAILURE_STATEMENT);
+                }
             }
+
+            $this->commit();
 
             $result = self::objectToJson($result);
 
         } catch ( \PDOException $e ) {
+            if ($this->inTransaction()) {
+                $this->rollBack();
+            }
             self::_setSuccess(false);
             self::_setText($e->getMessage());
             $result = self::getResultToJson();
@@ -273,10 +327,20 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             order by fps.steplevel, fps.steppriority";
 
         try {
+
+//            $this->beginTransaction();
+
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":flowprocessingid", $flowprocessingid, \PDO::PARAM_INT);
-            $pdo->execute();
+            $callback = $pdo->execute();
+
+            if(!$callback) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
+
             $rows = $pdo->fetchAll();
+
+//            $this->commit();
 
             $flow = new \iSterilization\Coach\flowprocessing();
             $step = new \iSterilization\Coach\flowprocessingstep();
@@ -293,28 +357,48 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                     $action->getStore()->getModel()->set('flowprocessingstepid',$id);
                     $action->getStore()->getModel()->set('flowstepaction','001');
                     $action->getStore()->getModel()->set('isactive',1);
-                    $action->getStore()->insert();
+                    $result = self::jsonToObject($action->getStore()->insert(false));
+
+                    if(!$result->success) {
+                        throw new \PDOException(self::$FAILURE_STATEMENT);
+                    }
 
                     // update flowprocessing
                     $flow->getStore()->getModel()->set('id',$flowprocessingid);
                     $flow->getStore()->getModel()->set('flowstatus','I');
-                    $flow->getStore()->update();
+                    $result = self::jsonToObject($flow->getStore()->update(false));
+
+                    if(!$result->success) {
+                        throw new \PDOException(self::$FAILURE_STATEMENT);
+                    }
 
                     // update flowprocessingstep
                     $date = date("Ymd H:i:s");
                     $step->getStore()->getModel()->set('id',$id);
                     $step->getStore()->getModel()->set('datestart',$date);
                     $step->getStore()->getModel()->set('flowstepstatus','001');
-                    $step->getStore()->update();
+                    $result = self::jsonToObject($step->getStore()->update(false));
+
+                    if(!$result->success) {
+                        throw new \PDOException(self::$FAILURE_STATEMENT);
+                    }
 
                     $data = array();
                     $data['id'] = $id;
+
                     // insert flowprocessingstepmaterial
-                    $this->newFlowItem($data);
+                    $resultItem = self::jsonToObject($this->newFlowItem($data));
+                    if(!$resultItem->success) {
+                        throw new \PDOException(self::$FAILURE_STATEMENT);
+                    }
                     break;
                 }
             }
+
         } catch ( \PDOException $e ) {
+//            if ($this->inTransaction()) {
+//                $this->rollBack();
+//            }
             self::_setSuccess(false);
             self::_setText($e->getMessage());
         }
@@ -372,14 +456,27 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 end";
 
         try {
+//            $this->beginTransaction();
+
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
 
-            $pdo->execute();
+            $callback = $pdo->execute();
+
+            if(!$callback) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
+
             $rows = $pdo->fetchAll();
 
+//            $this->commit();
+
             self::_setRows($rows);
+
         } catch ( \PDOException $e ) {
+//            if ($this->inTransaction()) {
+//                $this->rollBack();
+//            }
             self::_setSuccess(false);
             self::_setText($e->getMessage());
         }
@@ -393,18 +490,45 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         $step = new \iSterilization\Coach\flowprocessingstep();
         $message = new \iSterilization\Coach\flowprocessingstepmessage();
 
-        $date = date("Ymd H:i:s");
-        $step->getStore()->getModel()->set('id',$flowprocessingstepid);
-        $step->getStore()->getModel()->set('username',$username);
-        $step->getStore()->getModel()->set('datestart',$date);
-        $result = $step->getStore()->update();
+        try {
+            $this->beginTransaction();
 
-        $message->getStore()->getModel()->set('id','');
-        $message->getStore()->getModel()->set('flowprocessingstepid',$flowprocessingstepid);
-        $message->getStore()->getModel()->set('readercode','001');
-        $message->getStore()->getModel()->set('readershow','info');
-        $message->getStore()->getModel()->set('readertext','SATOR_INICIAR_LEITURA');
-        $message->getStore()->insert();
+            $date = date("Ymd H:i:s");
+            $step->getStore()->getModel()->set('id',$flowprocessingstepid);
+            $step->getStore()->getModel()->set('username',$username);
+            $step->getStore()->getModel()->set('datestart',$date);
+
+            $result = self::jsonToObject($step->getStore()->update(false));
+
+            if(!$result->success) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
+
+            $message->getStore()->getModel()->set('id','');
+            $message->getStore()->getModel()->set('flowprocessingstepid',$flowprocessingstepid);
+            $message->getStore()->getModel()->set('readercode','001');
+            $message->getStore()->getModel()->set('readershow','info');
+            $message->getStore()->getModel()->set('readertext','SATOR_INICIAR_LEITURA');
+
+            $result = self::jsonToObject($message->getStore()->insert(false));
+
+            if(!$result->success) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
+
+            $this->commit();
+
+            $result = self::objectToJson($result);
+
+        } catch ( \PDOException $e ) {
+            if ($this->inTransaction()) {
+                $this->rollBack();
+            }
+            self::_setSuccess(false);
+            self::_setText($e->getMessage());
+
+            $result = self::getResultToJson();
+        }
 
         return $result;
     }
@@ -412,11 +536,32 @@ class heartflowprocessing extends \Smart\Data\Proxy {
     public function updatetUnconformities(array $data) {
         $flowprocessingstepid = $data['flowprocessingstepid'];
 
+        $sql = "
+            declare
+                @flowprocessingstepid int = :flowprocessingstepid;
+                
+            update
+                flowprocessingstepmaterial 
+            set unconformities = '001'
+            where flowprocessingstepid = @flowprocessingstepid";
+
         try {
-            $pdo = $this->prepare("update flowprocessingstepmaterial set unconformities = '001' where flowprocessingstepid = :id");
-            $pdo->bindValue(":id", $flowprocessingstepid, \PDO::PARAM_INT);
-            $pdo->execute();
+            $this->beginTransaction();
+
+            $pdo = $this->prepare($sql);
+            $pdo->bindValue(":flowprocessingstepid", $flowprocessingstepid, \PDO::PARAM_INT);
+            $callback = $pdo->execute();
+
+            if(!$callback) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
+
+            $this->commit();
+
         } catch ( \PDOException $e ) {
+            if ($this->inTransaction()) {
+                $this->rollBack();
+            }
             self::_setSuccess(false);
             self::_setText($e->getMessage());
         }
@@ -455,7 +600,12 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         try {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":flowprocessingid", $flowprocessingid, \PDO::PARAM_INT);
-            $pdo->execute();
+            $callback = $pdo->execute();
+
+            if(!$callback) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
+
             $rows = $pdo->fetchAll();
 
             self::_setRows($rows);
@@ -479,6 +629,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         $data['params'] = $params;
 
         try {
+            $this->beginTransaction();
 
             while (list(, $item) = each($params)) {
                 extract($item);
@@ -523,18 +674,32 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 $pdo->bindValue(":stepchoice", $stepchoice, \PDO::PARAM_INT);
                 $pdo->bindValue(":levelsource", $levelsource, \PDO::PARAM_INT);
                 $pdo->bindValue(":flowprocessingid", $flowprocessingid, \PDO::PARAM_INT);
-                $pdo->execute();
+                $callback = $pdo->execute();
+
+                if(!$callback) {
+                    throw new \PDOException(self::$FAILURE_STATEMENT);
+                }
             }
 
             $item = [];
 
+            $item['hasTran'] = 0;
             $item['flowprocessingid'] = $flowprocessingid;
             $item['flowprocessingstepid'] = $flowprocessingstepid;
             $item['flowprocessingstepactionid'] = $flowprocessingstepactionid;
 
-            $this->setEncerrarLeitura($item);
+            $result = self::jsonToObject($this->setEncerrarLeitura($item));
+
+            if(!$result->success) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
+
+            $this->commit();
 
         } catch ( \PDOException $e ) {
+            if ($this->inTransaction()) {
+                $this->rollBack();
+            }
             self::_setSuccess(false);
             self::_setText($e->getMessage());
         }
@@ -546,6 +711,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         $flowprocessingid = $data['flowprocessingid'];
         $flowprocessingstepid = $data['flowprocessingstepid'];
         $flowprocessingstepactionid = $data['flowprocessingstepactionid'];
+        $hasTran = isset($data['hasTran']) ? intval($data['hasTran']) : 1;
 
         $result = null;
 
@@ -591,15 +757,24 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $pdo->bindValue(":flowprocessingstepid", $flowprocessingstepid, \PDO::PARAM_INT);
             $pdo->execute();
             $rows = $pdo->fetchAll();
+
             $newid = $rows[0]['newid'];
             $oldid = $rows[0]['oldid'];
             $flowstepaction = $rows[0]['flowstepaction'];
             unset($pdo);
 
+            if($hasTran == 1) {
+                $this->beginTransaction();
+            }
+
             // update flowprocessingstepaction
             $action->getStore()->getModel()->set('id', $flowprocessingstepactionid);
             $action->getStore()->getModel()->set('isactive', 0);
-            $action->getStore()->update();
+            $result = self::jsonToObject($action->getStore()->update(false));
+
+            if(!$result->success) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
 
             if(count($rows) != 0) {
 
@@ -609,14 +784,22 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                     $action->getStore()->getModel()->set('flowprocessingstepid',$newid);
                     $action->getStore()->getModel()->set('flowstepaction','001');
                     $action->getStore()->getModel()->set('isactive',1);
-                    $result = $action->getStore()->insert();
+                    $result = self::jsonToObject($action->getStore()->insert(false));
+
+                    if(!$result->success) {
+                        throw new \PDOException(self::$FAILURE_STATEMENT);
+                    }
                 }
 
                 if($flowstepaction == '005') {
                     $action->getStore()->getModel()->set('id',$oldid);
                     $action->getStore()->getModel()->set('flowstepaction','001');
                     $action->getStore()->getModel()->set('isactive',1);
-                    $result = $action->getStore()->update();
+                    $result = self::jsonToObject($action->getStore()->update(false));
+
+                    if(!$result->success) {
+                        throw new \PDOException(self::$FAILURE_STATEMENT);
+                    }
                 }
 
                 // update flowprocessingstep
@@ -624,32 +807,50 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 $step->getStore()->getModel()->set('id',$newid);
                 $step->getStore()->getModel()->set('datestart',$date);
                 $step->getStore()->getModel()->set('flowstepstatus','001');
-                $step->getStore()->update();
+                $result = self::jsonToObject($step->getStore()->update(false));
 
-                $sql = "
-                    declare
-                        @flowprocessingstepid int = :flowprocessingstepid;
-                        
-                    insert into
-                          flowprocessingstepmaterial
-                          ( flowprocessingstepid, materialid, unconformities, dateof )  
-                    select
-                          {$newid} as flowprocessingstepid,
-                          materialid,
-                          '001' as unconformities,
-                          getdate() dateof
-                    from
-                        flowprocessingstepmaterial
-                    where flowprocessingstepid = @flowprocessingstepid;";
+                if(!$result->success) {
+                    throw new \PDOException(self::$FAILURE_STATEMENT);
+                }
 
                 if($flowstepaction != '005') {
+                    $sql = "
+                        declare
+                            @flowprocessingstepid int = :flowprocessingstepid;
+                            
+                        insert into
+                              flowprocessingstepmaterial
+                              ( flowprocessingstepid, materialid, unconformities, dateof )  
+                        select
+                              {$newid} as flowprocessingstepid,
+                              materialid,
+                              '001' as unconformities,
+                              getdate() dateof
+                        from
+                            flowprocessingstepmaterial
+                        where flowprocessingstepid = @flowprocessingstepid;";
+
                     $pdo = $this->prepare($sql);
                     $pdo->bindValue(":flowprocessingstepid", $flowprocessingstepid, \PDO::PARAM_INT);
-                    $pdo->execute();
+                    $callback = $pdo->execute();
+
+                    if(!$callback) {
+                        throw new \PDOException(self::$FAILURE_STATEMENT);
+                    }
+
                 }
+
+
+            }
+
+            if($hasTran == 1) {
+                $this->commit();
             }
 
         } catch ( \PDOException $e ) {
+            if ($this->inTransaction() && $hasTran == 1) {
+                $this->rollBack();
+            }
             self::_setSuccess(false);
             self::_setText($e->getMessage());
         }
@@ -660,23 +861,26 @@ class heartflowprocessing extends \Smart\Data\Proxy {
     public function setRemoveCargaLista(array $data) {
         $id = $data['id'];
 
-        $charge = new \iSterilization\Coach\flowprocessingcharge();
-
-        $charge->getStore()->getModel()->set('id',$id);
-        $charge->getStore()->getModel()->set('chargeflag','004');
-        $result = $charge->getStore()->update();
-
         try {
+            $charge = new \iSterilization\Coach\flowprocessingcharge();
 
-            return $result;
+            $charge->getStore()->getModel()->set('id',$id);
+            $charge->getStore()->getModel()->set('chargeflag','004');
+            $result = self::jsonToObject($charge->getStore()->update());
+
+            if(!$result->success) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
+
+            $result = self::objectToJson($result);
 
         } catch ( \PDOException $e ) {
-
             self::_setSuccess(false);
             self::_setText($e->getMessage());
-            return self::getResultToJson();
-
+            $result = self::getResultToJson();
         }
+
+        return $result;
     }
 
     public function setValidaCargaLista(array $data) {
@@ -698,6 +902,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         $chargeitem = new \iSterilization\Coach\flowprocessingchargeitem();
 
         try {
+            $this->beginTransaction();
+
             $charge->getStore()->getModel()->set('chargeflag','001');
             $charge->getStore()->getModel()->set('barcode',$barcode);
             $charge->getStore()->getModel()->set('duration',$duration);
@@ -705,7 +911,11 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $charge->getStore()->getModel()->set('timetoopen',$timetoopen);
             $charge->getStore()->getModel()->set('temperature',$temperature);
             $charge->getStore()->getModel()->set('equipmentcycleid',$equipmentcycleid);
-            $result = self::jsonToObject($charge->getStore()->insert());
+            $result = self::jsonToObject($charge->getStore()->insert(false));
+
+            if(!$result->success) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
 
             while (list(, $item) = each($list)) {
                 extract($item);
@@ -713,15 +923,24 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 $chargeitem->getStore()->getModel()->set('chargestatus','001');
                 $chargeitem->getStore()->getModel()->set('flowprocessingchargeid',$result->rows->id);
                 $chargeitem->getStore()->getModel()->set('flowprocessingstepid',$flowprocessingstepid);
-                $chargeitem->getStore()->insert();
+                $result = self::jsonToObject($chargeitem->getStore()->insert(false));
+
+                if(!$result->success) {
+                    throw new \PDOException(self::$FAILURE_STATEMENT);
+                }
             }
 
             unset($charge);
             unset($chargeitem);
 
+            $this->commit();
+
             self::_setSuccess(true);
 
         } catch ( \PDOException $e ) {
+            if ($this->inTransaction()) {
+                $this->rollBack();
+            }
             self::_setSuccess(false);
             self::_setText($e->getMessage());
         }
@@ -744,10 +963,16 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         $chargeitem = new \iSterilization\Coach\flowprocessingchargeitem();
 
         try {
+            $this->beginTransaction();
+
             $charge->getStore()->getModel()->set('chargeflag','005');
             $charge->getStore()->getModel()->set('barcode',$barcode);
             $charge->getStore()->getModel()->set('chargeuser',$username);
-            $result = self::jsonToObject($charge->getStore()->insert());
+            $result = self::jsonToObject($charge->getStore()->insert(false));
+
+            if(!$result->success) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
 
             while (list(, $item) = each($list)) {
                 extract($item);
@@ -755,15 +980,24 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 $chargeitem->getStore()->getModel()->set('chargestatus','001');
                 $chargeitem->getStore()->getModel()->set('flowprocessingchargeid',$result->rows->id);
                 $chargeitem->getStore()->getModel()->set('flowprocessingstepid',$flowprocessingstepid);
-                $chargeitem->getStore()->insert();
+                $result = self::jsonToObject($chargeitem->getStore()->insert(false));
+
+                if(!$result->success) {
+                    throw new \PDOException(self::$FAILURE_STATEMENT);
+                }
             }
 
             unset($charge);
             unset($chargeitem);
 
+            $this->commit();
+
             self::_setSuccess(true);
 
         } catch ( \PDOException $e ) {
+            if ($this->inTransaction()) {
+                $this->rollBack();
+            }
             self::_setSuccess(false);
             self::_setText($e->getMessage());
         }
@@ -779,17 +1013,27 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         $action = new \iSterilization\Coach\flowprocessingstepaction();
 
         try {
-
+            $this->beginTransaction();
+            
             foreach ($list as $item) {
                 $action->getStore()->getModel()->set('id',$item->flowprocessingstepactionid);
                 $action->getStore()->getModel()->set('toreversedby',$username);
                 $action->getStore()->getModel()->set('flowstepaction','004');
-                $action->getStore()->update();
+                $result = self::jsonToObject($action->getStore()->update(false));
+
+                if(!$result->success) {
+                    throw new \PDOException(self::$FAILURE_STATEMENT);
+                }
             }
 
             unset($action);
 
+            $this->commit();
+
         } catch ( \PDOException $e ) {
+            if ($this->inTransaction()) {
+                $this->rollBack();
+            }
             self::_setSuccess(false);
             self::_setText($e->getMessage());
         }
@@ -852,11 +1096,17 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                       and flowprocessingstepid in ( select flowprocessingstepid from flowprocessingchargeitem where flowprocessingchargeid = @id );
                 end;";
 
+            $this->beginTransaction();
+
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
             $pdo->bindValue(":username", $username, \PDO::PARAM_STR);
             $pdo->bindValue(":cyclestatus", $cyclestatus, \PDO::PARAM_STR);
-            $pdo->execute();
+            $callback = $pdo->execute();
+
+            if(!$callback) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
 
             if(($cyclestatus == 'FINAL') || ($cyclestatus == 'PRINT')) {
 
@@ -877,7 +1127,12 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
                 $pdo = $this->prepare($sql);
                 $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
-                $pdo->execute();
+                $callback = $pdo->execute();
+
+                if(!$callback) {
+                    throw new \PDOException(self::$FAILURE_STATEMENT);
+                }
+
                 $rows = $pdo->fetchAll();
 
                 foreach ($rows as $item) {
@@ -889,13 +1144,20 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 $tagprinter['tagprinter'] = $cyclestatus == 'FINAL' ? '002' : '003';
 
                 $data['stepsettings'] = self::arrayToJson($tagprinter);
-
-                $this->imprimeEtiqueta($data);
             }
+
+            $this->commit();
 
             self::_setSuccess(true);
 
+            if(($cyclestatus == 'FINAL') || ($cyclestatus == 'PRINT')) {
+                $this->imprimeEtiqueta($data);
+            }
+
         } catch ( \PDOException $e ) {
+            if ($this->inTransaction()) {
+                $this->rollBack();
+            }
             self::_setSuccess(false);
             self::_setText($e->getMessage());
         }
@@ -953,13 +1215,25 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             where id in ($materiallist);";
 
         try {
+            $this->beginTransaction();
+
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":flowprocessingid", $flowprocessingid, \PDO::PARAM_INT);
             $pdo->bindValue(":flowprocessingstepid", $flowprocessingstepid, \PDO::PARAM_INT);
             $pdo->bindValue(":flowprocessingstepactionid", $flowprocessingstepactionid, \PDO::PARAM_INT);
-            $pdo->execute();
+            $callback = $pdo->execute();
+
+            if(!$callback) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
+
+            $this->commit();
+
             self::_setSuccess(true);
         } catch ( \PDOException $e ) {
+            if ($this->inTransaction()) {
+                $this->rollBack();
+            }
             self::_setSuccess(false);
             self::_setText($e->getMessage());
         }
@@ -1011,15 +1285,26 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             select @hasitem as err_code, @hastext as err_text;";
 
         try {
+            $this->beginTransaction();
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":materialid", $materialid, \PDO::PARAM_INT);
             $pdo->bindValue(":flowprocessingstepid", $flowprocessingstepid, \PDO::PARAM_INT);
-            $pdo->execute();
+            $callback = $pdo->execute();
+
+            if(!$callback) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
+
             $rows = $pdo->fetchAll();
+
+            $this->commit();
 
             self::_setRows($rows);
 
         } catch ( \PDOException $e ) {
+            if ($this->inTransaction()) {
+                $this->rollBack();
+            }
             self::_setSuccess(false);
             self::_setText($e->getMessage());
         }
@@ -1092,14 +1377,25 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             select @hasitem as err_code, @hastext as err_text;";
 
         try {
+            $this->beginTransaction();
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":flowprocessingstepid", $flowprocessingstepid, \PDO::PARAM_INT);
-            $pdo->execute();
+            $callback = $pdo->execute();
+
+            if(!$callback) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
+
             $rows = $pdo->fetchAll();
+
+            $this->commit();
 
             self::_setRows($rows);
 
         } catch ( \PDOException $e ) {
+            if ($this->inTransaction()) {
+                $this->rollBack();
+            }
             self::_setSuccess(false);
             self::_setText($e->getMessage());
         }
@@ -1221,7 +1517,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 fpsa.flowprocessingstepid,
                 fpci.flowprocessingchargeid,
                 t.barcode,
-                t.equipmentid,
+                @equipmentid as equipmentid,
                 t.materialname
             from
                 flowprocessingstep fps
@@ -1237,10 +1533,11 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                     from 
                         flowprocessing fp
                         inner join flowprocessingstep a on ( a.flowprocessingid = fp.id )
-                        inner join equipmentcycle ec on ( ec.equipmentid = a.equipmentid and ec.id = @equipmentcycleid )
+						inner join equipmentcycle ec on ( ec.id = @equipmentcycleid and ec.equipmentid = @equipmentid )
+                        --inner join equipmentcycle ec on ( ec.equipmentid = a.equipmentid and ec.id = @equipmentcycleid )
                         inner join materialcycle mc on ( mc.cycleid = ec.cycleid )
                         inner join itembase ib on ( ib.id = mc.materialid )
-                        inner join flowprocessingstepmaterial c on ( c.flowprocessingstepid = fps.id and c.materialid = ib.id )     
+                        inner join flowprocessingstepmaterial c on ( c.flowprocessingstepid = fps.id and c.materialid = ib.id )
                         outer apply (
                             select
                                 mb.name
@@ -1258,10 +1555,11 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                         ) tb
                     where a.flowprocessingid = fps.flowprocessingid
                       and a.id = fps.target
-                      and a.equipmentid = @equipmentid
+                      --and a.equipmentid = @equipmentid
                       and ( ib.barcode = @barcode or fp.barcode = @barcode )
                 ) t
-            where fps.areasid = @areasid
+            where fpci.id is null
+			  and fps.areasid = @areasid
               and fpsa.flowstepaction = '001'
               and fps.stepflaglist like '%016%'
               and not exists (
@@ -1271,8 +1569,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                       flowprocessingchargeitem a
                       inner join flowprocessingcharge b on ( b.id = a.flowprocessingchargeid )
                   where a.flowprocessingstepid = fps.id
-                    and a.chargestatus = '001'
-                    and b.chargeflag = '001'
+                    and a.chargestatus in ('001','002','003')
+                    and b.chargeflag = '001' -- carga, '002' carga avulsa
             )";
 
         try {
@@ -1360,6 +1658,9 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         $query = $data['query'];
 
         $sql = "
+            declare
+                @username varchar(50) = :username;
+
             select
                 u.id,
                 u.username,
@@ -1367,11 +1668,11 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 u.isactive
             from
                 users u
-            where u.username = :usercode";
+            where u.username = @username";
 
         try {
             $pdo = $this->prepare($sql);
-            $pdo->bindValue(":usercode", $query, \PDO::PARAM_STR);
+            $pdo->bindValue(":username", $query, \PDO::PARAM_STR);
             $pdo->execute();
             $rows = $pdo->fetchAll();
 
@@ -1390,6 +1691,9 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         $query = $data['query'];
 
         $sql = "
+            declare
+                @username varchar(50) = :username;
+                
             select
                 u.id,
                 u.username,
@@ -1397,11 +1701,11 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 u.isactive
             from
                 users u
-            where u.username = :usercode";
+            where u.username = @username";
 
         try {
             $pdo = $this->prepare($sql);
-            $pdo->bindValue(":usercode", $query, \PDO::PARAM_STR);
+            $pdo->bindValue(":username", $query, \PDO::PARAM_STR);
             $pdo->execute();
             $rows = $pdo->fetchAll();
 
@@ -1417,23 +1721,20 @@ class heartflowprocessing extends \Smart\Data\Proxy {
     }
 
     public function selectUserFlow(array $data) {
-//        $id = $data['id'];
-//        $username = $data['username'];
-//        $password = $data['password'];
         $usercode = str_replace('HAM-','',$data['usercode']);
         $userfail = "Sua tentativa fracassou, o usuário NÂO foi Autenticado!";
 
-//        $sql = "select username, password from users where id = :id and username = :username";
-
         $sql = "
+            declare
+                @usercode varchar(50) = :usercode;
+                
             select
                 u.username,
                 u.password
             from
                 collaborator c
                 inner join users u on ( u.id = c.usersid )
-            where c.registration = :usercode";
-
+            where c.registration = @usercode";
 
         self::_setSuccess(false);
 
@@ -1444,17 +1745,11 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
         try {
             $pdo = $this->prepare($sql);
-//            $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
-//            $pdo->bindValue(":username", $username, \PDO::PARAM_STR);
             $pdo->bindValue(":usercode", $usercode, \PDO::PARAM_INT);
             $pdo->execute();
             $rows = $pdo->fetchAll();
 
-//            $passwordUser = (count($rows) != 0) ? $rows[0]['password'] : '';
-//            $success = self::tryHash($password,$passwordUser);
             $success = (count($rows) != 0);
-
-//            $rows[0]['password'] = '';
 
             self::_setRows($rows);
             self::_setSuccess($success);
@@ -1892,6 +2187,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 						armorymovementitem x
 						inner join armorymovement z on ( z.id = x.armorymovementid )
 					where z.releasestype in ('A','E')
+					  and z.movementtype = '001'
 			  );";
 
         try {
@@ -2080,7 +2376,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                     where amo.id = am.id
                 ) o
             where am.areasid = @areasid
-                and am.releasestype = @releasestype;";
+              and am.releasestype = @releasestype;";
 
         try {
             $pdo = $this->prepare($sql);
@@ -2224,6 +2520,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         return self::getResultToJson();
     }
 
+    //<editor-fold desc="Etiqueta">
+
     public function imprimeEtiqueta(array $data) {
         $stepsettings = isset($data['stepsettings']) ? $data['stepsettings'] : null;
 
@@ -2277,8 +2575,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
             $pdo->execute();
-//            $rows = self::encodeUTF8($pdo->fetchAll());
-            $rows = $this->removeAccents(self::encodeUTF8($pdo->fetchAll()));
+            $rows = $this->toHexUTF8($pdo->fetchAll());
+//            $rows = $this->removeAccents(self::encodeUTF8($pdo->fetchAll()));
 
             $entityname = $rows[0]['entityname'];
             $proprietaryname = $this->removeAccents($rows[0]['proprietaryname']);
@@ -2350,7 +2648,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
             $pdo->execute();
-            $rows = self::encodeUTF8($pdo->fetchAll());
+            $rows = $this->toHexUTF8($pdo->fetchAll());
 //            $rows = $this->removeAccents(self::encodeUTF8($pdo->fetchAll()));
 
             if($ph) {
@@ -2433,7 +2731,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
             $pdo->execute();
-            $rows = self::encodeUTF8($pdo->fetchAll());
+            $rows = $this->toHexUTF8($pdo->fetchAll());
 //            $rows = $this->removeAccents(self::encodeUTF8($pdo->fetchAll()));
 
             if($ph) {
@@ -2489,5 +2787,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         return self::getResultToJson();
 
     }
+
+    //</editor-fold>
 
 }

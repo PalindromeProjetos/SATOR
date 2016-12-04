@@ -16,8 +16,8 @@ Ext.define( 'iSterilization.view.main.MainController', {
             ctrll = Smart.app.getController('App'),
             button = view.down('button[toggleHandler=onToggleMicro]');
 
-        me.onToggleMicro(button,true);
         ctrll.setFlowProcessingType();
+        me.onToggleMicro(button,true);
     }
 
 });
