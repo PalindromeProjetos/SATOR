@@ -109,7 +109,7 @@ class Store {
 
         return self::getResultToJson();
     }
-    public function update() {
+    public function update($hasTran = true) {
 
         try {
             $have = !$this->session->have();
@@ -121,7 +121,7 @@ class Store {
             $this->policy();
             self::_setCrud('update');
 
-            $this->proxy->beginTransaction();
+            if ($hasTran === true) $this->proxy->beginTransaction();
 
             $this->fireEvent('PreUpdate');
 
@@ -143,12 +143,12 @@ class Store {
             new Logbook($this->model);
             $this->fireEvent('PosUpdate');
 
-            $this->proxy->commit();
+            if ($hasTran === true) $this->proxy->commit();
 
             self::_setRecords($statement->rowCount());
 
         } catch ( \PDOException $e ) {
-            if ($this->proxy->inTransaction()) {
+            if ($this->proxy->inTransaction() && $hasTran === true) {
                 $this->proxy->rollBack();
             }
             self::_setRestart($have);
@@ -158,7 +158,7 @@ class Store {
 
         return self::getResultToJson();
     }
-    public function insert() {
+    public function insert($hasTran = true) {
 
         try {
             $have = !$this->session->have();
@@ -170,7 +170,7 @@ class Store {
             $this->policy();
             self::_setCrud('insert');
 
-            $this->proxy->beginTransaction();
+            if ($hasTran === true) $this->proxy->beginTransaction();
 
             $this->fireEvent('PreInsert');
 
@@ -202,12 +202,12 @@ class Store {
             new Logbook($this->model);
             $this->fireEvent('PosInsert');
 
-            $this->proxy->commit();
+            if ($hasTran === true) $this->proxy->commit();
 
             self::_setRows($this->getRecord());
 
         } catch ( \PDOException $e ) {
-            if ($this->proxy->inTransaction()) {
+            if ($this->proxy->inTransaction() && $hasTran === true) {
                 $this->proxy->rollBack();
             }
             self::_setRestart($have);
@@ -217,7 +217,7 @@ class Store {
 
         return self::getResultToJson();
     }
-    public function delete() {
+    public function delete($hasTran = true) {
 
         try {
             $have = !$this->session->have();
@@ -228,7 +228,7 @@ class Store {
 
             self::_setCrud('delete');
 
-            $this->proxy->beginTransaction();
+            if ($hasTran === true) $this->proxy->beginTransaction();
 
             $this->fireEvent('PreDelete');
 
@@ -250,12 +250,12 @@ class Store {
             new Logbook($this->model);
             $this->fireEvent('PosDelete');
 
-            $this->proxy->commit();
+            if ($hasTran === true) $this->proxy->commit();
 
             self::_setRecords($statement->rowCount());
 
         } catch ( \PDOException $e ) {
-            if ($this->proxy->inTransaction()) {
+            if ($this->proxy->inTransaction() && $hasTran === true) {
                 $this->proxy->rollBack();
             }
             self::_setRestart($have);
