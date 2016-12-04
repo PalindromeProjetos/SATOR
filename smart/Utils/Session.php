@@ -21,7 +21,7 @@ class Session {
     use Traits\TresultSet;
 
     const _SESSION_NAME = 'smart';
-    const _SESSION_PATH = '/sator/';
+    const _SESSION_PATH = "/../tmp/sator/";
 
     const _SESSION_STARTED = true;
     const _SESSION_NOT_STARTED = false;
@@ -69,7 +69,7 @@ class Session {
      *    @return    bool    TRUE if the session has been initialized, else FALSE.
      */
     public function startSession() {
-        $path = $_SERVER['DOCUMENT_ROOT'] . '/../tmp/sator/';
+        $path = $_SERVER['DOCUMENT_ROOT'] . self::$path;
 
         if ( $this->sessionState == self::_SESSION_NOT_STARTED ) {
             $expireto = 60*60*24*1; // 1 day
