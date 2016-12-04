@@ -745,8 +745,6 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $flowstepaction = $rows[0]['flowstepaction'];
             unset($pdo);
 
-            $this->beginTransaction();
-
             // update flowprocessingstepaction
             $action->getStore()->getModel()->set('id', $flowprocessingstepactionid);
             $action->getStore()->getModel()->set('isactive', 0);
@@ -755,8 +753,6 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             if(!$result->success) {
                 throw new \PDOException(self::$FAILURE_STATEMENT);
             }
-
-            $this->commit();
 
             if(count($rows) != 0) {
 
