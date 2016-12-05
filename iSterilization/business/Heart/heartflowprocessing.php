@@ -354,6 +354,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 if ($pos !== false) {
 
                     // insert flowprocessingstepaction
+                    $action->getStore()->setProxy($this);
                     $action->getStore()->getModel()->set('flowprocessingstepid',$id);
                     $action->getStore()->getModel()->set('flowstepaction','001');
                     $action->getStore()->getModel()->set('isactive',1);
@@ -364,6 +365,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                     }
 
                     // update flowprocessing
+                    $flow->getStore()->setProxy($this);
                     $flow->getStore()->getModel()->set('id',$flowprocessingid);
                     $flow->getStore()->getModel()->set('flowstatus','I');
                     $result = self::jsonToObject($flow->getStore()->update(false));
@@ -374,6 +376,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
                     // update flowprocessingstep
                     $date = date("Ymd H:i:s");
+                    $step->getStore()->setProxy($this);
                     $step->getStore()->getModel()->set('id',$id);
                     $step->getStore()->getModel()->set('datestart',$date);
                     $step->getStore()->getModel()->set('flowstepstatus','001');
@@ -965,6 +968,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         try {
             $this->beginTransaction();
 
+            $charge->getStore()->setProxy($this);
             $charge->getStore()->getModel()->set('chargeflag','005');
             $charge->getStore()->getModel()->set('barcode',$barcode);
             $charge->getStore()->getModel()->set('chargeuser',$username);
@@ -977,9 +981,10 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             while (list(, $item) = each($list)) {
                 extract($item);
 
+                $chargeitem->getStore()->setProxy($this);
                 $chargeitem->getStore()->getModel()->set('chargestatus','001');
-                $chargeitem->getStore()->getModel()->set('flowprocessingchargeid',$result->rows->id);
                 $chargeitem->getStore()->getModel()->set('flowprocessingstepid',$flowprocessingstepid);
+                $chargeitem->getStore()->getModel()->set('flowprocessingchargeid',$result->rows->id);
                 $result = self::jsonToObject($chargeitem->getStore()->insert(false));
 
                 if(!$result->success) {
@@ -1507,10 +1512,28 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
         $sql = "
             declare
+                @barcode_p varchar(20),
                 @areasid int = :areasid,
                 @equipmentid int = :equipmentid,
                 @barcode varchar(20) = :barcode,
                 @equipmentcycleid int = :equipmentcycleid;
+
+            if (substring(@barcode,1,1) = 'C')
+            begin
+                select top 1
+                    @barcode_p = fp.barcode
+                from
+                    flowprocessing fp
+                    inner join flowprocessingstep fps on ( fps.flowprocessingid = fp.id )
+                    inner join flowprocessingstepmaterial fpsm on ( fpsm.flowprocessingstepid = fps.id )
+                    inner join itembase ib on ( ib.id = fpsm.materialid and ib.barcode = @barcode )
+                where ib.barcode = @barcode
+                  and fp.flowstatus = 'I';
+            end
+            else
+            begin
+                set @barcode_p = @barcode;
+            end
 
             select distinct
                 fpci.id,
@@ -1555,8 +1578,9 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                         ) tb
                     where a.flowprocessingid = fps.flowprocessingid
                       and a.id = fps.target
+                      and fp.barcode = @barcode_p
                       --and a.equipmentid = @equipmentid
-                      and ( ib.barcode = @barcode or fp.barcode = @barcode )
+                      --and ( ib.barcode = @barcode or fp.barcode = @barcode )
                 ) t
             where fpci.id is null
 			  and fps.areasid = @areasid

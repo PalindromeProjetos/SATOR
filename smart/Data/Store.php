@@ -31,14 +31,14 @@ class Store {
         'property'=>array('Policy','Column'),
         'function'=>array('PreInsert','PosInsert','PreUpdate','PosUpdate','PreDelete','PosDelete'));
 
+    public $session = null;
+
     /**
      * Proxy de Acesso ao Banco de Dados
      *
      * @var null|Proxy
      */
     private $proxy = null;
-
-    public $session = null;
 
     /**
      * Model de uma Tabela do Banco de Dados
@@ -294,6 +294,10 @@ class Store {
 
     public function getProxy () {
         return $this->proxy;
+    }
+
+    public function setProxy ( \Smart\Data\Proxy &$proxy ) {
+        $this->proxy = $proxy;
     }
 
     public function getModel () {

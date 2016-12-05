@@ -168,7 +168,7 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
                 fp.dateof,
                 dbo.getEnum('flowstatus',fp.flowstatus) as flowstatusdescription,
                 a.stepsettings,
-                a.flowprocessingstepid,
+                coalesce(b.id,a.flowprocessingstepid) as flowprocessingstepid,
                 b.barcode as charge,
 				b.chargeflag,
 				dbo.getEnum('chargeflag',b.chargeflag) as chargeflagdescription
@@ -187,6 +187,7 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
                 ) a
 				outer apply (
                     select top 1
+                        c.id,
                         c.barcode,
 						c.chargeflag
                     from

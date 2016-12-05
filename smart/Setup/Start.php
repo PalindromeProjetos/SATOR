@@ -7,7 +7,7 @@ class Start {
     private static $usr = "sa";
     private static $sch = "dbo";
     private static $pwd = "1844";
-    private static $dtb = "CME";
+    private static $dtb = "CMENEW";
     private static $log = "CME_LOG";
     private static $tmz = "America/Sao_Paulo";
     private static $dns = "sqlsrv:server=(local);database=dtb";
