@@ -18,6 +18,12 @@ class flowprocessingcharge extends \Smart\Data\Model {
      * @Policy {"nullable":true}
      * @Column {"description":"", "type":"integer", "policy":true, "logallow":true, "default":""}
      */
+    private $equipmentid;
+
+    /**
+     * @Policy {"nullable":true}
+     * @Column {"description":"", "type":"integer", "policy":true, "logallow":true, "default":""}
+     */
     private $equipmentcycleid;
 
     /**
@@ -99,6 +105,22 @@ class flowprocessingcharge extends \Smart\Data\Model {
      */
     public function setId($id) {
         $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @return type integer
+     */
+    public function getEquipmentid() {
+        return $this->equipmentid;
+    }
+
+    /**
+     * @param type $equipmentid
+     * @return \iSterilization\Model\flowprocessingcharge
+     */
+    public function setEquipmentid($equipmentid) {
+        $this->equipmentid = $equipmentid;
         return $this;
     }
 

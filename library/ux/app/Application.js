@@ -48,7 +48,7 @@ Ext.define( 'Smart.ux.app.Application', {
                     rows = result.rows[0];
 
                 Smart.workstation = workstation ? Ext.decode(workstation) : null;
-                
+
                 if((result.success)&&(result.modulebuild != Ext.manifest.version)) {
                     success = false;
                     Smart.Msg.showToast('Você está executando uma versão diferente da atualmente homolagada!','warning');
@@ -92,6 +92,16 @@ Ext.define( 'Smart.ux.app.Application', {
 
         Ext.getBody().getById('preloader').hide();
         Ext.getBody().getById('buildapp').update('v'+Ext.manifest.version);
+
+        window.onbeforeunload = function () {
+            Ext.Ajax.request({
+                url: me.url,
+                params: {
+                    action: 'select',
+                    method: 'selectLogout'
+                }
+            });
+        };
     },
 
     onAppUpdate: function () {

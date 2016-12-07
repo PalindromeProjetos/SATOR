@@ -16,37 +16,8 @@
     <script type="text/javascript">
         var Ext = Ext || {}; // Ext namespace won't be defined yet...
 
-        // This function is called by the Microloader after it has performed basic
-        // device detection. The results are provided in the "tags" object. You can
-        // use these tags here or even add custom tags. These can be used by platform
-        // filters in your manifest or by platformConfig expressions in your app.
-        //
         Ext.beforeLoad = function (tags) {
-            var s = location.search,  // the query string (ex "?foo=1&bar")
-                    profile = 'classic';
-
-            // For testing look for "?classic" or "?modern" in the URL to override
-            // device detection default.
-            //
-//            if (s.match(/\bclassic\b/)) {
-//                profile = 'classic';
-//            }
-//            else if (s.match(/\bmodern\b/)) {
-//                profile = 'modern';
-//            }
-//            else {
-//                profile = tags.desktop ? 'classic' : 'modern';
-//                //profile = tags.phone ? 'modern' : 'classic';
-//            }
-
-            Ext.manifest = profile; // this name must match a build profile name
-
-            // This function is called once the manifest is available but before
-            // any data is pulled from it.
-            //
-            //return function (manifest) {
-                // peek at / modify the manifest object
-            //};
+            Ext.manifest = 'classic';
         };
     </script>    
     
@@ -106,25 +77,25 @@ b.cache()}c.notifyUpdateReady()},notifyUpdateReady:function(){if("checking"!==c.
 1);"/"==e?b.substring(2,d+2)!==a&&(c=!1):"f"==e?b.substring(10,d+10)!==a&&(c=!1):"."==e&&b.substring(1,d+1)!==a&&(c=!1);return c},parseResult:function(b){var a={};(b.exception||0===b.status)&&!e.env.phantom?a.error=!0:200<=b.status&&300>b.status||304===b.status||e.env.phantom||0===b.status&&0<b.content.length?a.content=b.content:a.error=!0;return a}};return c}();Ext.manifest=Ext.manifest||"bootstrap";Ext.Microloader.run();</script>
 
 </head>
-<body>
+    <body>
 
-    <a class="buildapp" id="buildapp"></a>
+        <a class="buildapp" id="buildapp"></a>
 
-    <div id="preloader">
-        <div class="loader">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
+        <div id="preloader">
+            <div class="loader">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
-    </div>
 
-    <audio id="audio" src="../resources/sounds/pipe5.wav" ></audio>
+        <audio id="audio" src="../resources/sounds/pipe5.wav" ></audio>
 
-    <div id="marquee" class="marquee down">
-        <p><a class="one"></a></p>
-        <p><a class="two"></a></p>
-    </div>
+        <div id="marquee" class="marquee down">
+            <p><a class="one"></a></p>
+            <p><a class="two"></a></p>
+        </div>
 
-</body>
+    </body>
 </html>

@@ -473,7 +473,7 @@ class flowprocessingstepaction extends \Smart\Data\Cache {
             $rows = $pdo->fetchAll();
 
             self::_setRows($rows);
-            self::_setPage(0,10);
+            self::_setPage(0,500);
             self::_setSuccess(count($rows) != 0);
 
         } catch ( \PDOException $e ) {

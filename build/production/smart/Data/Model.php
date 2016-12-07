@@ -26,10 +26,7 @@ class Model {
      */
     private $_notate = null;
 
-    private $session = null;
-
     public function __construct() {
-        $this->session = Session::getInstance();
     }
 
     public function set ($field,$value) {

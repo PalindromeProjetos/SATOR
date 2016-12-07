@@ -139,6 +139,9 @@ class dispensingreport extends Report {
         $pdo->execute();
         $rows = $pdo->fetchAll();
 
+        //print_r($rows);
+        //exit;
+
         $local = $rows[0]['name'];
         $operator = $rows[0]['movementuser'];
         $circulante = 'Circulante Geral';

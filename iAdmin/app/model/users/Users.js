@@ -52,6 +52,9 @@ Ext.define( 'iAdmin.model.users.Users', {
                     type = (info && info.length !== 0) ? Ext.decode(info) : null;
                 return (type) ? Ext.String.format('data:{0};base64,{1}',type.fileType,record.get('filedata')) : record.get('filedata');
             }
+        }, {
+            name: 'lastactivity',
+            type: 'auto'
         }
     ]
 

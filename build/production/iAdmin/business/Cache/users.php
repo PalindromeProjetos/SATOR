@@ -13,51 +13,51 @@ class users extends \Smart\Data\Cache {
     use Traits\TuserHandler;
 
     public function selectLogout(array $data) {
-        $this->session->destroy();
+        $this->stash->destroy();
 
         return self::getResultToJson();
     }
 
     public function selectLocked(array $data) {
-        $this->session->slay();
+        $this->stash->slay();
 		
         return self::getResultToJson();
     }
 
     public function selectOpened(array $data) {
         $isTest = Start::areTestBase();
-		$opened = $this->session->have();
+		$opened = $this->stash->have();
 
         self::_setSuccess($opened);
         self::_setText($opened ? 'Esta sessão está aberta' : 'Esta sessão está fechada');
 
         if($opened) {
             $data = array();
-            $data['moduleid'] = $this->session->moduleid;
-            $data['username'] = $this->session->username;
+            $data['moduleid'] = $this->stash->moduleid;
+            $data['username'] = $this->stash->username;
             $result = self::jsonToObject($this->selectUserComein($data));
             self::_setRows($result->rows);
         }
 
         self::_set('isTest',$isTest);
 
-        return self::getResultToJson();
+        return self::arrayToJson(self::encodeUTF8(self::getResult()));
     }
 
     public function selectAccess(array $data) {
-        $attempts = $this->session->attempts;
-        $backupid = $this->session->backupid;
-        $password = $this->session->password;
+        $attempts = $this->stash->attempts;
+        $backupid = $this->stash->backupid;
+        $password = $this->stash->password;
 
         $access = self::tryHash($data["password"],$password);
 
         if ($access) {
-            $this->session->attempts = 0;
-            $this->session->usercode = $backupid;
+            $this->stash->attempts = 0;
+            $this->stash->usercode = $backupid;
             self::_setText('Sua tentativa foi bem sucedida!');
         } else {
             $attempts++;
-            $this->session->attempts = $attempts;
+            $this->stash->attempts = $attempts;
             self::_setSuccess(true);
             self::_setText('Sua tentativa fracassou!');
             self::_setErrors(array('attempts'=>$attempts));
@@ -69,10 +69,10 @@ class users extends \Smart\Data\Cache {
     public function selectCookie(array $data) {
         $cookie = array();
 
-        $cookie['usercode'] = $this->session->usercode;
-        $cookie['username'] = $this->session->username;
-        $cookie['password'] = $this->session->password;
-        $cookie['fullname'] = $this->session->fullname;
+        $cookie['usercode'] = $this->stash->usercode;
+        $cookie['username'] = $this->stash->username;
+        $cookie['password'] = $this->stash->password;
+        $cookie['fullname'] = $this->stash->fullname;
 
         self::_setRows($cookie);
 
@@ -83,10 +83,6 @@ class users extends \Smart\Data\Cache {
         $moduleid = $data["module"];
         $passwordData = $data["password"];
         $passwordUser = "NOT VALID ACCESS!";
-
-        $this->session->destroy();
-
-        $this->session = Session::getInstance();
 
         try {
 
@@ -103,13 +99,13 @@ class users extends \Smart\Data\Cache {
             $result->success = self::tryHash($passwordData,$passwordUser);
 
             if ($result->success) {
-                $this->session->attempts = 0;
-                $this->session->moduleid = $moduleid;
-                $this->session->backupid = $result->rows[0]->id;
-                $this->session->usercode = $result->rows[0]->id;
-                $this->session->username = $result->rows[0]->username;
-                $this->session->password = $result->rows[0]->password;
-                $this->session->fullname = $result->rows[0]->fullname;
+                $this->stash->attempts = 0;
+                $this->stash->moduleid = $moduleid;
+                $this->stash->backupid = $result->rows[0]->id;
+                $this->stash->usercode = $result->rows[0]->id;
+                $this->stash->username = $result->rows[0]->username;
+                $this->stash->password = $result->rows[0]->password;
+                $this->stash->fullname = $result->rows[0]->fullname;
             } else {
                 $result->text = sprintf("%s. Usuário não autenticado!",$passwordUser);
             }
