@@ -29,6 +29,7 @@ Ext.define( 'Ext.overrides.data.Connection', {
 
         options.headers = {
             'Credential-Name' : 'sator.etimba',
+            'Credential-Code' : 'Palindrome Projetos',
             'Credential-Date' : new Date().toGMTString()
         };
 
