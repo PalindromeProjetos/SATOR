@@ -38,8 +38,6 @@ class Store {
      */
     private $proxy = null;
 
-    public $session = null;
-
     /**
      * Model de uma Tabela do Banco de Dados
      *
@@ -47,8 +45,15 @@ class Store {
      */
     private $model = null;
 
+    /**
+     * Instância da Sessão
+     *
+     * @var null|Session
+     */
+    public $stash = null;
+
     public function __construct(array $link, $model) {
-        $this->session = Session::getInstance();
+        $this->stash = new Session();
         $this->model = new $model();
         $this->proxy = new Proxy($link);
 
@@ -78,7 +83,7 @@ class Store {
     public function select() {
 
         try {
-            $have = !$this->session->have();
+            $have = !$this->stash->have();
 
             if($have == true) {
                 throw new \PDOException("A sua sessão expirou!");
@@ -91,11 +96,7 @@ class Store {
                 return self::getResultToJson();
             }
 
-            $callback = $statement->execute();
-
-            if(!$callback) {
-                throw new \PDOException(self::$FAILURE_STATEMENT);
-            }
+            $statement->execute();
 
             $rows = $statement->fetchAll();
 
@@ -112,16 +113,16 @@ class Store {
     public function update($hasTran = true) {
 
         try {
-            $have = !$this->session->have();
+            $notHave = !$this->stash->have();
 
-            if($have == true) {
+            if($notHave == true) {
                 throw new \PDOException("A sua sessão expirou!");
             }
 
             $this->policy();
             self::_setCrud('update');
 
-            if ($hasTran === true) $this->proxy->beginTransaction();
+            if($hasTran == true) $this->proxy->beginTransaction();
 
             $this->fireEvent('PreUpdate');
 
@@ -134,24 +135,20 @@ class Store {
                 return self::getResultToJson();
             }
 
-            $callback = $statement->execute();
-
-            if(!$callback) {
-                throw new \PDOException(self::$FAILURE_STATEMENT);
-            }
+            $statement->execute();
 
             new Logbook($this->model);
             $this->fireEvent('PosUpdate');
 
-            if ($hasTran === true) $this->proxy->commit();
+            if($hasTran == true) $this->proxy->commit();
 
             self::_setRecords($statement->rowCount());
 
         } catch ( \PDOException $e ) {
-            if ($this->proxy->inTransaction() && $hasTran === true) {
+            if ($hasTran == true && $this->proxy->inTransaction()) {
                 $this->proxy->rollBack();
             }
-            self::_setRestart($have);
+            self::_setRestart($notHave);
             self::_setSuccess(false);
             self::_setText($e->getMessage());
         }
@@ -161,7 +158,7 @@ class Store {
     public function insert($hasTran = true) {
 
         try {
-            $have = !$this->session->have();
+            $have = !$this->stash->have();
 
             if($have == true) {
                 throw new \PDOException("A sua sessão expirou!");
@@ -170,7 +167,7 @@ class Store {
             $this->policy();
             self::_setCrud('insert');
 
-            if ($hasTran === true) $this->proxy->beginTransaction();
+            if ($hasTran == true) $this->proxy->beginTransaction();
 
             $this->fireEvent('PreInsert');
 
@@ -183,11 +180,7 @@ class Store {
                 return self::getResultToJson();
             }
 
-            $callback = $statement->execute();
-
-            if(!$callback) {
-                throw new \PDOException(self::$FAILURE_STATEMENT);
-            }
+            $statement->execute();
 
             $id = $this->proxy->lastInsertId();
 
@@ -202,12 +195,12 @@ class Store {
             new Logbook($this->model);
             $this->fireEvent('PosInsert');
 
-            if ($hasTran === true) $this->proxy->commit();
+            if ($hasTran == true) $this->proxy->commit();
 
             self::_setRows($this->getRecord());
 
         } catch ( \PDOException $e ) {
-            if ($this->proxy->inTransaction() && $hasTran === true) {
+            if ($hasTran == true && $this->proxy->inTransaction()) {
                 $this->proxy->rollBack();
             }
             self::_setRestart($have);
@@ -220,7 +213,7 @@ class Store {
     public function delete($hasTran = true) {
 
         try {
-            $have = !$this->session->have();
+            $have = !$this->stash->have();
 
             if($have == true) {
                 throw new \PDOException("A sua sessão expirou!");
@@ -228,7 +221,7 @@ class Store {
 
             self::_setCrud('delete');
 
-            if ($hasTran === true) $this->proxy->beginTransaction();
+            if($hasTran == true) $this->proxy->beginTransaction();
 
             $this->fireEvent('PreDelete');
 
@@ -241,21 +234,17 @@ class Store {
                 return self::getResultToJson();
             }
 
-            $callback = $statement->execute();
-
-            if(!$callback) {
-                throw new \PDOException(self::$FAILURE_STATEMENT);
-            }
+            $statement->execute();
 
             new Logbook($this->model);
             $this->fireEvent('PosDelete');
 
-            if ($hasTran === true) $this->proxy->commit();
+            if($hasTran == true) $this->proxy->commit();
 
             self::_setRecords($statement->rowCount());
 
         } catch ( \PDOException $e ) {
-            if ($this->proxy->inTransaction() && $hasTran === true) {
+            if ($hasTran == true && $this->proxy->inTransaction()) {
                 $this->proxy->rollBack();
             }
             self::_setRestart($have);
@@ -294,6 +283,11 @@ class Store {
 
     public function getProxy () {
         return $this->proxy;
+    }
+
+    public function setProxy (Proxy &$proxy) {
+        $this->proxy = $proxy;
+        return $this;
     }
 
     public function getModel () {

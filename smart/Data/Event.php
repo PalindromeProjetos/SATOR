@@ -24,13 +24,10 @@ class Event {
      */
     private $proxy = null;
 
-    public $session = null;
-
     /**
      * @param \Smart\Data\Proxy $proxy
      */
     public function __construct( \Smart\Data\Proxy &$proxy ) {
-        $this->session = Session::getInstance();
         $this->proxy = $proxy;
     }
 

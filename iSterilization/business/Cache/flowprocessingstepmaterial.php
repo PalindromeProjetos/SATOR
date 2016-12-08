@@ -167,11 +167,8 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
                 fp.flowstatus,
                 fp.dateof,
                 dbo.getEnum('flowstatus',fp.flowstatus) as flowstatusdescription,
-                a.stepsettings,
-                a.flowprocessingstepid,
-                b.barcode as charge,
-				b.chargeflag,
-				dbo.getEnum('chargeflag',b.chargeflag) as chargeflagdescription
+                b.stepsettings,
+                b.flowprocessingstepid
             from
                 flowprocessingstepmaterial fpm
                 inner join flowprocessingstep fps on ( fps.id = fpm.flowprocessingstepid )
@@ -182,17 +179,6 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
                         a.id as flowprocessingstepid
                     from
                         flowprocessingstep a
-                    where a.flowprocessingid = fp.id
-                      and a.areasid = @areasid
-                ) a
-				outer apply (
-                    select top 1
-                        c.barcode,
-						c.chargeflag
-                    from
-                        flowprocessingstep a
-						inner join flowprocessingchargeitem b on ( b.flowprocessingstepid = a.id )
-						inner join flowprocessingcharge c on ( c.id = b.flowprocessingchargeid and c.chargeflag in ('001','002','003') )
                     where a.flowprocessingid = fp.id
                       and a.areasid = @areasid
                 ) b

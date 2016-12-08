@@ -37,8 +37,16 @@ class Logbook extends \Smart\Data\Proxy {
         values
             ( :logtablesid, :fieldname, :fielddata )";
 
+    /**
+     * Instância da Sessão
+     *
+     * @var null|Session
+     */
+    public $stash = null;
+
     public function __construct($model, $logtype = 'setLogFields') {
         $this->submit = $_POST;
+        $this->stash = new Session();
         $this->pwd = Start::getPassWord();
         $this->usr = Start::getUserName();
         $this->dns = Start::logConnnect();
@@ -58,7 +66,7 @@ class Logbook extends \Smart\Data\Proxy {
      * Registrando Log da Tabela
      */
     public function setLogTables ($model) {
-        $logbookby = $this->session->username;
+        $logbookby = $this->stash->username;
         $operation = $model->getSubmit()->getRawValue('action');
         $tablename = $model->getNotate()->instance->Entity->name;
 

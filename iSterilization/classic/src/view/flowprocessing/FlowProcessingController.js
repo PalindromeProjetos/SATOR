@@ -2858,7 +2858,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             return false;
         }
 
-        if(stepsettings && ['001','002'].indexOf(stepsettings.tagprinter) != -1) {
+        if(stepsettings && ['001','002','003'].indexOf(stepsettings.tagprinter) != -1) {
             Ext.Ajax.request({
                 scope: me,
                 url: me.url,

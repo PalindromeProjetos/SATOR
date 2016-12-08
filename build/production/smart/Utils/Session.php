@@ -14,132 +14,72 @@ use Smart\Common\Traits as Traits;
  * Validar permissões de acesso - Profile
  *
  * <code>
- *      $session = Session::getInstance();
+ *      $session = new Session();
  * </code>
  */
 class Session {
     use Traits\TresultSet;
 
-    const _SESSION_PATH = '/';
     const _SESSION_NAME = 'smart';
+    const _SESSION_DATE = 60*60*24*1;
+    const _SESSION_PATH = '/../session/smart/';
 
-    const _SESSION_STARTED = true;
-    const _SESSION_NOT_STARTED = false;
-
-    // THE only instance of the class
-    private static $instance = null;
-
-    // The configs params
     private static $name = self::_SESSION_NAME;
+    private static $date = self::_SESSION_DATE;
     private static $path = self::_SESSION_PATH;
 
-    // The state of the session
-    private $sessionState = self::_SESSION_NOT_STARTED;
+	/**
+	 * http://www.scriptcase.com.br/forum/index.php?topic=4849.0
+	 * http://forum.wmonline.com.br/topic/157538-session-cache-expire;/
+	 * https://groups.google.com/forum/#!topic/php-brasil/nfoW0Bdx9Bc
+	 */
+    public function __construct(array $data = null) {
+        $path = $_SERVER['DOCUMENT_ROOT'] . self::$path;
+        $name = isset($_SERVER["HTTP_REFERER"]) ? basename($_SERVER["HTTP_REFERER"]) : self::$name;
 
-    private function __construct() {}
+		@session_set_cookie_params(self::$date);
+        @session_save_path($path);
+        @session_name($name);
+        @session_start();
 
-    /**
-     *    Returns THE instance of 'Session'.
-     *    The session is automatically initialized if it wasn't.
-     *
-     *    @return    object
-     */
-    public static function getInstance(array $data = null) {
+        if(!is_array($data)) return true;
 
-        if( isset($data['name']) ) {
-            self::$name = $data['name'];
-        }
-
-        if( isset($data['path']) ) {
-            self::$path = $data['path'];
-        }
-
-        if ( !isset(self::$instance) ) {
-            self::$instance = new self;
-        }
-
-        self::$instance->startSession();
-
-        return self::$instance;
-    }
-
-    /**
-     *    (Re)starts the session.
-     *
-     *    @return    bool    TRUE if the session has been initialized, else FALSE.
-     */
-    public function startSession() {
-
-        if ( $this->sessionState == self::_SESSION_NOT_STARTED ) {
-            $expireto = 60*60*24*1; // 1 day
-            session_set_cookie_params($expireto,self::$path);
-            session_name(isset($_SERVER["HTTP_REFERER"]) ? basename($_SERVER["HTTP_REFERER"]) : self::$name);
-            $this->sessionState = session_start();
-        }
-
-        return $this->sessionState;
-    }
-
-    /**
-     *    Stores datas in the session.
-     *    Example: $instance->foo = 'bar';
-     *
-     *    @param    name    Name of the datas.
-     *    @param    value    Your datas.
-     *    @return   void
-     */
-    public function __set( $name, $value ) {
-        $_SESSION[$name] = $value;
-    }
-
-    /**
-     *    Gets datas from the session.
-     *    Example: echo $instance->foo;
-     *
-     *    @param    name    Name of the datas to get.
-     *    @return   mixed    Datas stored in session.
-     */
-    public function __get( $name ) {
-        if (isset($_SESSION[$name])) {
-            return $_SESSION[$name];
+        foreach ($data as $field => $value) {
+            $this->$field = $value;
         }
     }
 
-    public function __isset( $name ) {
-        return isset($_SESSION[$name]);
-    }
-
-    public function __unset( $name ) {
-        unset($_SESSION[$name]);
-    }
-
-    /**
-     *    Destroys the current session.
-     *
-     *    @return    bool    TRUE is session has been deleted, else FALSE.
-     */
     public function destroy() {
-        if ( $this->sessionState == self::_SESSION_STARTED ) {
-            $this->sessionState = !session_destroy();
-
-            unset( $_SESSION );
-
-            return !$this->sessionState;
-        }
-
-        return false;
+        @session_unset();
+        @session_destroy();
     }
 
-    public function slay() {
-        unset(self::$instance->usercode);
+    public function __set( $field, $value ) {
+        $_SESSION[$field] = $value;
+    }
+
+    public function __get( $field ) {
+        return isset($_SESSION[$field]) ? $_SESSION[$field] : '';
     }
 
     public function have() {
-        return ( strlen(self::$instance->username) !== 0 );
+        return (strlen($this->username) !== 0);
     }
 
-    public function hasProfile($menu, $action, $goback = false, $msgerror = null) {
-        $username = self::$instance->username;
+    public function slay() {
+        unset($this->usercode);
+    }
+
+    public function __isset( $field ) {
+        return isset($_SESSION[$field]);
+    }
+
+    public function __unset( $field ) {
+        unset($_SESSION[$field]);
+    }
+
+    public static function hasProfile($menu, $action, $goback = false, $msgerror = null) {
+        $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
 
         if(strlen($menu) == 0 || strlen($action) == 0) {
             return true;

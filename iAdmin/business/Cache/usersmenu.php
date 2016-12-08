@@ -16,8 +16,7 @@ class usersmenu extends \Smart\Data\Cache {
                 um.id,
                 :usersid as usersid,
                 m.id as menuid,
-                m.name,
-				um.isfavorite
+                m.name
             from
                 menu m
                 left join usersmenu um on ( um.menuid = m.id and um.usersid = :id )
@@ -59,7 +58,6 @@ class usersmenu extends \Smart\Data\Cache {
                 mn.id as menuid,
                 mm.orderby,
                 mn.menutype,
-				um.isfavorite,
                 case coalesce(len(mn.router),0) when 0 then 0 else 1 end as leaf
             from
                 modulemenu mm

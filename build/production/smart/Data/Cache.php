@@ -25,14 +25,17 @@ class Cache {
      */
     private $store = null;
 
-    public $session = null;
+    /**
+     * Instância da Sessão
+     */
+    public $stash = null;
 
     /**
      * @param Store $store
      */
     public function __construct( \Smart\Data\Store &$store ) {
-        $this->session = Session::getInstance();
         $this->store = $store;
+        $this->stash = new Session();
     }
 
     public function getStore (){

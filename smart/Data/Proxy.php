@@ -25,22 +25,19 @@ class Proxy extends \PDO {
         DML_UPDATE = 2,
         DML_DELETE = 3;
 
-    public $session = null;
-
     public $driverName = null;
 
     public function __construct(array $link, $data = null) {
-        $this->session = ($data) ? Session::getInstance($data) : Session::getInstance();
-
+        
         list ($dns, $usr, $pwd) = $link;
 
         Start::setTimeZone();
 
         try {
 			parent::__construct( $dns, $usr, $pwd );
-            $this->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
-			$this->setAttribute( \PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC );
             $this->driverName = $this->getAttribute( \PDO::ATTR_DRIVER_NAME );
+            $this->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
+            $this->setAttribute( \PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC );
 
             /**
              * Use Only SQLServer

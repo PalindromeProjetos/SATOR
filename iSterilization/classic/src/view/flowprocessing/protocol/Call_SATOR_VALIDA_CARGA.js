@@ -138,7 +138,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_VALIDA_CARGA
                                 xtype: 'actioncolumn',
                                 handler: 'setDeleteChargeItem',
                                 getTip: function(v, meta, rec) {
-                                    return 'Remover material do menu!';
+                                    return 'Remover material da lista!';
                                 },
                                 getClass: function(v, meta, rec) {
                                     return "fa fa-minus-circle action-delete-color-font";

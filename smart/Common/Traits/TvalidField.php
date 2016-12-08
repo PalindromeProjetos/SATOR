@@ -34,7 +34,7 @@ trait TvalidField
      * @return string formatada Y-m-d
      */
     public function strToDate($param) {
-       return $this->tryDate($param) ? date('Y-m-d', strtotime(str_replace('/', '-', $param))) : $param;
+        return $this->tryDate($param) ? date('Y-m-d', strtotime(str_replace('/', '-', $param))) : $param;
     }
 
     /**
@@ -59,18 +59,18 @@ trait TvalidField
         // Verifica se nenhuma das sequências invalidas abaixo
         // foi digitada. Caso afirmativo, retorna falso
         else if (
-				$param == '00000000000' ||
-				$param == '11111111111' ||
-				$param == '22222222222' ||
-				$param == '33333333333' ||
-				$param == '44444444444' ||
-				$param == '55555555555' ||
-				$param == '66666666666' ||
-				$param == '77777777777' ||
-				$param == '88888888888' ||
-				$param == '99999999999'
-			) {
-				return false;
+            $param == '00000000000' ||
+            $param == '11111111111' ||
+            $param == '22222222222' ||
+            $param == '33333333333' ||
+            $param == '44444444444' ||
+            $param == '55555555555' ||
+            $param == '66666666666' ||
+            $param == '77777777777' ||
+            $param == '88888888888' ||
+            $param == '99999999999'
+        ) {
+            return false;
             // Calcula os digitos verificadores para verificar se o
             // CPF é válido
         } else {
