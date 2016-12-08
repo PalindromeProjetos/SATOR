@@ -15,7 +15,6 @@ Ext.define( 'Smart.ux.app.Application', {
 
         Smart.app = me;
         Smart.appType = 'pro';
-        // Ext.Ajax.defaultHeaders = { 'Foo': 'bar' };
         Ext.USE_NATIVE_JSON = true;
         Ext.enableAriaButtons = false;
         Ext.setGlyphFontFamily('fontello');
@@ -33,6 +32,7 @@ Ext.define( 'Smart.ux.app.Application', {
         //</debug>
 
         // Ext.Ajax.defaultHeaders = { 'Foo': 'bar' };
+        Ext.Ajax.defaultHeaders = { 'Foo': 'bar' };
 
         me.redirectTo(Ext.manifest.name.toLowerCase());
 

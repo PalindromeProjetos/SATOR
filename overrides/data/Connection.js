@@ -2,23 +2,11 @@
 Ext.define( 'Ext.overrides.data.Connection', {
     override: 'Ext.data.Connection',
 
-    defaultHeaders: { 'Credential-Name': 'samuel.oliveira' },
-
     constructor: function () {
         var me = this;
-        me.callParent();
-        me.onBefore( 'beforerequest', me.fnBeforeRequest, me);
+
+        me.callParent(arguments);
         me.onAfter( 'requestcomplete', me.fnRequestComplete, me);
-
-        var defaultHeaders = me.getDefaultHeaders();
-        me.setDefaultHeaders(Ext.Object.merge(defaultHeaders,{credential: 'samuel.oliveira'}));
-    },
-
-    fnBeforeRequest: function (conn , options , eOpts) {
-        var me = this,
-            extraParams = me.getExtraParams();
-
-        me.setExtraParams(Ext.Object.merge(extraParams,{Credential: 'samuel.oliveira'}));
     },
 
     fnRequestComplete: function ( conn , response , options , eOpts ) {
@@ -34,6 +22,17 @@ Ext.define( 'Ext.overrides.data.Connection', {
             }
             window.location.reload();
         }
+    },
+
+    request: function(options) {
+        options = options || {};
+
+        options.headers = {
+            'Credential-Name' : 'sator.etimba',
+            'Credential-Date' : new Date().toGMTString()
+        };
+
+        return this.callParent(arguments);
     }
 
 });
