@@ -17,6 +17,28 @@ Ext.define( 'Ext.overrides.data.Store', {
         }
     },
 
+    constructor: function () {
+        var me = this;
+        me.callParent(arguments);
+
+        me.onBefore( 'beforeload', me.fnBeforeLoad, me);
+        me.onBefore( 'beforesync', me.fnBeforeSync, me);
+    },
+
+    fnBeforeLoad: function (store , operation , eOpts) {
+        var me = this,
+            extraParams = me.getExtraParams();
+
+        me.setExtraParams(Ext.Object.merge(extraParams,{credential: 'samuel.dasilva'}));
+    },
+
+    fnBeforeSync: function (options , eOpts) {
+        var me = this,
+            extraParams = me.getExtraParams();
+
+        me.setExtraParams(Ext.Object.merge(extraParams,{credential: 'samuel.dasilva'}));
+    },
+
     // http://stackoverflow.com/questions/11022616/store-do-something-after-sync-with-autosync-enabled
     restartSession: function (operation) {
         var me = this,

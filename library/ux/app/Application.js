@@ -15,7 +15,7 @@ Ext.define( 'Smart.ux.app.Application', {
 
         Smart.app = me;
         Smart.appType = 'pro';
-
+        // Ext.Ajax.defaultHeaders = { 'Foo': 'bar' };
         Ext.USE_NATIVE_JSON = true;
         Ext.enableAriaButtons = false;
         Ext.setGlyphFontFamily('fontello');
@@ -31,6 +31,8 @@ Ext.define( 'Smart.ux.app.Application', {
             Smart.appType = 'dev';
             document.cookie = 'XDEBUG_SESSION=PHPSTORM;path=/;';
         //</debug>
+
+        // Ext.Ajax.defaultHeaders = { 'Foo': 'bar' };
 
         me.redirectTo(Ext.manifest.name.toLowerCase());
 
@@ -87,6 +89,8 @@ Ext.define( 'Smart.ux.app.Application', {
                 }
             }
         });
+
+        // Ext.Ajax.defaultHeaders = { 'Credential-Name': 'samuel.oliveira' };
 
         Smart.workstation = workstation ? Ext.decode(workstation) : null;
 

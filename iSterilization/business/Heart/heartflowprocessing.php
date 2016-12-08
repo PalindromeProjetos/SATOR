@@ -674,13 +674,13 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				}
             }
 
-            $item = [];
+            $list = [];
+			$list['hasTran'] = 0;
+			$list['flowprocessingid'] = $flowprocessingid;
+			$list['flowprocessingstepid'] = $flowprocessingstepid;
+			$list['flowprocessingstepactionid'] = $flowprocessingstepactionid;
 
-            $item['flowprocessingid'] = $flowprocessingid;
-            $item['flowprocessingstepid'] = $flowprocessingstepid;
-            $item['flowprocessingstepactionid'] = $flowprocessingstepactionid;
-
-			$result = self::jsonToObject($this->setEncerrarLeitura($item));
+			$result = self::jsonToObject($this->setEncerrarLeitura($list));
 
 			if(!$result->success) {
 				throw new \PDOException(self::$FAILURE_STATEMENT);
@@ -747,7 +747,12 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":flowprocessingid", $flowprocessingid, \PDO::PARAM_INT);
             $pdo->bindValue(":flowprocessingstepid", $flowprocessingstepid, \PDO::PARAM_INT);
-            $pdo->execute();
+			$callback = $pdo->execute();
+
+			if(!$callback) {
+				throw new \PDOException(self::$FAILURE_STATEMENT);
+			}
+
             $rows = $pdo->fetchAll();
             $newid = $rows[0]['newid'];
             $oldid = $rows[0]['oldid'];
@@ -785,7 +790,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 }
 
                 if($flowstepaction == '005') {
-                    $action->getStore()->getModel()->set('id',$oldid);
+					$action->getStore()->setProxy($this);
+					$action->getStore()->getModel()->set('id',$oldid);
                     $action->getStore()->getModel()->set('flowstepaction','001');
                     $action->getStore()->getModel()->set('isactive',1);
 					$result = self::jsonToObject($action->getStore()->update(false));
@@ -797,10 +803,15 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
                 // update flowprocessingstep
                 $date = date("Ymd H:i:s");
+				$step->getStore()->setProxy($this);
                 $step->getStore()->getModel()->set('id',$newid);
                 $step->getStore()->getModel()->set('datestart',$date);
-                $step->getStore()->getModel()->set('flowstepstatus','001');
-                $step->getStore()->update();
+                $step->getStore()->getModel()->set('flowstepstatus','001');				
+				$result = self::jsonToObject($step->getStore()->update(false));
+				
+				if(!$result->success) {
+					throw new \PDOException(self::$FAILURE_STATEMENT);
+				}
 
                 $sql = "
                     declare
@@ -1127,7 +1138,12 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				$rows = $pdo->fetchAll();
 
 				foreach ($rows as $item) {
-					self::jsonToObject($this->setEncerrarLeitura($item));
+					$item['hasTran'] = 0;
+					$result = self::jsonToObject($this->setEncerrarLeitura($item));
+
+					if(!$result->success) {
+						throw new \PDOException(self::$FAILURE_STATEMENT);
+					}					
 				}
 
 				self::_setRows($rows);

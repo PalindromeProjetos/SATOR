@@ -9,7 +9,7 @@ class Start {
     private static $pwd = "1844";
     private static $dtb = "CMENEW";
     private static $log = "CME_LOG";
-    private static $tmz = "America/Manaus";
+    private static $tmz = "America/Sao_Paulo";
     private static $dns = "sqlsrv:server=(local);database=dtb";
 
     public static function tableSchema() {

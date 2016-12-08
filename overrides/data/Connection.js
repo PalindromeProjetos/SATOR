@@ -2,10 +2,23 @@
 Ext.define( 'Ext.overrides.data.Connection', {
     override: 'Ext.data.Connection',
 
+    defaultHeaders: { 'Credential-Name': 'samuel.oliveira' },
+
     constructor: function () {
         var me = this;
-        me.callParent(arguments);
+        me.callParent();
+        me.onBefore( 'beforerequest', me.fnBeforeRequest, me);
         me.onAfter( 'requestcomplete', me.fnRequestComplete, me);
+
+        var defaultHeaders = me.getDefaultHeaders();
+        me.setDefaultHeaders(Ext.Object.merge(defaultHeaders,{credential: 'samuel.oliveira'}));
+    },
+
+    fnBeforeRequest: function (conn , options , eOpts) {
+        var me = this,
+            extraParams = me.getExtraParams();
+
+        me.setExtraParams(Ext.Object.merge(extraParams,{Credential: 'samuel.oliveira'}));
     },
 
     fnRequestComplete: function ( conn , response , options , eOpts ) {
