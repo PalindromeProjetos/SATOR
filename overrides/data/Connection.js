@@ -4,6 +4,7 @@ Ext.define( 'Ext.overrides.data.Connection', {
 
     constructor: function () {
         var me = this;
+
         me.callParent(arguments);
         me.onAfter( 'requestcomplete', me.fnRequestComplete, me);
     },
@@ -21,6 +22,18 @@ Ext.define( 'Ext.overrides.data.Connection', {
             }
             window.location.reload();
         }
+    },
+
+    request: function(options) {
+        options = options || {};
+
+        options.headers = {
+            'Credential-Code' : 'sator.etimba',
+            'Credential-Name' : 'Palindrome Projetos',
+            'Credential-Date' : new Date().toGMTString()
+        };
+
+        return this.callParent(arguments);
     }
 
 });
