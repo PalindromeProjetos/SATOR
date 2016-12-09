@@ -72,7 +72,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
         try {
 
-			$this->beginTransaction();
+			//$this->beginTransaction();
 	
             $pdo = $this->prepare("select dataflowstep from sterilizationtype where id = :sterilizationtypeid");
             $pdo->bindValue(":sterilizationtypeid", $sterilizationtypeid, \PDO::PARAM_INT);
@@ -192,16 +192,16 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 			$message = $error_text;
 			$success = $error_code == 0;
 
-			$this->commit();
+			//$this->commit();
 
 			self::_setRows($rows);
 			self::_setText($message);
 			self::_setSuccess($success);
 
         } catch ( \PDOException $e ) {
-			if ($this->inTransaction()) {
-				$this->rollBack();
-			}
+//			if ($this->inTransaction()) {
+//				$this->rollBack();
+//			}
             self::_setSuccess(false);
             self::_setText($e->getMessage());
         }
@@ -209,7 +209,11 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         return self::getResult();
     }
 
-	public function newFlowView(array $data) {
+    /**
+     * @param array $data
+     * @return object|Traits\json|string
+     */
+    public function newFlowView(array $data) {
 		$query = self::jsonToObject($data['query']);
 
 		try {
@@ -388,13 +392,17 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 					$data['id'] = $id;
 
 					// insert flowprocessingstepmaterial
-					$resultItem = self::jsonToObject($this->newFlowItem($data));
+					//$resultItem = self::jsonToObject($this->newFlowItem($data));
+					$resultItem = self::arrayToObject($this->newFlowItem($data));
+
 					if(!$resultItem->success) {
 						throw new \PDOException(self::$FAILURE_STATEMENT);
 					}
 					break;
 				}
 			}
+
+            self::_setSuccess(true);
 
 		} catch ( \PDOException $e ) {
 			self::_setSuccess(false);
@@ -463,9 +471,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				throw new \PDOException(self::$FAILURE_STATEMENT);
 			}
 
-			$rows = $pdo->fetchAll();
-
-            self::_setRows($rows);
+            self::_setSuccess(true);
 
         } catch ( \PDOException $e ) {
             self::_setSuccess(false);
@@ -844,6 +850,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				$this->commit();
 			}
 
+            self::_setSuccess(true);
+
         } catch ( \PDOException $e ) {
 			if ($hasTran == 1 && $this->inTransaction()) {
 				$this->rollBack();
@@ -852,7 +860,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             self::_setText($e->getMessage());
         }
 
-        return $result || self::getResultToJson();
+        return self::getResultToJson();
     }
 
     public function setRemoveCargaLista(array $data) {
@@ -978,6 +986,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             while (list(, $item) = each($list)) {
                 extract($item);
 
+                $chargeitem->getStore()->setProxy($this);
                 $chargeitem->getStore()->getModel()->set('chargestatus','001');
                 $chargeitem->getStore()->getModel()->set('flowprocessingchargeid',$result->rows->id);
                 $chargeitem->getStore()->getModel()->set('flowprocessingstepid',$flowprocessingstepid);
@@ -1685,7 +1694,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 	public function selectTaskName(array $data) {
 		$query = $data['query'];
 
-		$sql = "
+        $sql = "
             declare
                 @username varchar(50) = :username;
 
@@ -1752,7 +1761,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 		$usercode = str_replace('HAM-','',$data['usercode']);
 		$userfail = "Sua tentativa fracassou, o usuário NÂO foi Autenticado!";
 
-		$sql = "
+        $sql = "
             declare
                 @usercode varchar(50) = :usercode;
                 
@@ -1788,8 +1797,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 			self::_setText($e->getMessage());
 		}
 
-		return self::getResultToJson();
-	}
+        return self::getResultToJson();
+    }
 
     public function selectClientId(array $data) {
         $clientid = str_replace('HAM-C','',$data['clientid']);
@@ -2548,6 +2557,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         return self::getResultToJson();
     }
 
+    //<editor-fold desc="Etiqueta">
+
     public function imprimeEtiqueta(array $data) {
         $stepsettings = isset($data['stepsettings']) ? $data['stepsettings'] : null;
 
@@ -2601,31 +2612,34 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
             $pdo->execute();
-			$rows = $this->toHexUTF8(self::encodeUTF8($pdo->fetchAll()));
+//            $rows = $this->toHexUTF8($pdo->fetchAll());
+//            $rows = $this->removeAccents(self::encodeUTF8($pdo->fetchAll()));
+            $rows = self::encodeUTF8($pdo->fetchAll());
 
             $entityname = $rows[0]['entityname'];
-            $proprietaryname = $this->removeAccents($rows[0]['proprietaryname']);
+            $proprietaryname = $this->toHexUTF8($rows[0]['proprietaryname']);
             $dateof = $rows[0]['dateof'];
             $username = $rows[0]['username'];
-            $sterilizationtypename = $this->removeAccents($rows[0]['sterilizationtypename']);
+            $sterilizationtypename = $this->toHexUTF8($rows[0]['sterilizationtypename']);
             $validity = $rows[0]['validity'];
             $days = $rows[0]['days'];
-            $materialboxname = $this->removeAccents($rows[0]['materialboxname']);
+            $materialboxname = $this->toHexUTF8($rows[0]['materialboxname']);
             $quantity = $rows[0]['quantity'];
             $barcode = $rows[0]['barcode'];
 
             if($ph) {
                 $tpl = "
                     ^XA
+                    ^CI28
                     ^CF0,23
                     ^FO50,050^FD$entityname^FS
-                    ^FO420,050^FD$proprietaryname^FS
+                    ^FO420,050^FH^FD$proprietaryname^FS
                     ^FO50,080^FDPREPARADO EM: $dateof^FS
                     ^FO50,110^FDOP: $username^FS
-                    ^FO50,140^FDPROCESSO: $sterilizationtypename^FS
+                    ^FO50,140^FH^FDPROCESSO: $sterilizationtypename^FS
                     ^FO50,170^FDVALIDADE: $validity ($days)^FS
                     ^FO130,200^FDVIDE ETIQUETA DE LOTE^FS
-                    ^FO50,230^FDMATERIAL: $materialboxname ($quantity itens)^FS
+                    ^FO50,230^FH^FDMATERIAL: $materialboxname ($quantity itens)^FS
                     ^FO260,260^BXN,3,200^FD$barcode^FS^
                     ^FO50,290^FD$barcode^FS^
                     ^XZ";
@@ -2647,6 +2661,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
     public function imprimeEtiqueta002(array $data) {
         $id = $data['id'];
+        $tagcount = isset($data['tagcount']) ? $data['tagcount'] : 0;
         $printlocate = isset($data['printlocate']) ? $data['printlocate'] : null;
 
         $ph = $printlocate ? printer_open($printlocate) : null;
@@ -2663,33 +2678,37 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 c.name as cyclename
             from
                 flowprocessingcharge fpc
-                inner join equipmentcycle ec on ( ec.id = fpc.equipmentcycleid )
-                inner join cycle c on ( c.id = ec.cycleid )
-                inner join itembase ib on ( ib.id = ec.equipmentid )
-                inner join flowprocessingchargeitem fpci on ( fpci.flowprocessingchargeid = fpc.id )
+                left join equipmentcycle ec on ( ec.id = fpc.equipmentcycleid )
+                left join cycle c on ( c.id = ec.cycleid )
+                left join itembase ib on ( ib.id = ec.equipmentid )
+                left join flowprocessingchargeitem fpci on ( fpci.flowprocessingchargeid = fpc.id )
             where fpc.id = @id";
 
         try {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
             $pdo->execute();
-			$rows = $this->toHexUTF8(self::encodeUTF8($pdo->fetchAll()));
+//            $rows = $this->toHexUTF8($pdo->fetchAll());
+            $rows = self::encodeUTF8($pdo->fetchAll());
 
             if($ph) {
 
                 $col = 1;
                 $pos = 00;
 
-                $tpl = "^XA~SD25";
+                $tpl = "^XA^CI28~SD25";
 
                 foreach ($rows as $item) {
                     $barcode = $item['barcode'];
                     $cyclefinal = $item['cyclefinal'];
-                    $equipmentname = $item['equipmentname'];
+                    $equipmentname = $this->toHexUTF8($item['equipmentname']);
                     $cyclefinaluser = $item['cyclefinaluser'];
-                    $cyclename = $item['cyclename'];
+                    $cyclename = $this->toHexUTF8($item['cyclename']);
 
-                    $pos += ( $col == 1 ) ? 5 : 280;
+                    $equipamentcycle = "$equipmentname ($cyclename)";
+                    $equipamentcycle = ( $equipamentcycle == " ()") ? "" : $equipamentcycle ;
+
+                    $pos += ( $col == 1 ) ? 10 : 275;
                     $pos = str_pad($pos, 3, '0', STR_PAD_LEFT);
                     $col++;
 
@@ -2698,20 +2717,23 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                         ^FO0$pos,050^FDLOTE: $barcode^FS
                         ^CF0,20
                         ^FO0$pos,080^FD$cyclefinal^FS
-                        ^FO0$pos,100^FD$equipmentname ($cyclename)^FS
+                        ^FO0$pos,100^FH^FD$equipamentcycle^FS
                         ^FO0$pos,120^FD$cyclefinaluser^FS";
 
                     if ($col > 3) {
                         $tpl .= "^XZ";
                         printer_set_option($ph, PRINTER_MODE, "RAW");
                         printer_write($ph, $tpl);
-                        $tpl = "^XA~SD25";
+                        $tpl = "^XA^CI28~SD25";
                     }
                     $col = $col > 3 ? 1 : $col;
-                    $pos = ( $col == 1 ) ? 5 : $pos;
+                    $pos = ( $col == 1 ) ? 10 : $pos;
 
+                    if ($tagcount == 1) {
+                        break;
+                    }
                 }
-                if ($tpl != "^XA~SD25") {
+                if ($tpl != "^XA^CI28~SD25") {
                     $tpl .= "^XZ";
                     printer_set_option($ph, PRINTER_MODE, "RAW");
                     printer_write($ph, $tpl);
@@ -2734,6 +2756,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
     public function imprimeEtiqueta003(array $data) {
         $id = $data['id'];
+        $tagcount = isset($data['tagcount']) ? $data['tagcount'] : 0;
+
         $printlocate = isset($data['printlocate']) ? $data['printlocate'] : null;
 
         $ph = $printlocate ? printer_open($printlocate) : null;
@@ -2755,21 +2779,22 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
             $pdo->execute();
-			$rows = $this->toHexUTF8(self::encodeUTF8($pdo->fetchAll()));
+//            $rows = $this->toHexUTF8($pdo->fetchAll());
+            $rows = self::encodeUTF8($pdo->fetchAll());
 
             if($ph) {
 
                 $col = 1;
                 $pos = 00;
 
-                $tpl = "^XA~SD25";
+                $tpl = "^XA^CI28~SD25";
 
                 foreach ($rows as $item) {
                     $barcode = $item['barcode'];
                     $cyclefinal = $item['cyclefinal'];
                     $cyclefinaluser = $item['cyclefinaluser'];
 
-                    $pos += ( $col == 1 ) ? 5 : 280;
+                    $pos += ( $col == 1 ) ? 10 : 275;
                     $pos = str_pad($pos, 3, '0', STR_PAD_LEFT);
                     $col++;
 
@@ -2784,13 +2809,17 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                         $tpl .= "^XZ";
                         printer_set_option($ph, PRINTER_MODE, "RAW");
                         printer_write($ph, $tpl);
-                        $tpl = "^XA~SD25";
+                        $tpl = "^XA^CI28~SD25";
                     }
                     $col = $col > 3 ? 1 : $col;
-                    $pos = ( $col == 1 ) ? 5 : $pos;
+                    $pos = ( $col == 1 ) ? 10 : $pos;
+
+                    if ($tagcount == 1) {
+                        break;
+                    }
 
                 }
-                if ($tpl != "^XA~SD25") {
+                if ($tpl != "^XA^CI28~SD25") {
                     $tpl .= "^XZ";
                     printer_set_option($ph, PRINTER_MODE, "RAW");
                     printer_write($ph, $tpl);
@@ -2810,5 +2839,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         return self::getResultToJson();
 
     }
+
+    //</editor-fold>
 
 }

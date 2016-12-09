@@ -167,8 +167,13 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
                 fp.flowstatus,
                 fp.dateof,
                 dbo.getEnum('flowstatus',fp.flowstatus) as flowstatusdescription,
-                b.stepsettings,
-                b.flowprocessingstepid
+                a.stepsettings,
+                coalesce(b.chargeid,a.flowprocessingstepid) as flowprocessingstepid,
+                --a.flowprocessingstepid as flowprocessingstepid,
+                --b.chargeid,
+                b.barcode as charge,
+				b.chargeflag,
+				dbo.getEnum('chargeflag',b.chargeflag) as chargeflagdescription
             from
                 flowprocessingstepmaterial fpm
                 inner join flowprocessingstep fps on ( fps.id = fpm.flowprocessingstepid )
@@ -181,6 +186,19 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
                         flowprocessingstep a
                     where a.flowprocessingid = fp.id
                       and a.areasid = @areasid
+                ) a
+				outer apply (
+                    select top 1
+                        c.id as chargeid,
+                        c.barcode,
+						c.chargeflag
+                    from
+                        flowprocessingstep a
+						inner join flowprocessingchargeitem b on ( b.flowprocessingstepid = a.id )
+						inner join flowprocessingcharge c on ( c.id = b.flowprocessingchargeid and c.chargeflag in ('001','002','003','005','006') )
+                    where a.flowprocessingid = fp.id
+                      and a.areasid in (@areasid, Null)
+                    order by c.chargedate desc
                 ) b
             where fpm.materialid = @materialid
             order by fp.dateof desc";

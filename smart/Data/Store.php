@@ -260,7 +260,7 @@ class Store {
         $notate = $this->model->getNotate();
         $submit = $this->model->getSubmit()->getToArray();
 
-        $fields = self::arrayToOject($notate->property);
+        $fields = self::arrayToObject($notate->property);
 
         foreach ($submit['rows'] as $field => $value) {
             $column = isset($fields->$field) ? $fields->$field : false;

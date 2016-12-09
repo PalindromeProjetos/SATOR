@@ -228,7 +228,7 @@ trait TresultSet {
      * @param array $param
      * @return object Um objeto stdClass.
      */
-    public static function arrayToOject($param) {
+    public static function arrayToObject($param) {
         return json_decode(json_encode($param),false);
     }
 

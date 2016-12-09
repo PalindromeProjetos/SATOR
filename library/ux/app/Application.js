@@ -97,15 +97,15 @@ Ext.define( 'Smart.ux.app.Application', {
         Ext.getBody().getById('preloader').hide();
         Ext.getBody().getById('buildapp').update('v'+Ext.manifest.version);
 
-        window.onbeforeunload = function () {
-            Ext.Ajax.request({
-                url: me.url,
-                params: {
-                    action: 'select',
-                    method: 'selectLogout'
-                }
-            });
-        };
+        //window.onbeforeunload = function () {
+        //    Ext.Ajax.request({
+        //        url: me.url,
+        //        params: {
+        //            action: 'select',
+        //            method: 'selectLogout'
+        //        }
+        //    });
+        //};
     },
 
     onAppUpdate: function () {
