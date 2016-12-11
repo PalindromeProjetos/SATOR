@@ -464,7 +464,7 @@ class flowprocessingstepaction extends \Smart\Data\Cache {
 				fps.elementname,
 				ta.targetplace
 
-            order by 2, 3 desc";
+            order by 4, 2, 3 desc";
 
         try {
             $pdo = $proxy->prepare($sql);

@@ -911,6 +911,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 			$this->beginTransaction();
 
 			$charge->getStore()->setProxy($this);
+            $charge->getStore()->getModel()->set('id','');
             $charge->getStore()->getModel()->set('chargeflag','001');
             $charge->getStore()->getModel()->set('barcode',$barcode);
             $charge->getStore()->getModel()->set('duration',$duration);
@@ -928,12 +929,13 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				extract($item);
 
 				$chargeitem->getStore()->setProxy($this);
+                $chargeitem->getStore()->getModel()->set('id','');
 				$chargeitem->getStore()->getModel()->set('chargestatus','001');
 				$chargeitem->getStore()->getModel()->set('flowprocessingchargeid',$result->rows->id);
 				$chargeitem->getStore()->getModel()->set('flowprocessingstepid',$flowprocessingstepid);
-				$result = self::jsonToObject($chargeitem->getStore()->insert(false));
+                $resultitem = self::jsonToObject($chargeitem->getStore()->insert(false));
 
-				if(!$result->success) {
+				if(!$resultitem->success) {
 					throw new \PDOException(self::$FAILURE_STATEMENT);
 				}
 			}
@@ -974,6 +976,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 			$this->beginTransaction();
 
 			$charge->getStore()->setProxy($this);
+            $charge->getStore()->getModel()->set('id','');
             $charge->getStore()->getModel()->set('chargeflag','005');
             $charge->getStore()->getModel()->set('barcode',$barcode);
             $charge->getStore()->getModel()->set('chargeuser',$username);
@@ -987,12 +990,13 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 extract($item);
 
                 $chargeitem->getStore()->setProxy($this);
+                $chargeitem->getStore()->getModel()->set('id','');
                 $chargeitem->getStore()->getModel()->set('chargestatus','001');
                 $chargeitem->getStore()->getModel()->set('flowprocessingchargeid',$result->rows->id);
                 $chargeitem->getStore()->getModel()->set('flowprocessingstepid',$flowprocessingstepid);
-				$result = self::jsonToObject($chargeitem->getStore()->insert(false));
+                $resultitem = self::jsonToObject($chargeitem->getStore()->insert(false));
 
-				if(!$result->success) {
+				if(!$resultitem->success) {
 					throw new \PDOException(self::$FAILURE_STATEMENT);
 				}
             }
