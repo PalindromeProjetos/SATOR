@@ -25,10 +25,16 @@ class Event {
     private $proxy = null;
 
     /**
+     * Instância da Sessão
+     */
+    public $stash = null;
+
+    /**
      * @param \Smart\Data\Proxy $proxy
      */
     public function __construct( \Smart\Data\Proxy &$proxy ) {
         $this->proxy = $proxy;
+        $this->stash = new Session();
     }
 
     public function getProxy () {

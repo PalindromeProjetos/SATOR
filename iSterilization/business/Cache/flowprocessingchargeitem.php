@@ -6,4 +6,56 @@ use iSterilization\Model\flowprocessingchargeitem as Model;
 
 class flowprocessingchargeitem extends \Smart\Data\Cache {
 
+    public function selectItem(array $data) {
+        $query = $data['query'];
+
+        $proxy = $this->getStore()->getProxy();
+
+        $sql = "
+            declare
+                @flowprocessingchargeid int = :id;
+                            
+            select
+                fpci.*,
+                fp.barcode,
+                coalesce(ta.name,tb.name) as materialname
+            from
+                flowprocessingchargeitem fpci
+                inner join flowprocessingstep fps on ( fps.id = fpci.flowprocessingstepid )
+                inner join flowprocessing fp on ( fp.id = fps.flowprocessingid )
+                outer apply (
+                    select
+                        mb.name
+                    from
+                        materialbox mb
+                    where mb.id = fp.materialboxid
+                ) ta
+                outer apply (
+                    select top 1
+                        ib.name
+                    from
+                        flowprocessingstepmaterial fpsm
+                        inner join itembase ib on ( ib.id = fpsm.materialid )
+                    where fpsm.flowprocessingstepid = fps.id
+                ) tb
+            where fpci.flowprocessingchargeid = @flowprocessingchargeid;";
+
+        try {
+            $pdo = $proxy->prepare($sql);
+
+            $pdo->bindValue(":id", $query, \PDO::PARAM_INT);
+
+            $pdo->execute();
+            $rows = $pdo->fetchAll();
+
+            self::_setRows($rows);
+
+        } catch ( \PDOException $e ) {
+            self::_setSuccess(false);
+            self::_setText($e->getMessage());
+        }
+
+        return self::getResultToJson();
+    }
+
 }

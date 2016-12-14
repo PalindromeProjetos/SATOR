@@ -160,6 +160,12 @@ Ext.define( 'Smart.ux.login.LoginController', {
 
             document.getElementsByTagName('head')[0].appendChild(link);
 
+            var expireto = new Date(rows.lastactivity);
+            expireto.setDate(expireto.getDate() + 364);
+
+            Ext.util.Cookies.set('Credential-Code',rows.username,expireto);
+            Ext.util.Cookies.set('Credential-Data',Ext.manifest.name,expireto);
+
             if(result.isTest == true) {
                 Ext.getBody().getById('marquee').show();
             }

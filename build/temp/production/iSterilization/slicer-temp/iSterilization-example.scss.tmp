@@ -1,5 +1,5 @@
 $app-name:  dynamic( 'iSterilization' );
-$image-search-path: 'C:/Palindrome/SATORCME/build/production/iSterilization/classic/resources';
+$image-search-path: 'C:/Palindrome/SATOR/build/production/iSterilization/classic/resources';
 $theme-name:  dynamic( 'theme-triton' );
 $include-ext-abstractcomponent: dynamic(true);;
 $include-ext-abstractcontainer: dynamic(true);;
@@ -1299,10 +1299,12 @@ $include-isterilization-view-flowprocessing-protocol-call_sator_consultar_materi
 $include-isterilization-view-flowprocessing-protocol-call_sator_encerrar_movimento: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_informar_insumos: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_lancamento_manual: dynamic(true);;
+$include-isterilization-view-flowprocessing-protocol-call_sator_lote_ciclo: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_movimento_in: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_movimento_of: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_movimento_to: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_prepara_lote_avulso: dynamic(true);;
+$include-isterilization-view-flowprocessing-protocol-call_sator_prepara_lote_ciclo: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_relatar_cycle_status: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_relatar_exception: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_reverte_fase: dynamic(true);;
@@ -1310,7 +1312,6 @@ $include-isterilization-view-flowprocessing-protocol-call_sator_unconformities: 
 $include-isterilization-view-flowprocessing-protocol-call_sator_valida_carga: dynamic(true);;
 $include-isterilization-view-login-login: dynamic(true);;
 $include-isterilization-view-login-logincontroller: dynamic(true);;
-$include-isterilization-view-main-list: dynamic(true);;
 $include-isterilization-view-main-main: dynamic(true);;
 $include-isterilization-view-main-maincontroller: dynamic(true);;
 $include-isterilization-view-main-maindock: dynamic(true);;

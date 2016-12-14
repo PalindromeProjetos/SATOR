@@ -15,6 +15,13 @@ class Report extends FPDF {
     protected $entity = [];
     protected $margin = 12;
 
+    /**
+     * Instância da Sessão
+     *
+     * @var null|Session
+     */
+    public $stash = null;
+
     protected $translate = array(
         'monthly'=>array(
             'jan'=>'Janeiro',
@@ -59,6 +66,7 @@ class Report extends FPDF {
     }
 
     public function preConstruct() {
+        $this->stash = new Session();
         $pwd = Start::getPassWord();
         $usr = Start::getUserName();
         $dns = Start::getConnnect();
@@ -275,9 +283,7 @@ class Report extends FPDF {
     }
 
     public function loadFooter($internalW = 1000, $bottonLine = true) {
-        $session = Session::getInstance();
-
-        $passport   = $session->username;
+        $passport   = $this->stash->username;
         $date       = date("d/m/Y H:i");
         $pageNo     = $this->PageNo();
 

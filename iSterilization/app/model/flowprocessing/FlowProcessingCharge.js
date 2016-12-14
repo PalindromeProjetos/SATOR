@@ -17,6 +17,15 @@ Ext.define( 'iSterilization.model.flowprocessing.FlowProcessingCharge', {
             name: 'equipmentcycleid',
             type: 'int'
         }, {
+            name: 'cyclename',
+            type: 'auto'
+        }, {
+            name: 'equipmentid',
+            type: 'int'
+        }, {
+            name: 'equipmentname',
+            type: 'auto'
+        }, {
             name: 'barcode',
             type: 'auto'
         }, {

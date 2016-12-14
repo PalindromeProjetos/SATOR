@@ -14,11 +14,11 @@ class flowprocessingcharge extends \Smart\Data\Model {
      */
     private $id;
 
-    /**
-     * @Policy {"nullable":true}
-     * @Column {"description":"", "type":"integer", "policy":true, "logallow":true, "default":""}
-     */
-    private $equipmentid;
+//    /**
+//     * @Policy {"nullable":true}
+//     * @Column {"description":"", "type":"integer", "policy":true, "logallow":true, "default":""}
+//     */
+//    private $equipmentid;
 
     /**
      * @Policy {"nullable":true}

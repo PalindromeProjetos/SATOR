@@ -83,104 +83,104 @@ class Store {
     public function select() {
 
         try {
-            $have = !$this->stash->have();
+            $have = $this->stash->have();
 
-            if($have == true) {
+            if($have == false) {
                 throw new \PDOException("A sua sessão expirou!");
             }
 
-            $statement = $this->proxy->sqlSelect($this->model);
+            $pdo = $this->proxy->sqlSelect($this->model);
 
-            if($this->tryNull($statement)) {
-                self::_setText(self::INVALID_STATEMENT);
-                return self::getResultToJson();
+            if($this->tryNull($pdo)) {
+                throw new \PDOException(self::INVALID_STATEMENT);
             }
 
-            $statement->execute();
+            $callback = $pdo->execute();
 
-            $rows = $statement->fetchAll();
+            if(!$callback) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
+
+            $rows = $pdo->fetchAll();
 
             self::_setRows($rows);
 
         } catch ( \PDOException $e ) {
-            self::_setRestart($have);
+            self::_setRestart(true);
             self::_setSuccess(false);
             self::_setText($e->getMessage());
         }
 
         return self::getResultToJson();
     }
-    public function update($hasTran = true) {
+    public function update() {
 
         try {
-            $notHave = !$this->stash->have();
+            $have = $this->stash->have();
 
-            if($notHave == true) {
+            if($have == false) {
                 throw new \PDOException("A sua sessão expirou!");
             }
 
             $this->policy();
             self::_setCrud('update');
 
-            if($hasTran == true) $this->proxy->beginTransaction();
-
             $this->fireEvent('PreUpdate');
 
             $this->model->getSubmit()->setRawValue('action',self::_getCrud());
 
-            $statement = $this->proxy->sqlUpdate($this->model);
+            $pdo = $this->proxy->sqlUpdate($this->model);
 
-            if($this->tryNull($statement)) {
-                self::_setText(self::INVALID_STATEMENT);
-                return self::getResultToJson();
+            if($this->tryNull($pdo)) {
+                throw new \PDOException(self::INVALID_STATEMENT);
             }
 
-            $statement->execute();
+            $callback = $pdo->execute();
+
+            if(!$callback) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
 
             new Logbook($this->model);
             $this->fireEvent('PosUpdate');
 
-            if($hasTran == true) $this->proxy->commit();
-
-            self::_setRecords($statement->rowCount());
+            self::_setRecords($pdo->rowCount());
 
         } catch ( \PDOException $e ) {
-            if ($hasTran == true && $this->proxy->inTransaction()) {
-                $this->proxy->rollBack();
-            }
-            self::_setRestart($notHave);
+            self::_setRestart(true);
             self::_setSuccess(false);
             self::_setText($e->getMessage());
         }
 
         return self::getResultToJson();
     }
-    public function insert($hasTran = true) {
+    public function insert() {
 
         try {
-            $have = !$this->stash->have();
+            $have = $this->stash->have();
 
-            if($have == true) {
+            if($have == false) {
                 throw new \PDOException("A sua sessão expirou!");
             }
 
             $this->policy();
             self::_setCrud('insert');
 
-            if ($hasTran == true) $this->proxy->beginTransaction();
-
             $this->fireEvent('PreInsert');
 
             $this->model->getSubmit()->setRawValue('action',self::_getCrud());
 
-            $statement = $this->proxy->sqlInsert($this->model);
+            $pdo = $this->proxy->sqlInsert($this->model);
 
-            if($this->tryNull($statement)) {
-                self::_setText(self::INVALID_STATEMENT);
-                return self::getResultToJson();
+            if($this->tryNull($pdo)) {
+                throw new \PDOException(self::INVALID_STATEMENT);
             }
 
-            $statement->execute();
+            $callback = $pdo->execute();
+
+            if(!$callback) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
 
             $id = $this->proxy->lastInsertId();
 
@@ -188,66 +188,58 @@ class Store {
                 $id = $this->model->getId();
             }
 
-            $this->model->setId($id);
-            $this->model->getSubmit()->setRowValue('id',$id);
-            $this->model->getSubmit()->setRawValue('id',$id);
+            $this->model->set('id',$id);
+//            $this->model->setId($id);
+//            $this->model->getSubmit()->setRowValue('id',$id);
+//            $this->model->getSubmit()->setRawValue('id',$id);
 
             new Logbook($this->model);
             $this->fireEvent('PosInsert');
 
-            if ($hasTran == true) $this->proxy->commit();
-
             self::_setRows($this->getRecord());
 
         } catch ( \PDOException $e ) {
-            if ($hasTran == true && $this->proxy->inTransaction()) {
-                $this->proxy->rollBack();
-            }
-            self::_setRestart($have);
+            self::_setRestart(true);
             self::_setSuccess(false);
             self::_setText($e->getMessage());
         }
 
         return self::getResultToJson();
     }
-    public function delete($hasTran = true) {
+    public function delete() {
 
         try {
-            $have = !$this->stash->have();
+            $have = $this->stash->have();
 
-            if($have == true) {
+            if($have == false) {
                 throw new \PDOException("A sua sessão expirou!");
             }
 
             self::_setCrud('delete');
 
-            if($hasTran == true) $this->proxy->beginTransaction();
-
             $this->fireEvent('PreDelete');
 
             $this->model->getSubmit()->setRawValue('action',self::_getCrud());
 
-            $statement = $this->proxy->sqlDelete($this->model);
+            $pdo = $this->proxy->sqlDelete($this->model);
 
-            if($this->tryNull($statement)) {
-                self::_setText(self::INVALID_STATEMENT);
-                return self::getResultToJson();
+            if($this->tryNull($pdo)) {
+                throw new \PDOException(self::INVALID_STATEMENT);
             }
 
-            $statement->execute();
+            $callback = $pdo->execute();
+
+            if(!$callback) {
+                throw new \PDOException(self::$FAILURE_STATEMENT);
+            }
 
             new Logbook($this->model);
             $this->fireEvent('PosDelete');
 
-            if($hasTran == true) $this->proxy->commit();
-
-            self::_setRecords($statement->rowCount());
+            self::_setRecords($pdo->rowCount());
 
         } catch ( \PDOException $e ) {
-            if ($hasTran == true && $this->proxy->inTransaction()) {
-                $this->proxy->rollBack();
-            }
-            self::_setRestart($have);
+            self::_setRestart(true);
             self::_setSuccess(false);
             self::_setText($e->getMessage());
         }
@@ -330,6 +322,7 @@ class Store {
 
         $event->$method($model);
         $this->model = $model;
+
         unset($event);
         unset($model);
     }

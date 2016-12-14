@@ -20,7 +20,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingDataView', {
             '<div style="margin-bottom: 10px;" class="step step-{flowstepaction}-{steptype}">',
                 '<div class="step-left">',
                     '<div class="steptype-{steptype}"></div>',
-                    '<div class="steptype-clear step-hide fa fa-times-circle" id="clear-{id}"></div>',
+                    '<div class="steptype-tools step-hide" id="tools-{id}">',
+                        '<div class="steptype-infor fa fa-info-circle" id="infor-{id}"></div>',
+                        '<div class="steptype-clear fa fa-times-circle" id="clear-{id}"></div>',
+                    '</div>',
                     '<div class="steptype-clock step-hide" id="clock-{id}"></div>',
                 '</div>',
                 '<div class="step-right" style="font-weight: 700;">',
@@ -51,10 +54,14 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingDataView', {
         var me = this;
 
         me.el.on('click', function (event, target) {
-            me.fireEvent('removerecord', me, me.store, event, target);
-        }, null, {
-            delegate: 'div.steptype-clear'
-        });
+            var record = me.getSelectionModel().getSelection()[0];
+            me.fireEvent('removecharge', me, record, event, target);
+        }, null, { delegate: 'div.steptype-clear' });
+
+        me.el.on('click', function (event, target) {
+            var record = me.getSelectionModel().getSelection()[0];
+            me.fireEvent('selectcharge', me, record, event, target);
+        }, null, { delegate: 'div.steptype-infor' });
     }
 
 });

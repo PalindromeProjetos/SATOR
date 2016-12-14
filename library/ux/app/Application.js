@@ -3,6 +3,7 @@ Ext.define( 'Smart.ux.app.Application', {
     extend: 'Ext.app.Application',
 
     requires: [
+        'Ext.util.Cookies',
         'Smart.util.Message',
         'Ext.app.Application'
     ],
@@ -31,9 +32,6 @@ Ext.define( 'Smart.ux.app.Application', {
             document.cookie = 'XDEBUG_SESSION=PHPSTORM;path=/;';
         //</debug>
 
-        // Ext.Ajax.defaultHeaders = { 'Foo': 'bar' };
-        Ext.Ajax.defaultHeaders = { 'Foo': 'bar' };
-
         me.redirectTo(Ext.manifest.name.toLowerCase());
 
         Ext.Ajax.request({
@@ -48,7 +46,7 @@ Ext.define( 'Smart.ux.app.Application', {
                 var workstation = localStorage.getItem('workstation'),
                     result = Ext.decode(response.responseText),
                     rows = result.rows[0];
-
+                
                 Smart.workstation = workstation ? Ext.decode(workstation) : null;
 
                 if((result.success)&&(result.modulebuild != Ext.manifest.version)) {
@@ -90,22 +88,20 @@ Ext.define( 'Smart.ux.app.Application', {
             }
         });
 
-        // Ext.Ajax.defaultHeaders = { 'Credential-Name': 'samuel.oliveira' };
-
         Smart.workstation = workstation ? Ext.decode(workstation) : null;
 
         Ext.getBody().getById('preloader').hide();
         Ext.getBody().getById('buildapp').update('v'+Ext.manifest.version);
 
-        //window.onbeforeunload = function () {
-        //    Ext.Ajax.request({
-        //        url: me.url,
-        //        params: {
-        //            action: 'select',
-        //            method: 'selectLogout'
-        //        }
-        //    });
-        //};
+        // window.onbeforeunload = function () {
+        //     Ext.Ajax.request({
+        //         url: me.url,
+        //         params: {
+        //             action: 'select',
+        //             method: 'selectLogout'
+        //         }
+        //     });
+        // };
     },
 
     onAppUpdate: function () {

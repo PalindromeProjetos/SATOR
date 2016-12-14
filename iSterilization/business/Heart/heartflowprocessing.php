@@ -72,8 +72,6 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
         try {
 
-			//$this->beginTransaction();
-	
             $pdo = $this->prepare("select dataflowstep from sterilizationtype where id = :sterilizationtypeid");
             $pdo->bindValue(":sterilizationtypeid", $sterilizationtypeid, \PDO::PARAM_INT);
 
@@ -130,11 +128,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
                 BEGIN TRY
 
-                    --BEGIN TRAN setFlowStep;
-
                     {$insert}
-
-                    --COMMIT TRAN setFlowStep;
 
                     set @error_code = 0;
                     set @error_text = 'Atualizacoes realizadas com sucesso!';
@@ -142,7 +136,6 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 END TRY
 
                 BEGIN CATCH
-                    --ROLLBACK TRAN setFlowStep;
                     set @error_code = error_number();
                     set @error_text = ' # ' +error_message() + ', ' + cast(error_line() as varchar);
                 END CATCH
@@ -192,16 +185,11 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 			$message = $error_text;
 			$success = $error_code == 0;
 
-			//$this->commit();
-
 			self::_setRows($rows);
 			self::_setText($message);
 			self::_setSuccess($success);
 
         } catch ( \PDOException $e ) {
-//			if ($this->inTransaction()) {
-//				$this->rollBack();
-//			}
             self::_setSuccess(false);
             self::_setText($e->getMessage());
         }
@@ -272,7 +260,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 			$model = $coach->getStore()->getModel();
 			$this->preInsert($model);
 
-			$result = self::jsonToObject($coach->getStore()->insert(false));
+			$result = self::jsonToObject($coach->getStore()->insert());
 
 			if(!$result->success) {
 				throw new \PDOException(self::$FAILURE_STATEMENT);
@@ -360,7 +348,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 					$action->getStore()->getModel()->set('flowprocessingstepid',$id);
 					$action->getStore()->getModel()->set('flowstepaction','001');
 					$action->getStore()->getModel()->set('isactive',1);
-					$result = self::jsonToObject($action->getStore()->insert(false));
+					$result = self::jsonToObject($action->getStore()->insert());
 
 					if(!$result->success) {
 						throw new \PDOException(self::$FAILURE_STATEMENT);
@@ -370,7 +358,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 					$flow->getStore()->setProxy($this);
 					$flow->getStore()->getModel()->set('id',$flowprocessingid);
 					$flow->getStore()->getModel()->set('flowstatus','I');
-					$result = self::jsonToObject($flow->getStore()->update(false));
+					$result = self::jsonToObject($flow->getStore()->update());
 
 					if(!$result->success) {
 						throw new \PDOException(self::$FAILURE_STATEMENT);
@@ -382,7 +370,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 					$step->getStore()->getModel()->set('id',$id);
 					$step->getStore()->getModel()->set('datestart',$date);
 					$step->getStore()->getModel()->set('flowstepstatus','001');
-					$result = self::jsonToObject($step->getStore()->update(false));
+					$result = self::jsonToObject($step->getStore()->update());
 
 					if(!$result->success) {
 						throw new \PDOException(self::$FAILURE_STATEMENT);
@@ -392,17 +380,13 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 					$data['id'] = $id;
 
 					// insert flowprocessingstepmaterial
-					//$resultItem = self::jsonToObject($this->newFlowItem($data));
-					$resultItem = self::arrayToObject($this->newFlowItem($data));
-
+					$resultItem = self::jsonToObject($this->newFlowItem($data));
 					if(!$resultItem->success) {
 						throw new \PDOException(self::$FAILURE_STATEMENT);
 					}
 					break;
 				}
 			}
-
-            self::_setSuccess(true);
 
 		} catch ( \PDOException $e ) {
 			self::_setSuccess(false);
@@ -471,7 +455,9 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				throw new \PDOException(self::$FAILURE_STATEMENT);
 			}
 
-            self::_setSuccess(true);
+			$rows = $pdo->fetchAll();
+
+            self::_setRows($rows);
 
         } catch ( \PDOException $e ) {
             self::_setSuccess(false);
@@ -496,7 +482,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 			$step->getStore()->getModel()->set('username',$username);
 			$step->getStore()->getModel()->set('datestart',$date);
 
-			$result = self::jsonToObject($step->getStore()->update(false));
+			$result = self::jsonToObject($step->getStore()->update());
 
 			if(!$result->success) {
 				throw new \PDOException(self::$FAILURE_STATEMENT);
@@ -509,7 +495,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 			$message->getStore()->getModel()->set('readershow','info');
 			$message->getStore()->getModel()->set('readertext','SATOR_INICIAR_LEITURA');
 
-			$result = self::jsonToObject($message->getStore()->insert(false));
+			$result = self::jsonToObject($message->getStore()->insert());
 
 			if(!$result->success) {
 				throw new \PDOException(self::$FAILURE_STATEMENT);
@@ -773,7 +759,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 			$action->getStore()->setProxy($this);
             $action->getStore()->getModel()->set('id', $flowprocessingstepactionid);
             $action->getStore()->getModel()->set('isactive', 0);
-			$result = self::jsonToObject($action->getStore()->update(false));
+			$result = self::jsonToObject($action->getStore()->update());
 
 			if(!$result->success) {
 				throw new \PDOException(self::$FAILURE_STATEMENT);
@@ -788,7 +774,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                     $action->getStore()->getModel()->set('flowprocessingstepid',$newid);
                     $action->getStore()->getModel()->set('flowstepaction','001');
                     $action->getStore()->getModel()->set('isactive',1);
-					$result = self::jsonToObject($action->getStore()->insert(false));
+					$result = self::jsonToObject($action->getStore()->insert());
 
 					if(!$result->success) {
 						throw new \PDOException(self::$FAILURE_STATEMENT);
@@ -800,7 +786,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 					$action->getStore()->getModel()->set('id',$oldid);
                     $action->getStore()->getModel()->set('flowstepaction','001');
                     $action->getStore()->getModel()->set('isactive',1);
-					$result = self::jsonToObject($action->getStore()->update(false));
+					$result = self::jsonToObject($action->getStore()->update());
 
 					if(!$result->success) {
 						throw new \PDOException(self::$FAILURE_STATEMENT);
@@ -813,7 +799,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 $step->getStore()->getModel()->set('id',$newid);
                 $step->getStore()->getModel()->set('datestart',$date);
                 $step->getStore()->getModel()->set('flowstepstatus','001');				
-				$result = self::jsonToObject($step->getStore()->update(false));
+				$result = self::jsonToObject($step->getStore()->update());
 				
 				if(!$result->success) {
 					throw new \PDOException(self::$FAILURE_STATEMENT);
@@ -919,7 +905,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $charge->getStore()->getModel()->set('timetoopen',$timetoopen);
             $charge->getStore()->getModel()->set('temperature',$temperature);
             $charge->getStore()->getModel()->set('equipmentcycleid',$equipmentcycleid);
-			$result = self::jsonToObject($charge->getStore()->insert(false));
+			$result = self::jsonToObject($charge->getStore()->insert());
 
 			if(!$result->success) {
 				throw new \PDOException(self::$FAILURE_STATEMENT);
@@ -933,7 +919,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				$chargeitem->getStore()->getModel()->set('chargestatus','001');
 				$chargeitem->getStore()->getModel()->set('flowprocessingchargeid',$result->rows->id);
 				$chargeitem->getStore()->getModel()->set('flowprocessingstepid',$flowprocessingstepid);
-                $resultitem = self::jsonToObject($chargeitem->getStore()->insert(false));
+                $resultitem = self::jsonToObject($chargeitem->getStore()->insert());
 
 				if(!$resultitem->success) {
 					throw new \PDOException(self::$FAILURE_STATEMENT);
@@ -980,7 +966,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             $charge->getStore()->getModel()->set('chargeflag','005');
             $charge->getStore()->getModel()->set('barcode',$barcode);
             $charge->getStore()->getModel()->set('chargeuser',$username);
-			$result = self::jsonToObject($charge->getStore()->insert(false));
+			$result = self::jsonToObject($charge->getStore()->insert());
 
 			if(!$result->success) {
 				throw new \PDOException(self::$FAILURE_STATEMENT);
@@ -994,7 +980,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 $chargeitem->getStore()->getModel()->set('chargestatus','001');
                 $chargeitem->getStore()->getModel()->set('flowprocessingchargeid',$result->rows->id);
                 $chargeitem->getStore()->getModel()->set('flowprocessingstepid',$flowprocessingstepid);
-                $resultitem = self::jsonToObject($chargeitem->getStore()->insert(false));
+                $resultitem = self::jsonToObject($chargeitem->getStore()->insert());
 
 				if(!$resultitem->success) {
 					throw new \PDOException(self::$FAILURE_STATEMENT);
@@ -1034,7 +1020,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				$action->getStore()->getModel()->set('id',$item->flowprocessingstepactionid);
 				$action->getStore()->getModel()->set('toreversedby',$username);
 				$action->getStore()->getModel()->set('flowstepaction','004');
-				$result = self::jsonToObject($action->getStore()->update(false));
+				$result = self::jsonToObject($action->getStore()->update());
 
 				if(!$result->success) {
 					throw new \PDOException(self::$FAILURE_STATEMENT);
@@ -1300,9 +1286,9 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 delete from flowprocessingstepmaterial where flowprocessingstepid = @flowprocessingstepid and materialid = @materialid;
             end
             
-            SET NOCOUNT ON
+            --SET NOCOUNT ON
             
-            select @hasitem as err_code, @hastext as err_text;";
+            --select @hasitem as err_code, @hastext as err_text;";
 
         try {
 			$this->beginTransaction();
@@ -1316,11 +1302,13 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				throw new \PDOException(self::$FAILURE_STATEMENT);
 			}
 
-			$rows = $pdo->fetchAll();
+			//$rows = $pdo->fetchAll();
 
 			$this->commit();
 
-			self::_setRows($rows);
+			self::_setSuccess(true);
+
+			//self::_setRows($rows);
 
         } catch ( \PDOException $e ) {
 			if ($this->inTransaction()) {
@@ -1393,9 +1381,9 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                   );
             end
             
-            SET NOCOUNT ON
+            --SET NOCOUNT ON
             
-            select @hasitem as err_code, @hastext as err_text;";
+            --select @hasitem as err_code, @hastext as err_text;";
 
         try {
 			$this->beginTransaction();
@@ -1408,11 +1396,13 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				throw new \PDOException(self::$FAILURE_STATEMENT);
 			}
 
-			$rows = $pdo->fetchAll();
+//			$rows = $pdo->fetchAll();
 
 			$this->commit();
 
-			self::_setRows($rows);
+			self::_setSuccess(true);
+
+//			self::_setRows($rows);
 
         } catch ( \PDOException $e ) {
 			if ($this->inTransaction()) {
@@ -1439,36 +1429,45 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             
             select distinct
                 ib.id,
-                ib.name as equipmentname
+                ib.name as equipmentname,
+				oncharge = (
+                    select
+                        count(b.id)
+                    from
+                        flowprocessingcharge a
+						inner join equipmentcycle c on ( c.id = a.equipmentcycleid )
+						inner join itembase b on ( b.id = c.equipmentid and b.id = ib.id )
+                    where a.chargeflag in ('001','005')
+				)
             from
                 equipment e
                 inner join itembase ib on ( ib.id = e.id )
                 inner join equipmentcycle ec on ( ec.equipmentid = ib.id )
                 inner join cmesubareas csa on ( csa.cmeareasid = e.cmeareasid )
-                inner join cmeareas ca on ( ca.id = csa.cmeareasid )
             where csa.id = @areasid
-              and ib.barcode = @barcode
-              --and ec.id not in (
-              --      select
-              --          fpc.equipmentcycleid
-              --      from
-              --          flowprocessingcharge fpc
-              --      where fpc.equipmentcycleid = ec.id
-              --        and fpc.chargeflag = '001'
-              -- )";
+              and ib.barcode = @barcode";
 
         try {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":areasid", $areasid, \PDO::PARAM_INT);
             $pdo->bindValue(":barcode", $barcode, \PDO::PARAM_STR);
-            $pdo->execute();
-            $rows = $pdo->fetchAll();
+			$callback = $pdo->execute();
 
-            self::_setSuccess(count($rows) != 0);
+			if(!$callback) {
+				throw new \PDOException(self::$FAILURE_STATEMENT);
+			}
 
-            if(count($rows) != 0) {
-                self::_setRows($rows[0]);
-            }
+			$rows = $pdo->fetchAll();
+
+			if(count($rows) == 0) {
+				throw new \PDOException('Não foi possível localizar o equipamento!');
+			}
+
+			if($rows[0]['oncharge'] != 0) {
+				throw new \PDOException('O equipamento já está em Preparo de Carga, favor aguardar o início do Ciclo!');
+			}
+
+			self::_setRows($rows[0]);
 
         } catch ( \PDOException $e ) {
             self::_setSuccess(false);
@@ -1524,14 +1523,12 @@ class heartflowprocessing extends \Smart\Data\Proxy {
     public function selectCycleItem(array $data) {
         $areasid = $data['areasid'];
         $barcode = $data['barcode'];
-        $equipmentid = $data['equipmentid'];
         $equipmentcycleid = $data['equipmentcycleid'];
 
         $sql = "
             declare
                 @barcode_p varchar(20),
                 @areasid int = :areasid,
-                @equipmentid int = :equipmentid,
                 @barcode varchar(20) = :barcode,
                 @equipmentcycleid int = :equipmentcycleid;
 
@@ -1552,82 +1549,73 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 set @barcode_p = @barcode;
             end
 
-            select distinct
-                fpci.id,
+            select
                 fpsa.flowprocessingstepid,
-                fpci.flowprocessingchargeid,
-                t.barcode,
-                @equipmentid as equipmentid,
-                t.materialname
-            from
-                flowprocessingstep fps
-                inner join flowprocessingstepaction fpsa on ( fpsa.flowprocessingstepid = fps.id )
-                inner join flowprocessingstepmaterial fpsm on ( fpsm.flowprocessingstepid = fps.id )
-                left join flowprocessingchargeitem fpci on ( fpci.flowprocessingstepid = fps.id )
-                cross apply (
-                    select 
-                        fp.barcode,
-                        a.equipmentid,
-                        a.elementname,
-                        coalesce(ta.name,tb.name) as materialname
-                    from 
-                        flowprocessing fp
-                        inner join flowprocessingstep a on ( a.flowprocessingid = fp.id )
-						inner join equipmentcycle ec on ( ec.id = @equipmentcycleid and ec.equipmentid = @equipmentid )
-                        --inner join equipmentcycle ec on ( ec.equipmentid = a.equipmentid and ec.id = @equipmentcycleid )
-                        inner join materialcycle mc on ( mc.cycleid = ec.cycleid )
-                        inner join itembase ib on ( ib.id = mc.materialid )
-                        inner join flowprocessingstepmaterial c on ( c.flowprocessingstepid = fps.id and c.materialid = ib.id )
-                        outer apply (
-                            select
-                                mb.name
-                            from
-                                materialbox mb
-                            where mb.id = fp.materialboxid
-                        ) ta
-                        outer apply (
-                            select top 1
-                                ib.name
-                            from
-                                flowprocessingstepmaterial b
-                                inner join itembase ib on ( ib.id = b.materialid )
-                            where b.flowprocessingstepid = fpsa.flowprocessingstepid
-                        ) tb
-                    where a.flowprocessingid = fps.flowprocessingid
-                      and a.id = fps.target
-                      and fp.barcode = @barcode_p
-                      --and a.equipmentid = @equipmentid
-                      --and ( ib.barcode = @barcode or fp.barcode = @barcode )
-                ) t
-            where fpci.id is null
-			  and fps.areasid = @areasid
-              and fpsa.flowstepaction = '001'
-              and fps.stepflaglist like '%016%'
-              and not exists (
+                fp.barcode,
+				coalesce(ta.name,tb.name) as materialname,
+				coalesce(tb.cycleenabled,0) as cycleenabled,
+				oncharge = (
                   select
-                      a.id
+                      count(a.id)
                   from
                       flowprocessingchargeitem a
                       inner join flowprocessingcharge b on ( b.id = a.flowprocessingchargeid )
                   where a.flowprocessingstepid = fps.id
-                    and a.chargestatus in ('001','002','003')
-                    and b.chargeflag = '001' -- carga, '002' carga avulsa
-            )";
+                    and b.chargeflag in ('001','002','003','005')
+				)
+            from
+                flowprocessing fp
+				inner join flowprocessingstep fps on ( fps.flowprocessingid = fp.id )
+                inner join flowprocessingstepaction fpsa on ( fpsa.flowprocessingstepid = fps.id )
+                outer apply (
+                    select
+                        mb.name
+                    from
+                        materialbox mb
+                    where mb.id = fp.materialboxid
+                ) ta
+                outer apply (
+                    select top 1
+						ib.name,
+						1 as cycleenabled
+                    from
+                        flowprocessingstepmaterial b
+                        inner join itembase ib on ( ib.id = b.materialid )
+						inner join materialcycle mc on ( mc.materialid = b.materialid )
+						inner join equipmentcycle ec on ( ec.cycleid = mc.cycleid and ec.id = @equipmentcycleid )
+                    where b.flowprocessingstepid = fps.id
+                ) tb
+            where fps.areasid = @areasid
+			  and fp.barcode = @barcode_p
+              and fpsa.flowstepaction = '001'
+              and fps.stepflaglist like '%016%'";
 
         try {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":areasid", $areasid, \PDO::PARAM_INT);
             $pdo->bindValue(":barcode", $barcode, \PDO::PARAM_STR);
-            $pdo->bindValue(":equipmentid", $equipmentid, \PDO::PARAM_INT);
             $pdo->bindValue(":equipmentcycleid", $equipmentcycleid, \PDO::PARAM_INT);
-            $pdo->execute();
+			$callback = $pdo->execute();
+
+			if(!$callback) {
+				throw new \PDOException(self::$FAILURE_STATEMENT);
+			}
+
             $rows = $pdo->fetchAll();
 
-            self::_setSuccess(count($rows) != 0);
+			if(count($rows) == 0) {
+				throw new \PDOException('Não foi possível localizar o material!');
+			}
 
-            if(count($rows) != 0) {
-                self::_setRows($rows[0]);
-            }
+			if($rows[0]['oncharge'] != 0) {
+				throw new \PDOException('O material já está em Ciclo/Carga, favor aguardar o término do processo!');
+			}
+
+			if($rows[0]['cycleenabled'] == 0) {
+				throw new \PDOException('O material não está configurado para este Ciclo!');
+			}
+
+			self::_setRows($rows[0]);
 
         } catch ( \PDOException $e ) {
             self::_setSuccess(false);
@@ -1698,7 +1686,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 	public function selectTaskName(array $data) {
 		$query = $data['query'];
 
-        $sql = "
+		$sql = "
             declare
                 @username varchar(50) = :username;
 

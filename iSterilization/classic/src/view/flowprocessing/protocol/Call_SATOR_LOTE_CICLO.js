@@ -1,8 +1,8 @@
 //@charset UTF-8
-Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_VALIDA_CARGA', {
+Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_CICLO', {
     extend: 'Ext.window.Window',
 
-    xtype: 'call_SATOR_VALIDA_CARGA',
+    xtype: 'call_SATOR_LOTE_CICLO',
 
     requires: [
         'Ext.form.Panel',
@@ -14,7 +14,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_VALIDA_CARGA
         'iSterilization.view.flowprocessing.FlowProcessingController'
     ],
 
-    width: 450,
+    width: 650,
     modal: true,
     layout: 'fit',
     header: false,
@@ -24,6 +24,12 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_VALIDA_CARGA
     editable: true,
 
     controller: 'flowprocessing',
+
+    listeners: {
+        beforedestroy: function (view , eOpts) {
+            view.master.updateType();
+        }
+    },
 
     initComponent: function () {
         var me = this;
@@ -40,25 +46,24 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_VALIDA_CARGA
         me.items = [
             {
                 xtype: 'form',
-                plugins:'formenter',
                 bodyPadding: 10,
                 layout: 'anchor',
                 margin: '10 0 0 0',
                 defaultType: 'textfield',
                 defaults: {
                     anchor: '100%',
-                    showClear: true,
                     allowBlank: false,
+                    useUpperCase: true,
+                    useReadColor: true,
                     fieldCls: 'smart-field-style-action'
-                    // labelCls: 'smart-field-style-action'
                 },
                 items: [
                     {
                         xtype: 'label',
                         cls: 'title-label',
-                        text: 'Validar Carga'
+                        name: 'titlelabel',
+                        text: 'Ciclo de Equipamento'
                     }, {
-                        allowBlank: true,
                         xtype: 'hiddenfield',
                         name: 'id'
                     }, {
@@ -78,25 +83,26 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_VALIDA_CARGA
                         name: 'equipmentcycleid'
                     }, {
                         style: 'margin-top: 20px',
-                        fieldLabel: 'Equipamento',
-                        useUpperCase: true,
-                        useReadColor: me.editable,
-                        name: 'equipmentname',
-                        listeners: {
-                            specialkey: 'onReaderEquipment',
-                            showclear: 'onShowClearEquipment'
-                        }
-                    }, {
-                        fieldLabel: 'Ciclo',
-                        useUpperCase: true,
-                        useReadColor: me.editable,
-                        name: 'cyclename',
-                        listeners: {
-                            specialkey: 'onReaderCycle',
-                            showclear: 'onShowClearCycle'
-                        }
+                        xtype: 'fieldcontainer',
+                        layout: 'hbox',
+                        defaults: {
+                            flex: 1,
+                            fieldCls: 'smart-field-style-action'
+                        },
+                        items: [
+                            {
+                                fieldLabel: 'Equipamento',
+                                name: 'equipmentname',
+                                xtype: 'displayfield'
+                            }, {
+                                fieldLabel: 'Ciclo',
+                                name: 'cyclename',
+                                xtype: 'displayfield'
+                            }
+                        ]
                     }, {
                         fieldLabel: 'Consulta',
+                        showClear: true,
                         allowBlank: true,
                         useUpperCase: true,
                         useReadColor: me.editable,
@@ -116,7 +122,10 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_VALIDA_CARGA
                                 dataIndex: 'materialname',
                                 flex: 1
                             }, {
-                                width: 60,
+                                dataIndex: 'barcode',
+                                width: 170
+                            }, {
+                                width: 40,
                                 align: 'center',
                                 sortable: false,
                                 dataIndex: 'haspending',

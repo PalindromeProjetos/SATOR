@@ -11,6 +11,15 @@ class flowprocessingcharge extends \Smart\Data\Event {
      */
     public function preInsert( \iSterilization\Model\flowprocessingcharge &$model ) {
         Session::hasProfile('','');
+
+        $utimestamp = microtime(true);
+        $timestamp = floor($utimestamp);
+        $milliseconds = round(($utimestamp - $timestamp) * 1000000);
+
+        $barcode = substr("L" . date("YmdHis") . $milliseconds,0,20);
+
+        $model->set('barcode',$barcode);
+        $model->set('chargeflag','001');
     }
 
     /**

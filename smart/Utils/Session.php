@@ -21,18 +21,13 @@ class Session {
     use Traits\TresultSet;
 
     const _SESSION_NAME = 'smart';
-    const _SESSION_DATE = 60*60*24*1;
+    const _SESSION_DATE = 60*60*23*1;
     const _SESSION_PATH = '/../session/smart/';
 
     private static $name = self::_SESSION_NAME;
     private static $date = self::_SESSION_DATE;
     private static $path = self::_SESSION_PATH;
 
-	/**
-	 * http://www.scriptcase.com.br/forum/index.php?topic=4849.0
-	 * http://forum.wmonline.com.br/topic/157538-session-cache-expire;/
-	 * https://groups.google.com/forum/#!topic/php-brasil/nfoW0Bdx9Bc
-	 */
     public function __construct(array $data = null) {
         $path = $_SERVER['DOCUMENT_ROOT'] . self::$path;
         $name = isset($_SERVER["HTTP_REFERER"]) ? basename($_SERVER["HTTP_REFERER"]) : self::$name;
@@ -49,6 +44,79 @@ class Session {
         }
     }
 
+    public function setLastActivity () {
+        $dns = Start::getConnnect();
+        $pwd = Start::getPassWord();
+        $usr = Start::getUserName();
+
+        $proxy = new Proxy(array($dns, $usr, $pwd));
+        $date = date('Y-m-d', strtotime(date("Y-m-d H:i:s"))+self::$date);
+        
+        $sql = "
+			declare
+				@date varchar(50) = :date,
+				@name varchar(80) = :name;
+			
+			update users set lastactivity = @date where username = @name;";
+
+        try {
+            $pdo = $proxy->prepare($sql);
+            $pdo->bindValue(":date", $date, \PDO::PARAM_STR);
+            $pdo->bindValue(":name", $this->username, \PDO::PARAM_STR);
+            $pdo->execute();
+        } catch ( \PDOException $e ) {
+
+        }
+
+        return $date;
+    }
+
+    public function getLastActivity () {
+        $dns = Start::getConnnect();
+        $pwd = Start::getPassWord();
+        $usr = Start::getUserName();
+
+        $proxy = new Proxy(array($dns, $usr, $pwd));
+
+        try {
+            $credentialCode = $_COOKIE['Credential-Code'];
+            $credentialData = $_COOKIE['Credential-Data'];
+            $sessionCookies = $_COOKIE[$credentialData];
+
+            $sql = "
+                declare
+                    @name varchar(80) = :name;
+    
+                select 
+                    id,
+                    username,
+                    password,
+                    fullname,
+                    '{$sessionCookies}' as moduleid,
+                    convert(varchar(10),lastactivity, 120) as lastactivity
+                from
+                    users
+                where username = @name;";
+
+            $pdo = $proxy->prepare($sql);
+            $pdo->bindValue(":name", $credentialCode, \PDO::PARAM_STR);
+            $callback = $pdo->execute();
+
+            self::_setSuccess(false);
+
+            if($callback) {
+                $rows = $pdo->fetchAll();
+                self::_setRows($rows);
+                self::_setSuccess(true);
+            }
+
+        } catch ( \PDOException $e ) {
+            self::_setSuccess(false);
+        }
+
+         return self::arrayToObject(self::getResult());
+    }
+
     public function destroy() {
         @session_unset();
         @session_destroy();
@@ -63,7 +131,32 @@ class Session {
     }
 
     public function have() {
-        return (strlen($this->username) !== 0);
+        $have = (strlen($this->username) !== 0);
+
+        if($have == false && @session_status() == PHP_SESSION_ACTIVE) {
+            $result = $this->getLastActivity();
+            if ($result && $result->success) {
+                $expireto = $result->rows[0]->lastactivity;
+
+                $format = "Y-m-d";
+                $date1  = \DateTime::createFromFormat($format, $expireto);
+                $date2  = \DateTime::createFromFormat($format, date($format));
+
+                if($date1 >= $date2) {
+                    $have = true;
+
+                    $this->attempts = 0;
+                    $this->backupid = $result->rows[0]->id;
+                    $this->usercode = $result->rows[0]->id;
+                    $this->moduleid = $result->rows[0]->moduleid;
+                    $this->username = $result->rows[0]->username;
+                    $this->password = $result->rows[0]->password;
+                    $this->fullname = $result->rows[0]->fullname;
+                }
+            }
+        }
+
+        return $have;
     }
 
     public function slay() {
@@ -142,6 +235,7 @@ class Session {
             $pdo->bindValue(":aguid", $action, \PDO::PARAM_STR);
             $pdo->bindValue(":uname", $username, \PDO::PARAM_STR);
             $pdo->execute();
+
             $rows = $pdo->fetchAll();
 
             self::_setRows($rows);
@@ -171,7 +265,7 @@ class Session {
 
         $format = "Y-m-d";
         $date1  = \DateTime::createFromFormat($format, $expireto);
-        $date2  = \DateTime::createFromFormat($format, date("Y-m-d"));
+        $date2  = \DateTime::createFromFormat($format, date($format));
 
         if($date1 < $date2) {
             throw new \PDOException($msgerror || ($negation . '.<br/> <br/>A data para esta ação expirou!'));

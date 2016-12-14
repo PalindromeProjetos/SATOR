@@ -3,7 +3,7 @@
 
 class Session {
     // const _SESSION_NAME = 'smart';
-	const _SESSION_PATH = '/../session/smart/';
+	const _SESSION_PATH = '/';
 	const _SESSION_NAME = 'ARMSApp';
     const _SESSION_DATE = 60*60*24*1;
 	
@@ -74,7 +74,9 @@ $session = new Session($data);
 $session->username = 'SamuelOliveira';
 
 echo $session->username . '<br/>';
-echo $session->password;
+echo $session->password . '<br/>';
+
+
 //$session->kilSession();
 //echo $session::hasProfile();
 

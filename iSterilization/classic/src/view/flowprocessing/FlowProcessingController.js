@@ -15,6 +15,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
     listen: {
         store: {
+            '#flowprocessingchargeitem': {
+                datachanged: 'onChangedCharge'
+            },
             '#flowprocessingstepmaterial': {
                 datachanged: 'onChangedMaterial'
             }
@@ -1320,8 +1323,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         var me = this,
             view = me.getView();
 
-        Ext.widget('call_SATOR_VALIDA_CARGA').show(null,function () {
+        Ext.widget('call_SATOR_PREPARA_LOTE_CICLO').show(null,function () {
             this.master = view;
+            this.down('textfield[name=equipmentname]').setReadColor(false);
             this.down('textfield[name=equipmentname]').focus(false,200);
         });
     },
@@ -1850,17 +1854,19 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 callback: function (options, success, response) {
                     var result = Ext.decode(response.responseText);
 
-                    if (success && result.success) {
-                        field.setValue(result.rows.equipmentname);
-                        view.down('gridpanel').getStore().removeAll();
-                        view.down('textfield[name=cyclename]').reset();
-                        view.down('textfield[name=cyclename]').setReadColor(false);
-                        view.down('textfield[name=materialboxname]').reset();
-                        view.down('textfield[name=materialboxname]').setReadColor(true);
-                        view.down('hiddenfield[name=equipmentid]').setValue(result.rows.id);
-                        view.down('textfield[name=cyclename]').focus(false,200);
+                    if(!success || !result.success) {
+                        Smart.ion.sound.play("computer_error");
+                        Smart.Msg.showToast(result.text,'error');
+                        field.reset();
+                        field.focus(false,200);
+                        return false;
                     }
 
+                    field.setValue(result.rows.equipmentname);
+                    view.down('textfield[name=cyclename]').reset();
+                    view.down('textfield[name=cyclename]').setReadColor(false);
+                    view.down('hiddenfield[name=equipmentid]').setValue(result.rows.id);
+                    view.down('textfield[name=cyclename]').focus(false,200);
                 }
             });
         }
@@ -1873,12 +1879,12 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         view.down('hiddenfield[name=equipmentid]').reset();
         view.down('textfield[name=equipmentname]').reset();
 
-        view.down('gridpanel').getStore().removeAll();
-        view.down('textfield[name=cyclename]').reset();
         view.down('hiddenfield[name=equipmentcycleid]').reset();
+        // view.down('gridpanel').getStore().removeAll();
+        view.down('textfield[name=cyclename]').reset();
         view.down('textfield[name=cyclename]').setReadColor(true);
-        view.down('textfield[name=materialboxname]').reset();
-        view.down('textfield[name=materialboxname]').setReadColor(true);
+        // view.down('textfield[name=materialboxname]').reset();
+        // view.down('textfield[name=materialboxname]').setReadColor(true);
     },
 
     onReaderCycle: function (field, e, eOpts) {
@@ -1907,15 +1913,15 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
                     if (success && result.success) {
                         field.setValue(result.rows.cyclename);
-                        view.down('gridpanel').getStore().removeAll();
-                        view.down('textfield[name=materialboxname]').setReadColor(false);
+                        // view.down('gridpanel').getStore().removeAll();
+                        // view.down('textfield[name=materialboxname]').setReadColor(false);
                         view.down('hiddenfield[name=equipmentcycleid]').setValue(result.rows.id);
 
                         view.down('hiddenfield[name=duration]').setValue(result.rows.duration);
                         view.down('hiddenfield[name=timetoopen]').setValue(result.rows.timetoopen);
                         view.down('hiddenfield[name=temperature]').setValue(result.rows.temperature);
 
-                        view.down('textfield[name=materialboxname]').focus(false,200);
+                        // view.down('textfield[name=materialboxname]').focus(false,200);
                     }
 
                 }
@@ -1992,8 +1998,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             view = me.getView(),
             form = view.down('form'),
             value = field.getValue(),
-            store = view.down('gridpanel').getStore(),
-            equipmentid = view.down('hiddenfield[name=equipmentid]'),
+            record = form.getRecord(),
+            id = view.down('hiddenfield[name=id]'),
+            store = Ext.getStore('flowprocessingchargeitem'),
             equipmentcycleid = view.down('hiddenfield[name=equipmentcycleid]');
 
         if(!form.isValid()){
@@ -2009,6 +2016,19 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 return false;
             }
 
+            if(value.indexOf('SATOR_ENCERRAR_LEITURA') != -1) {
+                if(store.getCount() == 0) {
+                    Smart.ion.sound.play("computer_error");
+                    Smart.Msg.showToast('Não existem materiais no equipamento para iniciar o ciclo!','error');
+                    return false;
+                }
+
+                view.close();
+
+                me.callSATOR_RELATAR_CYCLE_STATUS('START',record);
+                return false;
+            }
+
             Ext.Ajax.request({
                 url: me.url,
                 params: {
@@ -2016,11 +2036,18 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                     method: 'selectCycleItem',
                     barcode: value,
                     areasid: Smart.workstation.areasid,
-                    equipmentid: equipmentid.getValue(),
                     equipmentcycleid: equipmentcycleid.getValue()
                 },
                 callback: function (options, success, response) {
                     var result = Ext.decode(response.responseText);
+
+                    if(!success || !result.success) {
+                        Smart.ion.sound.play("computer_error");
+                        Smart.Msg.showToast(result.text,'error');
+                        field.reset();
+                        field.focus(false,200);
+                        return false;
+                    }
 
                     if (success && result.success) {
                         var find = store.findRecord('barcode',result.rows.barcode);
@@ -2031,7 +2058,15 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                             return false;
                         }
 
-                        store.add(result.rows);
+                        store.insert(0,{
+                            barcode: result.rows.barcode,
+                            flowprocessingchargeid: id.getValue(),
+                            materialname: result.rows.materialname,
+                            flowprocessingstepid: result.rows.flowprocessingstepid
+                        });
+
+                        store.sync();
+
                         Smart.ion.sound.play("button_tiny");
                         return false;
                     }
@@ -3227,6 +3262,25 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         if(materialaccount) materialaccount.setText(Ext.String.format(score,count,store.getCount()));
     },
 
+    onChangedCharge: function (store, eOpts) {
+        var me = this,
+            count = store.getCount(),
+            score = 'Ciclo de Equipamento',
+            titlelabel = me.getView().down('label[name=titlelabel]');
+
+        switch (count) {
+            case 0:
+                break;
+            case 1:
+                score += Ext.String.format(' {0}/item',store.getCount());
+                break;
+            default:
+                score += Ext.String.format(' {0}/itens',store.getCount());
+        }
+
+        if(titlelabel) titlelabel.setText(score);
+    },
+
     onSelectDataView: function (view,record,eOpts) {
         Ext.getStore('flowprocessingstep').setParams({
             method: 'selectCode',
@@ -3288,6 +3342,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 }
             });
         }
+
     },
 
     onFlowStepDeSelect: function () {
@@ -3300,9 +3355,37 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         propertygrid.setSource({});
     },
 
-    onFlowStepRemove: function (viewView,store) {
+    onFlowStepSelectCharge: function (viewView,record) {
         var me = this,
-            record = viewView.getSelectionModel().getSelection()[0];
+            view = me.getView(),
+            store = Ext.getStore('flowprocessingcharge') || Ext.create('iSterilization.store.flowprocessing.FlowProcessingCharge');
+
+        if(record.get('steptype') == 'C') {
+            store.setParams({
+                query: record.get('id')
+            }).load({
+                scope: me,
+                callback: function(records, operation, success) {
+                    var record = records[0],
+                        ciclo = Ext.widget('call_SATOR_LOTE_CICLO');
+
+                    ciclo.show(null,function () {
+                        this.master = view;
+                        this.down('form').loadRecord(record);
+                        this.down('textfield[name=materialboxname]').setReadColor(false);
+                        this.down('textfield[name=materialboxname]').focus(false,200);
+                    });
+
+                    var chargeItem = Ext.getStore('flowprocessingchargeitem');
+
+                    chargeItem.setParams({ query: record.get('id') }).load();
+                }
+            });
+        }
+    },
+
+    onFlowStepRemoveCharge: function (viewView,record) {
+        var me = this;
 
         Ext.Msg.confirm('Excluir carga', 'Confirma a exclusão da carga selecionada?',
             function (choice) {
@@ -3316,7 +3399,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                             method: 'setRemoveCargaLista'
                         },
                         success: function() {
-                            viewView.updateType();
+                            Ext.getCmp('flowprocessingstep').updateType();
                         }
                     });
                 }
@@ -3410,8 +3493,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
     },
 
     callSATOR_RELATAR_CYCLE_STATUS: function (status,record) {
-        var me = this,
-            view = me.getView();
+        var view = Ext.getCmp('flowprocessingstep');
 
         Ext.widget('call_SATOR_RELATAR_CYCLE_STATUS').show(null,function () {
             this.master = view;
@@ -3563,6 +3645,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             function (choice) {
                 if (choice === 'yes') {
                     store.remove(record);
+                    store.sync();
                     view.down('textfield[name=materialboxname]').focus(false,200);
                 }
             }
@@ -3652,7 +3735,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 });
 
                 if (back) {
-                    view.master.updateType();
+                    Ext.getCmp('flowprocessingstep').updateType();
                     Smart.ion.sound.play("button_tiny");
                     view.close();
                 }
@@ -3737,12 +3820,46 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             this.down('textfield[name=usercode]').focus(false,200);
         });
     },
-    
-    setValidaCargaLista: function () {
+
+    setPreparaLoteCiclo: function () {
+        var me = this,
+            view = me.getView(),
+            form = view.down('form'),
+            doCallBack = function (rows) {
+                form.down('hiddenfield[name=chargeuser]').setValue(rows.username);
+
+                me.setModuleForm(form);
+                me.setModuleData('flowprocessingcharge');
+
+                me._success = function (form, action) {
+                    Ext.getCmp('flowprocessingstep').updateType();
+                    Smart.ion.sound.play("button_tiny");
+                    view.close();
+                }
+
+                me._failure = function (form, action) {
+                    Smart.ion.sound.play("computer_error");
+                    Smart.Msg.showToast(action.result.text,'info');
+                }
+
+                me.updateModule();
+
+                return true;
+            };
+
+        Ext.widget('flowprocessinguser', {
+            doCallBack: doCallBack
+        }).show(null,function () {
+            this.down('form').reset();
+            this.down('textfield[name=usercode]').focus(false,200);
+        });
+    },
+
+    setValidaCargaLista_: function () {
         var me = this,
             list = [],
             view = me.getView(),
-            store = view.down('gridpanel').getStore(),
+            // store = view.down('gridpanel').getStore(),
             doCallBack = function (rows) {
                 var back = true,
                     data = view.down('form').getValues();
@@ -3778,9 +3895,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 return back;
             };
 
-        store.each(function(record) {
-            list.push(record.data);
-        });
+        // store.each(function(record) {
+        //     list.push(record.data);
+        // });
 
         if (store.getCount() == 0) {
             Smart.ion.sound.play("computer_error");
@@ -3822,23 +3939,18 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
                         if (!success || !result.success) {
                             Smart.ion.sound.play("computer_error");
-                            back = false;
-                            Smart.Msg.showToast('Este processo não foi executado com sucesso!','info');
+                            Smart.Msg.showToast(result.text,'error');
                         }
                     }
                 });
 
-                if (back) {
-                    view.master.updateType();
-                    Smart.ion.sound.play("button_tiny");
-                    view.close();
-                }
+                Ext.getCmp('flowprocessingstep').updateType();
+                view.close();
 
-                return back;
+                return true;
             };
 
         Ext.widget('flowprocessinguser', {
-            scope: me,
             doCallBack: doCallBack
         }).show(null,function () {
             this.down('form').reset();

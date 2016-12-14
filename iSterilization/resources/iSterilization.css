@@ -8,7 +8,7 @@
 }
 
 .main-toolbar-color {
-    background-color: rgb(0, 153, 0) !important;
+    background-color: rgb(76, 175, 80) !important;
 }
 
 /*
@@ -315,11 +315,40 @@
     background: #9452FF;
 }
 
-.step .steptype-clear {
-    color: red;
-    float: left;
+.step .steptype-infor {
+    color: rgb(101, 31, 255);
     font-size: 30px;
-    margin-left: 17px;
+    float: left;
+}
+.step .steptype-infor:hover {
+    top: -7px;
+    left: -7px;
+    opacity: 1;
+    -webkit-transition: -webkit-transform 0.5s, opacity 0.5s;
+    -moz-transition: -moz-transform 0.5s, opacity 0.5s;
+    transition: transform 0.5s, opacity 0.5s;
+    -webkit-transform: scale(1.2);
+    -moz-transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    transform: scale(1.2);
+}
+.step .steptype-clear {
+    color: rgb(255, 23, 68);
+    font-size: 30px;
+    float: right;
+}
+
+.step .steptype-clear:hover {
+    top: -7px;
+    left: -7px;
+    opacity: 1;
+    -webkit-transition: -webkit-transform 0.5s, opacity 0.5s;
+    -moz-transition: -moz-transform 0.5s, opacity 0.5s;
+    transition: transform 0.5s, opacity 0.5s;
+    -webkit-transform: scale(1.2);
+    -moz-transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    transform: scale(1.2);
 }
 
 .step .steptype-clock {
@@ -577,13 +606,13 @@
     font-weight: 700;
     text-align: center;
     line-height: 22px;
-    background: rgba(255, 237, 79, 1);
-    border-radius: 5px;
+    background: rgba(255, 237, 79, .8);
+    border-radius: 3px;
 }
 
-.hold .items:hover {
-    background: rgba(248, 202, 0, 1);
-}
+/*.hold .items:hover {*/
+    /*background: rgba(248, 202, 0, .3);*/
+/*}*/
 
 .hold .hold-btn {
     line-height: 48px;
@@ -620,21 +649,51 @@
     padding: 0 10px 0 10px;
 }
 .hold-001 {
-    background: rgba(16, 232, 196, .3);
+    color: black;
+    border: solid 1px rgba(41, 98, 255, .3);
+    background: rgba(0, 145, 234, .5);
 }
 .hold-001:hover {
-    color: white;
-    background: rgba(105, 112, 194, 1);
+    background: rgba(3, 169, 244, .2);
 }
+.hold-001 .hold-l {
+    background: rgba(41, 98, 255, .3);
+}
+
 .hold-002 {
-    background: rgba(242, 225, 145, .4)
+    color: black;
+    border: solid 1px rgba(121, 85, 72, .5);
+    background: rgba(141, 110, 99, .4)
 }
 .hold-002:hover {
-    color: black;
-    background: rgba(222, 242, 150, .4);
+    background: rgba(141, 110, 99, .2);
 }
+.hold-002 .hold-l {
+    background: rgba(121, 85, 72, .5);
+}
+
 .hold-003 {
-    background: #fff73b;
+    color: black;
+    border: solid 1px rgba(255, 109, 0, .3);
+    background: rgba(255, 152, 0, .5);
+}
+.hold-003:hover {
+    background: rgba(255, 171, 64, .3);
+}
+.hold-003 .hold-l {
+    background: rgba(255, 109, 0, .3);
+}
+
+.hold-btn .action-select-color-font {
+    color: rgb(100, 221, 23) !important;
+}
+
+.hold-btn .action-select-color-font:hover {
+    color: rgb(100, 221, 23) !important;
+}
+
+.hold-btn .action-delete-color-font {
+    color: rgb(255, 23, 68) !important;
 }
 
 .movement-title {

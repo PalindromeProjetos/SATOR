@@ -25,6 +25,12 @@ Ext.define( 'iSterilization.model.flowprocessing.FlowProcessingChargeItem', {
         }, {
             name: 'chargestatusdescription',
             type: 'auto'
+        }, {
+            name: 'barcode',
+            type: 'auto'
+        }, {
+            name: 'materialname',
+            type: 'auto'            
         }
     ]
 

@@ -28,9 +28,9 @@ Ext.define( 'Ext.overrides.data.Connection', {
         options = options || {};
 
         options.headers = {
-            'Credential-Code' : 'sator.etimba',
             'Credential-Name' : 'Palindrome Projetos',
-            'Credential-Date' : new Date().toGMTString()
+            'Credential-Code' : Ext.util.Cookies.get('Credential-Code'),
+            'Credential-Data' : Ext.util.Cookies.get('Credential-Data')
         };
 
         return this.callParent(arguments);

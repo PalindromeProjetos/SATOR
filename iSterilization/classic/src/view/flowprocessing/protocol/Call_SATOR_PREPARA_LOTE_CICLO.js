@@ -1,8 +1,8 @@
 //@charset UTF-8
-Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_VALIDA_CARGA', {
+Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_PREPARA_LOTE_CICLO', {
     extend: 'Ext.window.Window',
 
-    xtype: 'call_SATOR_VALIDA_CARGA',
+    xtype: 'call_SATOR_PREPARA_LOTE_CICLO',
 
     requires: [
         'Ext.form.Panel',
@@ -35,7 +35,6 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_VALIDA_CARGA
         var me = this;
 
         Ext.create('iSterilization.store.flowprocessing.FlowProcessingCharge');
-        Ext.create('iSterilization.store.flowprocessing.FlowProcessingChargeItem');
 
         me.items = [
             {
@@ -50,17 +49,19 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_VALIDA_CARGA
                     showClear: true,
                     allowBlank: false,
                     fieldCls: 'smart-field-style-action'
-                    // labelCls: 'smart-field-style-action'
                 },
                 items: [
                     {
                         xtype: 'label',
                         cls: 'title-label',
-                        text: 'Validar Carga'
+                        text: 'Preparando Ciclo'
                     }, {
                         allowBlank: true,
                         xtype: 'hiddenfield',
                         name: 'id'
+                    }, {
+                        xtype: 'hiddenfield',
+                        name: 'chargeuser'
                     }, {
                         xtype: 'hiddenfield',
                         name: 'equipmentid'
@@ -95,52 +96,31 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_VALIDA_CARGA
                             specialkey: 'onReaderCycle',
                             showclear: 'onShowClearCycle'
                         }
-                    }, {
-                        fieldLabel: 'Consulta',
-                        allowBlank: true,
-                        useUpperCase: true,
-                        useReadColor: me.editable,
-                        name: 'materialboxname',
-                        listeners: {
-                            specialkey: 'onReaderMaterialBoxName'
-                        }
-                    }, {
-                        height: 350,
-                        xtype: 'gridpanel',
-                        cls: 'update-grid',
-
-                        store: 'flowprocessingchargeitem',
-
-                        columns: [
-                            {
-                                dataIndex: 'materialname',
-                                flex: 1
-                            }, {
-                                width: 60,
-                                align: 'center',
-                                sortable: false,
-                                dataIndex: 'haspending',
-                                xtype: 'actioncolumn',
-                                handler: 'setDeleteChargeItem',
-                                getTip: function(v, meta, rec) {
-                                    return 'Remover processo da lista!';
-                                },
-                                getClass: function(v, meta, rec) {
-                                    return "fa fa-minus-circle action-delete-color-font";
-                                }
-                            }
-                        ],
-                        listeners: {
-                            rowkeydown: function ( viewTable , record , tr , rowIndex , e , eOpts) {
-                                if ([e.ESC].indexOf(e.getKey()) != -1) {
-                                    viewTable.up('window').close();
-                                }
-                            }
-                        }
                     }
                 ]
             }
         ]
-    }
+    },
+
+    buttonAlign: 'center',
+
+    buttons: [
+        {
+            scale: 'medium',
+            name: 'confirm',
+            text: 'Confirmar',
+            showSmartTheme: 'green',
+            listeners: {
+                click: 'setPreparaLoteCiclo'
+            }
+        }, {
+            scale: 'medium',
+            text: 'Cancelar',
+            showSmartTheme: 'red',
+            handler: function (btn) {
+                btn.windowClose();
+            }
+        }
+    ]
 
 });

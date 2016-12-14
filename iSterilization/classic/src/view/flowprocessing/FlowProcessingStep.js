@@ -58,7 +58,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
 
     setCycleStart: function (store) {
         var clock = Ext.dom.Query.select('div.steptype-clock');
-        var clear = Ext.dom.Query.select('div.steptype-clear');
+        var tools = Ext.dom.Query.select('div.steptype-tools');
 
         store.each(function (item) {
             var id = item.get('id');
@@ -79,9 +79,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
             }
 
             if (steptype == 'C') {
-                Ext.each(clear,function (node) {
+                Ext.each(tools,function (node) {
                     var el = Ext.get(node);
-                    if(el.id == ('clear-' + id)) {
+                    if(el.id == ('tools-' + id)) {
                         el.removeCls('step-hide');
                     }
                 });
@@ -212,7 +212,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
                                     select: 'onFlowStepSelect',
                                     deselect: 'onFlowStepDeSelect',
                                     itemdblclick: 'onFlowStepAction',
-                                    removerecord: 'onFlowStepRemove'
+                                    removecharge: 'onFlowStepRemoveCharge',
+                                    selectcharge: 'onFlowStepSelectCharge'
                                 }
                             }
                         ]

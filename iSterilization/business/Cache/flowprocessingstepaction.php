@@ -231,8 +231,7 @@ class flowprocessingstepaction extends \Smart\Data\Cache {
                         flowprocessingchargeitem a
                         inner join flowprocessingcharge b on ( b.id = a.flowprocessingchargeid )
                     where a.flowprocessingstepid = fps.id
-                      and a.chargestatus = '001'
-                      and b.chargeflag in ('001','002','005','006')
+                      and b.chargeflag in ('001','002','003','005')
               )
 
             union all
@@ -254,8 +253,7 @@ class flowprocessingstepaction extends \Smart\Data\Cache {
 				t.materialname,
 				t.originplace,
 				t.targetplace,
-				dbo.getLeftPad(3,'0',t.items) as items
-				--dbo.getLeftPad(3,'0',count(*)) as items
+				t.items
 			from
 				flowprocessingstep fps
 				cross apply (
@@ -276,13 +274,18 @@ class flowprocessingstepaction extends \Smart\Data\Cache {
 						('T.' + convert(varchar,fpc.temperature) + 'º D.' + convert(varchar,fpc.duration) + 'm A.' + convert(varchar,fpc.timetoopen) +'m' ) as materialname,
 						a.elementname as originplace,
 						ta.targetplace,
-						dbo.getLeftPad(3,'0',count(*)) as items
+						items = (
+							select
+								dbo.getLeftPad(3,'0',count(*))
+							from
+								flowprocessingchargeitem
+							where flowprocessingchargeid = fpc.id
+						)
 					from
 						flowprocessingstep a
 						inner join equipmentcycle ec on ( ec.equipmentid = a.equipmentid )
 						inner join cycle c on ( c.id = ec.cycleid )
 						inner join flowprocessingcharge fpc on ( fpc.equipmentcycleid =  ec.id )
-						inner join flowprocessingchargeitem fpci on ( fpci.flowprocessingchargeid =  fpc.id )
 						outer apply (
 							select top 1
 								b.elementname as targetplace
