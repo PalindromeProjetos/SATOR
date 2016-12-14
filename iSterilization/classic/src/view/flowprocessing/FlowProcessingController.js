@@ -3360,28 +3360,26 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             view = me.getView(),
             store = Ext.getStore('flowprocessingcharge') || Ext.create('iSterilization.store.flowprocessing.FlowProcessingCharge');
 
-        if(record.get('steptype') == 'C') {
-            store.setParams({
-                query: record.get('id')
-            }).load({
-                scope: me,
-                callback: function(records, operation, success) {
-                    var record = records[0],
-                        ciclo = Ext.widget('call_SATOR_LOTE_CICLO');
+        store.setParams({
+            query: record.get('id')
+        }).load({
+            scope: me,
+            callback: function(records, operation, success) {
+                var record = records[0],
+                    ciclo = Ext.widget('call_SATOR_LOTE_CICLO');
 
-                    ciclo.show(null,function () {
-                        this.master = view;
-                        this.down('form').loadRecord(record);
-                        this.down('textfield[name=materialboxname]').setReadColor(false);
-                        this.down('textfield[name=materialboxname]').focus(false,200);
-                    });
+                ciclo.show(null,function () {
+                    this.master = view;
+                    this.down('form').loadRecord(record);
+                    this.down('textfield[name=materialboxname]').setReadColor(false);
+                    this.down('textfield[name=materialboxname]').focus(false,200);
+                });
 
-                    var chargeItem = Ext.getStore('flowprocessingchargeitem');
+                var chargeItem = Ext.getStore('flowprocessingchargeitem');
 
-                    chargeItem.setParams({ query: record.get('id') }).load();
-                }
-            });
-        }
+                chargeItem.setParams({ query: record.get('id') }).load();
+            }
+        });
     },
 
     onFlowStepRemoveCharge: function (viewView,record) {
@@ -3831,13 +3829,16 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 me.setModuleForm(form);
                 me.setModuleData('flowprocessingcharge');
 
-                me._success = function (form, action) {
+                me._success = function (frm, action) {
+                    var record = form.getRecord();
+
                     Ext.getCmp('flowprocessingstep').updateType();
                     Smart.ion.sound.play("button_tiny");
+                    me.onFlowStepSelectCharge(view,record);
                     view.close();
                 }
 
-                me._failure = function (form, action) {
+                me._failure = function (frm, action) {
                     Smart.ion.sound.play("computer_error");
                     Smart.Msg.showToast(action.result.text,'info');
                 }

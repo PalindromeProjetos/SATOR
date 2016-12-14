@@ -27,7 +27,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_CICLO',
 
     listeners: {
         beforedestroy: function (view , eOpts) {
-            view.master.updateType();
+            Ext.getCmp('flowprocessingstep').updateType();
         }
     },
 
