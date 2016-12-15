@@ -160,7 +160,15 @@ class armorymovement extends \Smart\Data\Event {
                     }
 
                     if($newmovementtype == '002') {
-                        $sql = "update armorystock set armorystatus = 'E' where flowprocessingstepid = {$flowprocessingstepid}";
+                        $sql = "
+                            declare
+                               @flowprocessingstepid int = {$flowprocessingstepid};
+
+                            update
+                                armorystock
+                            set 
+                                armorystatus = 'E'
+                            where flowprocessingstepid = @flowprocessingstepid";
 
                         $affected = $proxy->exec($sql);
 
@@ -171,13 +179,17 @@ class armorymovement extends \Smart\Data\Event {
 
                     if($newmovementtype == '003') {
                         $sql = "
+                            declare
+                               @armorylocal char(3) = '{$armorylocal}',
+                               @flowprocessingstepid int = {$flowprocessingstepid};
+
                             update
-                              armorystock
+                                armorystock
                             set
-                              armorystatus = 'A'
-                            where flowprocessingstepid = {$flowprocessingstepid}
+                                armorystatus = 'A'
+                            where flowprocessingstepid = @flowprocessingstepid
                               and armorystatus = 'E'
-                              and armorylocal = '{$armorylocal}'";
+                              and armorylocal = @armorylocal";
 
                         $affected = $proxy->exec($sql);
 
