@@ -380,7 +380,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 					$data['id'] = $id;
 
 					// insert flowprocessingstepmaterial
-					$resultItem = self::jsonToObject($this->newFlowItem($data));
+					$resultItem = self::arrayToObject($this->newFlowItem($data));
 					if(!$resultItem->success) {
 						throw new \PDOException(self::$FAILURE_STATEMENT);
 					}
