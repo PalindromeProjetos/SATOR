@@ -455,9 +455,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				throw new \PDOException(self::$FAILURE_STATEMENT);
 			}
 
-			$rows = $pdo->fetchAll();
-
-            self::_setRows($rows);
+			self::_setSuccess(true);
 
         } catch ( \PDOException $e ) {
             self::_setSuccess(false);
