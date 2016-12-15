@@ -19,7 +19,7 @@ class flowprocessingcharge extends \Smart\Data\Event {
         $barcode = substr("L" . date("YmdHis") . $milliseconds,0,20);
 
         $model->set('barcode',$barcode);
-        $model->set('chargeflag','001');
+//        $model->set('chargeflag','001');
     }
 
     /**

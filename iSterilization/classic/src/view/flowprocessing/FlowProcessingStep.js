@@ -52,6 +52,15 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
         afterrender: 'onAfterRenderType'
     },
 
+    // html: [
+    //     '<div style="margin-bottom: 10px;" class="thumb-wrap">',
+    //         '<div class="thumb-task-{taskcode}">',
+    //         '<a class="authorize">{taskrows}</a>',
+    //         '</div>',
+    //         '<span><a style="font-size: 14px;">{taskname}</a></span>',
+    //     '</div>'
+    // ],
+
     bodyStyle: 'padding: 10px',
 
     timeoutInterval: (6000 * 10),

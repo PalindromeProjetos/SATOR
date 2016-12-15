@@ -36,7 +36,9 @@ Ext.define( 'iSterilization.model.flowprocessing.FlowProcessingCharge', {
             type: 'auto'
         }, {
             name: 'chargeflag',
-            type: 'auto'
+            type: 'auto',
+            persist: true,
+            critical: true
         }, {
             name: 'cyclestart',
             type: 'auto'
