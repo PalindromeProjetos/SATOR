@@ -109,13 +109,14 @@ class armorymovement extends \Smart\Data\Event {
                     $boxsealtwo = $model->getSubmit()->getRowValue('boxsealtwo');
                     $transportedby = $model->getSubmit()->getRowValue('transportedby');
 
+                    $output->getStore()->setProxy($proxy);
                     $output->getStore()->getModel()->set('id',$id);
                     $output->getStore()->getModel()->set('boxsealone',$boxsealone);
                     $output->getStore()->getModel()->set('boxsealtwo',$boxsealtwo);
                     $output->getStore()->getModel()->set('transportedby',$transportedby);
                     $result = self::jsonToObject($output->getStore()->update());
 
-                    if($result->success == false) {
+                    if(!$result->success) {
                         throw new \PDOException($result->text);
                     }
                 }
@@ -125,15 +126,15 @@ class armorymovement extends \Smart\Data\Event {
                     $flowprocessingstepid = $item->flowprocessingstepid;
 
                     if($newmovementtype == '001') {
+                        $stock->getStore()->setProxy($proxy);
                         $stock->getStore()->getModel()->set('id','');
                         $stock->getStore()->getModel()->set('flowprocessingstepid',$flowprocessingstepid);
                         $stock->getStore()->getModel()->set('armorylocal',$armorylocal);
                         $stock->getStore()->getModel()->set('armorystatus','A');
                         $result = self::jsonToObject($stock->getStore()->insert());
 
-                        if($result->success == false) {
+                        if(!$result->success) {
                             throw new \PDOException($result->text);
-                            break;
                         }
 
                         $sql = "
@@ -151,13 +152,21 @@ class armorymovement extends \Smart\Data\Event {
 
                             update flowprocessingstepaction set isactive = 0 where flowprocessingstepid = @flowprocessingstepid;";
 
-                        $proxy->exec($sql);
+                        $affected = $proxy->exec($sql);
+
+                        if ($affected === false) {
+                            throw new \PDOException(self::$FAILURE_STATEMENT);
+                        }
                     }
 
                     if($newmovementtype == '002') {
                         $sql = "update armorystock set armorystatus = 'E' where flowprocessingstepid = {$flowprocessingstepid}";
 
-                        $proxy->exec($sql);
+                        $affected = $proxy->exec($sql);
+
+                        if ($affected === false) {
+                            throw new \PDOException(self::$FAILURE_STATEMENT);
+                        }
                     }
 
                     if($newmovementtype == '003') {
@@ -170,7 +179,11 @@ class armorymovement extends \Smart\Data\Event {
                               and armorystatus = 'E'
                               and armorylocal = '{$armorylocal}'";
 
-                        $proxy->exec($sql);
+                        $affected = $proxy->exec($sql);
+
+                        if ($affected === false) {
+                            throw new \PDOException(self::$FAILURE_STATEMENT);
+                        }
                     }
                 }
 
