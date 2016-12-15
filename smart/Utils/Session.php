@@ -79,9 +79,9 @@ class Session {
         $proxy = new Proxy(array($dns, $usr, $pwd));
 
         try {
-            $credentialCode = $_COOKIE['Credential-Code'];
-            $credentialData = $_COOKIE['Credential-Data'];
-            $sessionCookies = $_COOKIE[$credentialData];
+            $credentialCode = $_COOKIE['Credential-Code'] ? $_COOKIE['Credential-Code'] : '';
+            $credentialData = $_COOKIE['Credential-Data'] ? $_COOKIE['Credential-Data'] : '';
+            $sessionCookies = $_COOKIE[$credentialData] ? $_COOKIE[$credentialData] : '';
 
             $sql = "
                 declare
