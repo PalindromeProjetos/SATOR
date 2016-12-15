@@ -200,6 +200,7 @@ class armorymovement extends \Smart\Data\Event {
                 }
 
                 $proxy->commit();
+
             } catch ( \PDOException $e ) {
                 if ($proxy->inTransaction()) {
                     $proxy->rollBack();
