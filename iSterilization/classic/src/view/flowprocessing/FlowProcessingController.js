@@ -515,7 +515,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 var data = result.rows[0],
                     armorymovementid = view.down('hiddenfield[name=id]').getValue();
 
-                store.add({
+                store.insert(0,{
                     barcode: data.barcode,
                     armorylocal: data.armorylocal,
                     regresstype: data.regresstype,
