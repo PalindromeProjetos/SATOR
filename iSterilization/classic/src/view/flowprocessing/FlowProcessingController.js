@@ -243,7 +243,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                     });
 
                     this.close();
-                    view.master.updateType();
+                    Ext.getCmp('flowprocessinghold').updateType();
                     view.close();
                     return false;
                 }
@@ -291,7 +291,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                                         window.open(Ext.String.format(url,data.get('id')));
 
                                         this.close();
-                                        view.master.updateType();
+                                        Ext.getCmp('flowprocessinghold').updateType();
                                         view.close();
                                     }
                                 });
@@ -668,7 +668,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
                 store.sync();
                 Smart.ion.sound.play("button_tiny");
-
             }
         });
     },
