@@ -2460,7 +2460,19 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 o.patientname,
                 o.dateof,
                 o.timeof,
-                item = ( select count(id) from armorymovementitem where armorymovementid = am.id )
+                item = ( 
+                	select
+						case am.movementtype
+							when '001' then 'E-' + dbo.getLeftPad(3,'0',count(id))
+							when '002' then 'S-' + dbo.getLeftPad(3,'0',count(id))
+							when '003' then 'R-' + dbo.getLeftPad(3,'0',count(id))
+							when '004' then 'X-' + dbo.getLeftPad(3,'0',count(id))
+							else dbo.getLeftPad(3,'0',count(id))
+						end as items                		
+                	from
+                		armorymovementitem
+                	where armorymovementid = am.id
+                )
             from
                 armorymovement am
                 inner join areas a on ( a.id = am.areasid )
