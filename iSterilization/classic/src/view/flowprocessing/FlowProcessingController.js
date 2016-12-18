@@ -466,7 +466,13 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 view.setLoading(false);
 
                 if(!success || !result.success) {
+                    Smart.ion.sound.play("computer_error");
                     Smart.Msg.showToast(result.text,'error');
+                    return false;
+                }
+
+                if(store.findRecord('barcode',value)) {
+                    Smart.Msg.showToast("O item lido já foi lançado neste movimento!",'info');
                     return false;
                 }
 
@@ -483,6 +489,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 });
 
                 store.sync();
+                Smart.ion.sound.play("button_tiny");
             }
         });
     },
@@ -508,6 +515,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 view.setLoading(false);
 
                 if(!success || !result.success) {
+                    Smart.ion.sound.play("computer_error");
                     Smart.Msg.showToast(result.text,'error');
                     return false;
                 }
@@ -517,7 +525,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                     return false;
                 }
 
-                var data = result.rows[0],
+                var data = result.rows,
                     armorymovementid = view.down('hiddenfield[name=id]').getValue();
 
                 store.insert(0,{
@@ -532,6 +540,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 });
 
                 store.sync();
+                Smart.ion.sound.play("button_tiny");
             }
         });
     },
@@ -603,7 +612,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         var me = this,
             view = me.getView(),
             value = field.getValue(),
-            id = view.down('hiddenfield[name=id]'),
             store = Ext.getStore('armorymovementitem');
 
         field.reset();
@@ -641,24 +649,20 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                     return false;
                 }
 
-                // if(!success || !result.success || result.records == 0) {
-                //     Smart.Msg.showToast(result.text,'error');
-                //     return false;
-                // }
-                //
-                // if(result.rows[0].available == 0) {
-                //     Smart.Msg.showToast("O item lido já foi lançado em outro movimento!",'error');
-                //     return false;
-                // }
+                if(store.findRecord('barcode',value)) {
+                    Smart.Msg.showToast("O item lido já foi lançado neste movimento!",'info');
+                    return false;
+                }
 
-                var data = result.rows;
+                var data = result.rows,
+                    armorymovementid = view.down('hiddenfield[name=id]').getValue();
 
                 store.insert(0,{
                     outputtype: 'P',
-                    armorymovementid: id.getValue(),
                     barcode: data.barcode,
                     colorschema: data.colorschema,
                     materialname: data.materialname,
+                    armorymovementid: armorymovementid,
                     flowprocessingstepid: data.flowprocessingstepid
                 });
 

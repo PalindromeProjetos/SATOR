@@ -2293,55 +2293,79 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             declare
                 @barcode varchar(20) = :barcode;
 
-		select
-			fp.id,
-			a.flowprocessingstepid,
-			fp.barcode,
-			t.materialname,
-			a.armorylocal,
-			'001' as regresstype,
-			dbo.getEnum('regresstype','001') as regresstypedescription,
-			dbo.getEnum('armorylocal',a.armorylocal) as armorylocaldescription
-		from
-			flowprocessing fp
-			inner join flowprocessingstep fps on ( fps.flowprocessingid = fp.id )
-			inner join armorystock a on ( a.flowprocessingstepid = fps.id )
-			inner join armorymovementitem ami on ( ami.flowprocessingstepid = a.flowprocessingstepid )
-			inner join armorymovement am on ( am.id = ami.armorymovementid )
-			cross apply (
-				select 
-					coalesce(ta.name,tb.name) as materialname
-				from 
-					flowprocessing a
-					outer apply (
-						select
-							mb.name
-						from
-							materialbox mb
-						where mb.id = a.materialboxid
-					) ta
-					outer apply (
-						select
-							ib.name
-						from
-							itembase ib
-							inner join material m on ( m.id = ib.id )
-						where ib.id = fp.materialid
-					) tb
-				where a.id = fp.id
-			) t
-		where fp.barcode = @barcode
-		  and a.armorystatus = 'E'
-		  and am.movementtype = '002'";
+			select
+				fp.id,
+				ak.flowprocessingstepid,
+				fp.barcode,
+				t.materialname,
+				ak.armorylocal,
+				'001' as regresstype,
+				dbo.getEnum('regresstype','001') as regresstypedescription,
+				dbo.getEnum('armorylocal',ak.armorylocal) as armorylocaldescription,
+				onmovement = (
+					select
+						count(a.id)
+					from
+						armorymovement a
+						inner join armorymovementitem b on ( 
+									b.armorymovementid = a.id 
+								and b.flowprocessingstepid = ak.flowprocessingstepid
+							)
+					where a.movementtype = '003'
+					  and a.releasestype = 'A'
+				)
+			from
+				flowprocessing fp
+				inner join flowprocessingstep fps on ( fps.flowprocessingid = fp.id )
+				inner join armorystock ak on ( ak.flowprocessingstepid = fps.id )
+				inner join armorymovementitem ami on ( ami.flowprocessingstepid = ak.flowprocessingstepid )
+				inner join armorymovement am on ( am.id = ami.armorymovementid )
+				cross apply (
+					select 
+						coalesce(ta.name,tb.name) as materialname
+					from 
+						flowprocessing a
+						outer apply (
+							select
+								mb.name
+							from
+								materialbox mb
+							where mb.id = a.materialboxid
+						) ta
+						outer apply (
+							select
+								ib.name
+							from
+								itembase ib
+								inner join material m on ( m.id = ib.id )
+							where ib.id = fp.materialid
+						) tb
+					where a.id = fp.id
+				) t
+			where fp.barcode = @barcode
+			  and ak.armorystatus = 'E'
+			  and am.movementtype = '002'";
 
         try {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":barcode", $barcode, \PDO::PARAM_STR);
-            $pdo->execute();
-            $rows = $pdo->fetchAll();
+			$callback = $pdo->execute();
 
-            self::_setRows($rows);
-            self::_setSuccess(count($rows) != 0);
+			if(!$callback) {
+				throw new \PDOException(self::$FAILURE_STATEMENT);
+			}
+
+			$rows = $pdo->fetchAll();
+
+			if(count($rows) == 0) {
+				throw new \PDOException('Não foi possível localizar o material!');
+			}
+
+			if($rows[0]['onmovement'] != 0) {
+				throw new \PDOException('O material já foi movimentado!');
+			}
+
+			self::_setRows($rows[0]);
 
         } catch ( \PDOException $e ) {
             self::_setSuccess(false);
