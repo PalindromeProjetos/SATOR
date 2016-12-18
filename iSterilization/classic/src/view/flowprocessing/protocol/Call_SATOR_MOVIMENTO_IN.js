@@ -13,7 +13,6 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_MOVIMENTO_IN
         'iSterilization.view.flowprocessing.FlowProcessingController'
     ],
 
-    // width: 500,
     width: 810,
     modal: true,
     header: false,
@@ -31,7 +30,10 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_MOVIMENTO_IN
     doCallBack: Ext.emptyFn,
 
     listeners: {
-        queryreader: 'onArmoryInQuery'
+        queryreader: 'onArmoryInQuery',
+        beforedestroy: function (view , eOpts) {
+            Ext.getCmp('flowprocessinghold').updateType();
+        }
     },
 
     initComponent: function () {

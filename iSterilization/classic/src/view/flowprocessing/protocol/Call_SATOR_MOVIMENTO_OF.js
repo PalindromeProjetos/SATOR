@@ -30,7 +30,10 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_MOVIMENTO_OF
     doCallBack: Ext.emptyFn,
 
     listeners: {
-        queryreader: 'onArmoryOfQuery'
+        queryreader: 'onArmoryOfQuery',
+        beforedestroy: function (view , eOpts) {
+            Ext.getCmp('flowprocessinghold').updateType();
+        }
     },
 
     initComponent: function () {

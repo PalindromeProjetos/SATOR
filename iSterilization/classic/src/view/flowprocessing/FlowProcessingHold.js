@@ -78,24 +78,24 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
             return false;
         }
 
-        Ext.Ajax.request({
-            scope: me,
-            url: storeHold.getUrl(),
-            params: storeHold.getExtraParams(),
-            callback: function (options, success, response) {
-                var result = Ext.decode(response.responseText);
-
-                if(!success || !result.success) {
-                    return false;
-                }
-
-                storeHold.removeAll();
-
-                if(result.rows) {
-                    storeHold.loadData(result.rows);
-                }
-            }
-        });
+        // Ext.Ajax.request({
+        //     scope: me,
+        //     url: storeHold.getUrl(),
+        //     params: storeHold.getExtraParams(),
+        //     callback: function (options, success, response) {
+        //         var result = Ext.decode(response.responseText);
+        //
+        //         if(!success || !result.success) {
+        //             return false;
+        //         }
+        //
+        //         storeHold.removeAll();
+        //
+        //         if(result.rows) {
+        //             storeHold.loadData(result.rows);
+        //         }
+        //     }
+        // });
 
         Ext.Ajax.request({
             scope: me,
@@ -107,8 +107,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
                 if(!success || !result.success) {
                     return false;
                 }
-
-
+                
                 Ext.each(result.rows,function (item) {
                     var record = holdview.store.findRecord('id',item.id);
 
@@ -116,14 +115,17 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
                         holdview.store.add(item);
                     }
 
+                    if(record) {
+                        record.set('item',item.item);
+                    }
                 });
 
                 holdview.store.each(function (record) {
                     var obj = Ext.Array.findBy(result.rows, function(item) {
-                        if (item.id == record.get('id')) {
-                            return true;
-                        }
-                    });
+                            if (item.id == record.get('id')) {
+                                return true;
+                            }
+                        });
 
                     if(!obj) {
                         holdview.store.remove(record);

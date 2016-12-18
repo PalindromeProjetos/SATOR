@@ -116,7 +116,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
             store = Ext.getStore('flowprocessingstepaction'),
             dataview = me.down('dataview[name=flowprocessingsteptask]');
 
-        if(!Smart.workstation) {
+        if(!Smart.workstation || !Smart.workstation.areasid) {
+            Smart.Msg.showToast('Estação de Trabalho Não Configurada!','error');
             return false;
         }
 
@@ -144,31 +145,31 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
             }
         });
 
-        Ext.Ajax.request({
-            scope: me,
-            url: dataview.getUrl(),
-            params: {
-                action: 'select',
-                method: 'actionTask'
-            },
-            callback: function (options, success, response) {
-                var result = Ext.decode(response.responseText);
-
-                if(!success || !result.success) {
-                    return false;
-                }
-
-                if(!dataview.store) {
-                    return false;
-                }
-
-                dataview.store.removeAll();
-
-                if(result.rows) {
-                    dataview.store.loadData(result.rows);
-                }
-            }
-        });
+        // Ext.Ajax.request({
+        //     scope: me,
+        //     url: dataview.getUrl(),
+        //     params: {
+        //         action: 'select',
+        //         method: 'actionTask'
+        //     },
+        //     callback: function (options, success, response) {
+        //         var result = Ext.decode(response.responseText);
+        //
+        //         if(!success || !result.success) {
+        //             return false;
+        //         }
+        //
+        //         if(!dataview.store) {
+        //             return false;
+        //         }
+        //
+        //         dataview.store.removeAll();
+        //
+        //         if(result.rows) {
+        //             dataview.store.loadData(result.rows);
+        //         }
+        //     }
+        // });
     },
 
     initComponent: function () {

@@ -28,7 +28,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHoldOutput', {
     doCallBack: Ext.emptyFn,
 
     listeners: {
-        queryreader: 'onSelectHoldItem'
+        queryreader: 'onSelectHoldItem',
+        beforedestroy: function (view , eOpts) {
+            Ext.getCmp('flowprocessinghold').updateType();
+        }
     },
 
     initComponent: function () {

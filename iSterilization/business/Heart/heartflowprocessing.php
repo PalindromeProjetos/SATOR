@@ -1779,8 +1779,9 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 	}
 
 	public function selectUserFlow(array $data) {
-		$usercode = str_replace('HAM-','',$data['usercode']);
-		$userfail = "Sua tentativa fracassou, o usuário NÂO foi Autenticado!";
+		$match = 'HAM-';
+		$usercode = $data['usercode'];
+		$userfail = "Sua tentativa fracassou, <b>o usuário NÂO foi Autenticado!</b>";
 
         $sql = "
             declare
@@ -1794,17 +1795,21 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 inner join users u on ( u.id = c.usersid )
             where c.registration = @usercode";
 
-		self::_setSuccess(false);
-
-		if(!is_numeric($usercode)) {
-			self::_setText($userfail);
-			return self::getResultToJson();
-		}
-
 		try {
+
+			if(preg_match("/(^$match)[0-9]/", $usercode) != 1) {
+				throw new \PDOException($userfail);
+			}
+
+			$usercode = str_replace($match,'',$usercode);
 			$pdo = $this->prepare($sql);
 			$pdo->bindValue(":usercode", $usercode, \PDO::PARAM_INT);
-			$pdo->execute();
+			$callback = $pdo->execute();
+
+			if(!$callback) {
+				throw new \PDOException(self::$FAILURE_STATEMENT);
+			}
+
 			$rows = $pdo->fetchAll();
 
 			$success = (count($rows) != 0);
@@ -2318,8 +2323,6 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				flowprocessing fp
 				inner join flowprocessingstep fps on ( fps.flowprocessingid = fp.id )
 				inner join armorystock ak on ( ak.flowprocessingstepid = fps.id )
-				inner join armorymovementitem ami on ( ami.flowprocessingstepid = ak.flowprocessingstepid )
-				inner join armorymovement am on ( am.id = ami.armorymovementid )
 				cross apply (
 					select 
 						coalesce(ta.name,tb.name) as materialname
@@ -2343,8 +2346,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 					where a.id = fp.id
 				) t
 			where fp.barcode = @barcode
-			  and ak.armorystatus = 'E'
-			  and am.movementtype = '002'";
+			  and ak.armorystatus = 'E'";
 
         try {
             $pdo = $this->prepare($sql);
