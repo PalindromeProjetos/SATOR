@@ -942,66 +942,66 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 		return self::getResultToJson();
     }
 
-    public function setValidaCargaAreas(array $data) {
-        $username = $data['username'];
+	public function setValidaCargaAreas(array $data) {
+		$username = $data['username'];
 
-        $utimestamp = microtime(true);
-        $timestamp = floor($utimestamp);
-        $milliseconds = round(($utimestamp - $timestamp) * 1000000);
+		$utimestamp = microtime(true);
+		$timestamp = floor($utimestamp);
+		$milliseconds = round(($utimestamp - $timestamp) * 1000000);
 
-        $barcode = substr("L" . date("YmdHis") . $milliseconds,0,20);
+		$barcode = substr("L" . date("YmdHis") . $milliseconds,0,20);
 
-        $list = self::jsonToArray($data['list']);
+		$list = self::jsonToArray($data['list']);
 
-        $charge = new \iSterilization\Coach\flowprocessingcharge();
-        $chargeitem = new \iSterilization\Coach\flowprocessingchargeitem();
+		$charge = new \iSterilization\Coach\flowprocessingcharge();
+		$chargeitem = new \iSterilization\Coach\flowprocessingchargeitem();
 
-        try {
+		try {
 			$this->beginTransaction();
 
 			$charge->getStore()->setProxy($this);
-            $charge->getStore()->getModel()->set('id','');
-            $charge->getStore()->getModel()->set('chargeflag','005');
-            $charge->getStore()->getModel()->set('barcode',$barcode);
-            $charge->getStore()->getModel()->set('chargeuser',$username);
+			$charge->getStore()->getModel()->set('id','');
+			$charge->getStore()->getModel()->set('chargeflag','005');
+			$charge->getStore()->getModel()->set('barcode',$barcode);
+			$charge->getStore()->getModel()->set('chargeuser',$username);
 			$result = self::jsonToObject($charge->getStore()->insert());
 
 			if(!$result->success) {
 				throw new \PDOException(self::$FAILURE_STATEMENT);
 			}
 
-            while (list(, $item) = each($list)) {
-                extract($item);
+			while (list(, $item) = each($list)) {
+				extract($item);
 
-                $chargeitem->getStore()->setProxy($this);
-                $chargeitem->getStore()->getModel()->set('id','');
-                $chargeitem->getStore()->getModel()->set('chargestatus','001');
-                $chargeitem->getStore()->getModel()->set('flowprocessingchargeid',$result->rows->id);
-                $chargeitem->getStore()->getModel()->set('flowprocessingstepid',$flowprocessingstepid);
-                $resultitem = self::jsonToObject($chargeitem->getStore()->insert());
+				$chargeitem->getStore()->setProxy($this);
+				$chargeitem->getStore()->getModel()->set('id','');
+				$chargeitem->getStore()->getModel()->set('chargestatus','001');
+				$chargeitem->getStore()->getModel()->set('flowprocessingchargeid',$result->rows->id);
+				$chargeitem->getStore()->getModel()->set('flowprocessingstepid',$flowprocessingstepid);
+				$resultitem = self::jsonToObject($chargeitem->getStore()->insert());
 
 				if(!$resultitem->success) {
 					throw new \PDOException(self::$FAILURE_STATEMENT);
 				}
-            }
+			}
 
-            unset($charge);
-            unset($chargeitem);
+			unset($charge);
+			unset($chargeitem);
 
 			$this->commit();
 
-            self::_setSuccess(true);
+			self::_setSuccess(true);
 
-        } catch ( \PDOException $e ) {
+		} catch ( \PDOException $e ) {
 			if ($this->inTransaction()) {
 				$this->rollBack();
 			}
-            self::_setSuccess(false);
-            self::_setText($e->getMessage());
-        }
+			self::_setSuccess(false);
+			self::_setText($e->getMessage());
+		}
 
-        return self::getResultToJson();
-    }
+		return self::getResultToJson();
+	}
 
     public function setReverteEtapaArea(array $data) {
         $username = $data['username'];
@@ -1632,40 +1632,71 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 @areasid int = :areasid,
                 @barcode varchar(20) = :barcode;
 
-            select distinct
+            select
                 fp.id,
-                fpsm.flowprocessingstepid,
+                fpsa.flowprocessingstepid,
                 fpsa.id as flowprocessingstepactionid,
                 fp.barcode,
-                coalesce(tb.name,ib.name) as materialname
+                coalesce(ta.name,tb.name) as materialname,
+				countitems = ( 
+					select
+						count(fpsm.id)
+					from
+						flowprocessingstepmaterial fpsm
+					where fpsm.flowprocessingstepid = fps.id
+				),
+				oncharge = (
+                  select
+                      count(a.id)
+                  from
+                      flowprocessingchargeitem a
+                      inner join flowprocessingcharge b on ( b.id = a.flowprocessingchargeid )
+                  where a.flowprocessingstepid = fps.id
+                    and b.chargeflag in ('001','002','005','006')
+				)
             from
                 flowprocessing fp
                 inner join flowprocessingstep fps on ( fps.flowprocessingid = fp.id )
-                inner join flowprocessingstepaction fpsa on ( fpsa.flowprocessingstepid = fps.id and fpsa.flowstepaction = '001' )
-                inner join flowprocessingstepmaterial fpsm on ( fpsm.flowprocessingstepid = fps.id )
-                inner join itembase ib on ( ib.id = fpsm.materialid )
+                inner join flowprocessingstepaction fpsa on ( fpsa.flowprocessingstepid = fps.id )
                 outer apply (
                     select
                         mb.name
                     from
                         materialbox mb
                     where mb.id = fp.materialboxid
+                ) ta
+                outer apply (
+                    select
+						ib.name
+                    from
+                        itembase ib
+                    where ib.id = fp.materialid
                 ) tb
             where fps.areasid = @areasid
-              and ( fp.barcode = @barcode or ib.barcode = @barcode )";
+              and fp.barcode = @barcode
+			  and fpsa.flowstepaction = '001'";
 
         try {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":areasid", $areasid, \PDO::PARAM_INT);
             $pdo->bindValue(":barcode", $barcode, \PDO::PARAM_STR);
-            $pdo->execute();
-            $rows = $pdo->fetchAll();
+			$callback = $pdo->execute();
 
-            self::_setSuccess(count($rows) != 0);
+			if(!$callback) {
+				throw new \PDOException(self::$FAILURE_STATEMENT);
+			}
 
-            if(count($rows) != 0) {
-                self::_setRows($rows[0]);
-            }
+			$rows = $pdo->fetchAll();
+
+			if(count($rows) == 0) {
+				throw new \PDOException('Não foi possível localizar o material!');
+			}
+
+			if($rows[0]['oncharge'] != 0) {
+				throw new \PDOException('O material já está em Ciclo/Carga, favor aguardar o término do processo!');
+			}
+
+			self::_setRows($rows[0]);
 
         } catch ( \PDOException $e ) {
             self::_setSuccess(false);
@@ -2104,6 +2135,16 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                                 materialbox mb
                             where mb.id = a.materialboxid
                         ) ta
+						outer apply (
+							select
+								ib.name,
+								m.armorylocal
+							from
+								itembase ib
+								inner join material m on ( m.id = ib.id )
+							where ib.id = fp.materialid
+						) tb
+						/*
                         outer apply (
                             select top 1
                                 ib.name,
@@ -2117,6 +2158,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                                 and b.id < fps.id
                                 and ( b.stepflaglist like '%001%' or b.stepflaglist like '%019%' )
                         ) tb
+                        */
                     where a.id = fp.id
                 ) t
             where a.armorystatus = 'A'
@@ -2168,7 +2210,17 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                                 for xml path ('')
                             ) ,1,1,''
                         )                
-                )				
+                ),
+				onmovement = (
+					select
+						count(x.flowprocessingstepid)
+					from
+						armorymovementitem x
+						inner join armorymovement z on ( z.id = x.armorymovementid )
+					where z.releasestype in ('A','E')
+					  and z.movementtype = '001'
+					  and x.flowprocessingstepid = fps.id
+				)
             from
                 flowprocessingstep fps
 				inner join flowprocessingstepaction fpsa on ( fpsa.flowprocessingstepid = fps.id )
@@ -2189,43 +2241,43 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 							where mb.id = a.materialboxid
 						) ta
 						outer apply (
-							select top 1
+							select
 								ib.name,
 								m.armorylocal
 							from
-								flowprocessingstep b
-								inner join flowprocessingstepmaterial c on ( c.flowprocessingstepid = b.id )
-								inner join itembase ib on ( ib.id = c.materialid )
+								itembase ib
 								inner join material m on ( m.id = ib.id )
-							where b.flowprocessingid = fp.id
-							  and b.id < fps.id
-							  and ( b.stepflaglist like '%001%' or b.stepflaglist like '%019%' )
+							where ib.id = fp.materialid
 						) tb
 					where a.id = fp.id
 				) t
             where fps.areasid = @areasid
               and fps.flowstepstatus = '001'
               and fp.barcode = @barcode
-			  and a.hasstock = 1
-			  and fps.id not in (
-					select
-						x.flowprocessingstepid
-					from
-						armorymovementitem x
-						inner join armorymovement z on ( z.id = x.armorymovementid )
-					where z.releasestype in ('A','E')
-					   and z.movementtype = '001'
-			  );";
+              and fp.flowstatus = 'I'
+			  and a.hasstock = 1";
 
         try {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":areasid", $areasid, \PDO::PARAM_INT);
             $pdo->bindValue(":barcode", $barcode, \PDO::PARAM_STR);
-            $pdo->execute();
-            $rows = $pdo->fetchAll();
+			$callback = $pdo->execute();
 
-            self::_setRows($rows);
-            self::_setSuccess(count($rows) != 0);
+			if(!$callback) {
+				throw new \PDOException(self::$FAILURE_STATEMENT);
+			}
+
+			$rows = $pdo->fetchAll();
+
+			if(count($rows) == 0) {
+				throw new \PDOException('Não foi possível localizar o material!');
+			}
+
+			if($rows[0]['onmovement'] != 0) {
+				throw new \PDOException('O material já foi movimentado!');
+			}
+
+			self::_setRows($rows[0]);
 
         } catch ( \PDOException $e ) {
             self::_setSuccess(false);
@@ -2270,6 +2322,15 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 						where mb.id = a.materialboxid
 					) ta
 					outer apply (
+						select
+							ib.name
+						from
+							itembase ib
+							inner join material m on ( m.id = ib.id )
+						where ib.id = fp.materialid
+					) tb
+					/*
+					outer apply (
 						select top 1
 							ib.name
 						from
@@ -2280,6 +2341,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 							and b.id < fps.id
 							and ( b.stepflaglist like '%001%' or b.stepflaglist like '%019%' )
 					) tb
+					*/
 				where a.id = fp.id
 			) t
 		where fp.barcode = @barcode

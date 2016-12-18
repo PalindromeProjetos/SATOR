@@ -1299,6 +1299,7 @@ $include-isterilization-view-flowprocessing-protocol-call_sator_consultar_materi
 $include-isterilization-view-flowprocessing-protocol-call_sator_encerrar_movimento: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_informar_insumos: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_lancamento_manual: dynamic(true);;
+$include-isterilization-view-flowprocessing-protocol-call_sator_lote_carga: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_lote_ciclo: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_movimento_in: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_movimento_of: dynamic(true);;

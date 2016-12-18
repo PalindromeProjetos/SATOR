@@ -18,7 +18,14 @@ class flowprocessingchargeitem extends \Smart\Data\Cache {
             select
                 fpci.*,
                 fp.barcode,
-                coalesce(ta.name,tb.name) as materialname
+                coalesce(ta.name,tb.name) as materialname,
+				countitems = ( 
+					select
+						count(fpsm.id)
+					from
+						flowprocessingstepmaterial fpsm
+					where fpsm.flowprocessingstepid = fps.id
+				)                
             from
                 flowprocessingchargeitem fpci
                 inner join flowprocessingstep fps on ( fps.id = fpci.flowprocessingstepid )
@@ -31,12 +38,11 @@ class flowprocessingchargeitem extends \Smart\Data\Cache {
                     where mb.id = fp.materialboxid
                 ) ta
                 outer apply (
-                    select top 1
-                        ib.name
+                    select
+						ib.name
                     from
-                        flowprocessingstepmaterial fpsm
-                        inner join itembase ib on ( ib.id = fpsm.materialid )
-                    where fpsm.flowprocessingstepid = fps.id
+                        itembase ib
+                    where ib.id = fp.materialid
                 ) tb
             where fpci.flowprocessingchargeid = @flowprocessingchargeid;";
 

@@ -31,6 +31,9 @@ Ext.define( 'iSterilization.model.flowprocessing.FlowProcessingChargeItem', {
         }, {
             name: 'materialname',
             type: 'auto'            
+        }, {
+            name: 'countitems',
+            type: 'int'
         }
     ]
 

@@ -19,55 +19,50 @@ class armorymovementitem extends \Smart\Data\Cache {
             select
                 ami.*,
                 fp.barcode,
-                t.colorschema,
                 t.materialname,
                 dbo.getEnum('outputtype',ami.outputtype) as outputtypedescription,
-                dbo.getEnum('armorylocal',ami.armorylocal) as armorylocaldescription
+                dbo.getEnum('armorylocal',ami.armorylocal) as armorylocaldescription,
+                colorschema = (
+                    select stuff
+                        (
+                            (
+                                select
+                                    ',#' + tc.colorschema + '|#' + tc.colorstripe
+                                from
+                                    materialboxtarge mbt
+                                    inner join targecolor tc on ( tc.id = mbt.targecolorid )
+                                where mbt.materialboxid = fp.materialboxid
+                                order by mbt.targeorderby asc
+                                for xml path ('')
+                            ) ,1,1,''
+                        )                
+                )
             from
                 armorymovementitem ami
                 inner join flowprocessingstep fps on ( fps.id = ami.flowprocessingstepid )
                 inner join flowprocessing fp on ( fp.id = fps.flowprocessingid )
-                cross apply (
-                    select
-                        ta.colorschema,
-                        coalesce(ta.name,tb.name) as materialname
-                    from 
-                        flowprocessing a
-                        outer apply (
-                            select
-                                mb.name,
-                                colorschema = (
-                                    select stuff
-                                        (
-                                            (
-                                                select
-                                                    ',#' + tc.colorschema + '|#' + tc.colorstripe
-                                                from
-                                                    materialboxtarge mbt
-                                                    inner join targecolor tc on ( tc.id = mbt.targecolorid )
-                                                where mbt.materialboxid = mb.id
-                                                order by mbt.targeorderby asc
-                                                for xml path ('')
-                                            ) ,1,1,''
-                                        )                
-                                )
-                            from
-                                materialbox mb
-                            where mb.id = a.materialboxid
-                        ) ta
-                        outer apply (
-                            select top 1
-                                ib.name
-                            from
-                                flowprocessingstep b
-                                inner join flowprocessingstepmaterial c on ( c.flowprocessingstepid = b.id )
-                                inner join itembase ib on ( ib.id = c.materialid )
-                            where b.flowprocessingid = fp.id
-                              and b.id < fps.id
-                              and ( b.stepflaglist like '%001%' or b.stepflaglist like '%019%' )
-                        ) tb
-                    where a.id = fp.id
-                ) t
+				cross apply (
+					select 
+						coalesce(ta.name,tb.name) as materialname
+					from 
+						flowprocessing a
+						outer apply (
+							select
+								mb.name
+							from
+								materialbox mb
+							where mb.id = a.materialboxid
+						) ta
+						outer apply (
+							select
+								ib.name
+							from
+								itembase ib
+								inner join material m on ( m.id = ib.id )
+							where ib.id = fp.materialid
+						) tb
+					where a.id = fp.id
+				) t
             where ami.armorymovementid = @id";
 
         try {

@@ -79,9 +79,9 @@ class Session {
         $proxy = new Proxy(array($dns, $usr, $pwd));
 
         try {
-            $credentialCode = $_COOKIE['Credential-Code'];
-            $credentialData = $_COOKIE['Credential-Data'];
-            $sessionCookies = $_COOKIE[$credentialData];
+            $credentialCode = $_COOKIE['Credential-Code'] ? $_COOKIE['Credential-Code'] : '';
+            $credentialData = $_COOKIE['Credential-Data'] ? $_COOKIE['Credential-Data'] : '';
+            $sessionCookies = $_COOKIE[$credentialData] ? $_COOKIE[$credentialData] : '';
 
             $sql = "
                 declare
@@ -133,28 +133,28 @@ class Session {
     public function have() {
         $have = (strlen($this->username) !== 0);
 
-        if($have == false && @session_status() == PHP_SESSION_ACTIVE) {
-            $result = $this->getLastActivity();
-            if ($result && $result->success) {
-                $expireto = $result->rows[0]->lastactivity;
-
-                $format = "Y-m-d";
-                $date1  = \DateTime::createFromFormat($format, $expireto);
-                $date2  = \DateTime::createFromFormat($format, date($format));
-
-                if($date1 >= $date2) {
-                    $have = true;
-
-                    $this->attempts = 0;
-                    $this->backupid = $result->rows[0]->id;
-                    $this->usercode = $result->rows[0]->id;
-                    $this->moduleid = $result->rows[0]->moduleid;
-                    $this->username = $result->rows[0]->username;
-                    $this->password = $result->rows[0]->password;
-                    $this->fullname = $result->rows[0]->fullname;
-                }
-            }
-        }
+//        if($have == false && @session_status() == PHP_SESSION_ACTIVE) {
+//            $result = $this->getLastActivity();
+//            if ($result && $result->success) {
+//                $expireto = $result->rows[0]->lastactivity;
+//
+//                $format = "Y-m-d";
+//                $date1  = \DateTime::createFromFormat($format, $expireto);
+//                $date2  = \DateTime::createFromFormat($format, date($format));
+//
+//                if($date1 >= $date2) {
+//                    $have = true;
+//
+//                    $this->attempts = 0;
+//                    $this->backupid = $result->rows[0]->id;
+//                    $this->usercode = $result->rows[0]->id;
+//                    $this->moduleid = $result->rows[0]->moduleid;
+//                    $this->username = $result->rows[0]->username;
+//                    $this->password = $result->rows[0]->password;
+//                    $this->fullname = $result->rows[0]->fullname;
+//                }
+//            }
+//        }
 
         return $have;
     }

@@ -13,7 +13,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_MOVIMENTO_OF
         'iSterilization.view.flowprocessing.FlowProcessingController'
     ],
 
-    width: 650,
+    width: 810,
     modal: true,
     header: false,
     resizable: false,
@@ -58,9 +58,22 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_MOVIMENTO_OF
                 },
                 items: [
                     {
-                        xtype: 'label',
-                        cls: 'title-label',
-                        text: 'Movimento'
+                        xtype: 'container',
+                        layout: 'hbox',
+                        defaultType: 'label',
+                        defaults: {
+                            cls: 'title-label'
+                        },
+                        items: [
+                            {
+                                flex: 4,
+                                text: 'Movimento'
+                            }, {
+                                flex: 2,
+                                name: 'countitems',
+                                style : { 'text-align': 'right', 'color': 'rgb(173, 20, 87)' }
+                            }
+                        ]
                     }, {
                         margin: '10 0 10 0',
                         xtype: 'fieldcontainer',
@@ -147,7 +160,12 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_MOVIMENTO_OF
                         },
 
                         listeners: {
-                            beforeedit: 'onBeforeEditMOVIMENTO_OF'
+                            beforeedit: 'onBeforeEditMOVIMENTO_OF',
+                            rowkeydown: function ( viewTable , record , tr , rowIndex , e , eOpts) {
+                                if ([e.ESC].indexOf(e.getKey()) != -1) {
+                                    viewTable.up('window').close();
+                                }
+                            }
                         },
 
                         columns: [
@@ -158,6 +176,9 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_MOVIMENTO_OF
                                 width: 150,
                                 text: 'Schema',
                                 dataIndex: 'colorpallet'
+                            }, {
+                                dataIndex: 'barcode',
+                                width: 160
                             }, {
                                 width: 180,
                                 dataIndex: 'armorylocaldescription',
@@ -182,42 +203,11 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_MOVIMENTO_OF
                                     }
                                 ]
                             }
-                        ],
-
-                        dockedItems: [
-                            {
-                                xtype: 'pagingtoolbar',
-                                store: 'armorymovementitem',
-                                dock: 'bottom',
-                                displayInfo: true,
-                                items: [
-                                    {
-                                        xtype: 'button',
-                                        iconCls: "fa fa-times",
-                                        handler: function (btn) {
-                                            btn.windowClose();
-                                        }
-                                    }
-                                ]
-                            }
                         ]
                     }
                 ]
             }
         ]
     }
-
-    // buttonAlign: 'center',
-    //
-    // buttons: [
-    //     {
-    //         scale: 'medium',
-    //         text: 'Cancelar',
-    //         showSmartTheme: 'red',
-    //         handler: function (btn) {
-    //             btn.windowClose();
-    //         }
-    //     }
-    // ]
 
 });

@@ -189,9 +189,6 @@ class Store {
             }
 
             $this->model->set('id',$id);
-//            $this->model->setId($id);
-//            $this->model->getSubmit()->setRowValue('id',$id);
-//            $this->model->getSubmit()->setRawValue('id',$id);
 
             new Logbook($this->model);
             $this->fireEvent('PosInsert');

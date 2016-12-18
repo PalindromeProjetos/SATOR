@@ -222,7 +222,7 @@ class flowprocessingstepaction extends \Smart\Data\Cache {
                     where a.id = fp.id
                 ) m
             where fpsa.isactive = 1
-              AND fp.flowstatus = 'I'
+              and fp.flowstatus = 'I'
 			  and fpsa.flowstepaction in ('001','004')
               and not exists (
                     select
@@ -422,50 +422,34 @@ class flowprocessingstepaction extends \Smart\Data\Cache {
 
 			union all
 
-			select
-				fpc.id,
-				'C' as steptype,
-				fpc.chargedate as dateof, 
-				fpc.barcode,
-				fpc.cyclestartuser as username, 
-				null as stepflaglist,
-				fpc.chargeflag as flowstepaction, 
-				st.name as sterilizationtypename,	
-				st.version,
-				null as flowprocessingid,
-				null as flowprocessingstepid,
-				null as flowprocessingstepactionid,
-				substring(convert(varchar(16), fpc.chargedate, 121),9,8) as timeof,
-				'Lote Avulso' as materialname,
-				fps.elementname as originplace,
-				ta.targetplace,
-				dbo.getLeftPad(3,'0',count(*)) as items
-			from
-				flowprocessingstep fps
-                inner join flowprocessing fp on ( fp.id = fps.flowprocessingid )
-                inner join sterilizationtype st on ( st.id = fp.sterilizationtypeid )
-				inner join flowprocessingchargeitem fpci on ( fpci.flowprocessingstepid = fps.id )
-				inner join flowprocessingcharge fpc on ( fpc.id =  fpci.flowprocessingchargeid )
-				outer apply (
-					select top 1
-						b.elementname as targetplace
-					from
-						flowprocessingstep b
-					where b.id = fps.target
-				) ta
-			where fps.areasid = @areasid
-			  and fpc.chargeflag = '005'
-			group by
-				fpc.id,
-				fpc.chargedate, 
-				fpc.barcode,
-				fpc.cyclestartuser, 
-				fpc.chargeflag, 
-				st.name,
-				st.version,
-				fpc.chargedate,
-				fps.elementname,
-				ta.targetplace
+            select
+                fpc.id,
+                'C' as steptype,
+                fpc.chargedate as dateof,
+                fpc.barcode,
+                fpc.chargeuser as username,
+                null as stepflaglist,
+                fpc.chargeflag as flowstepaction,
+                'Fluxos' as sterilizationtypename,	
+                null as version,
+                null as flowprocessingid,
+                null as flowprocessingstepid,
+                null as flowprocessingstepactionid,
+                substring(convert(varchar(16), fpc.chargedate, 121),9,8) as timeof,
+                'Lote Avulso' as materialname,
+                'Diversos' as originplace,
+                fpc.chargeuser as targetplace,
+                items = (
+                    select
+                        dbo.getLeftPad(3,'0',count(fpci.id))
+                    from
+                        flowprocessingchargeitem fpci
+                    where fpci.flowprocessingchargeid = fpc.id
+                )
+            from
+                flowprocessingcharge fpc
+            where fpc.chargeflag = '005'
+              and fpc.areasid = @areasid
 
             order by 4, 2, 3 desc";
 

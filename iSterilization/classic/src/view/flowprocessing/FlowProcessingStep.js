@@ -54,10 +54,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
 
     // html: [
     //     '<div style="margin-bottom: 10px;" class="thumb-wrap">',
-    //         '<div class="thumb-task-{taskcode}">',
-    //         '<a class="authorize">{taskrows}</a>',
+    //         '<div class="thumb-task-001">',
+    //         '<a class="authorize">00</a>',
     //         '</div>',
-    //         '<span><a style="font-size: 14px;">{taskname}</a></span>',
+    //         '<span><a style="font-size: 14px;">Liberar Processos</a></span>',
     //     '</div>'
     // ],
 

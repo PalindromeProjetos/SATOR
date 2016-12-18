@@ -16,15 +16,15 @@ class flowprocessingcharge extends \Smart\Data\Cache {
                 @id int = :id;
                 
             select
+                fpc.*,
                 ec.equipmentid,
                 c.name as cyclename,
-                ib.name as equipmentname,
-                fpc.*
+                ib.name as equipmentname                
             from
                 flowprocessingcharge fpc
-                inner join equipmentcycle ec on ( ec.id = fpc.equipmentcycleid )
-                inner join itembase ib on ( ib.id = ec.equipmentid )
-                inner join cycle c on ( c.id = ec.cycleid )
+                left join equipmentcycle ec on ( ec.id = fpc.equipmentcycleid )
+                left join itembase ib on ( ib.id = ec.equipmentid )
+                left join cycle c on ( c.id = ec.cycleid )
             where fpc.id = @id;";
 
         try {
