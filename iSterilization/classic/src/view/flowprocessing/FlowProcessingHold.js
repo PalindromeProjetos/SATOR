@@ -71,31 +71,11 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
     updateType: function () {
         var me = this,
             holdview = me.down('flowprocessingholdview');
-            // storeHold = me.down('gridpanel[name=releasesHold]').getStore();
 
         if(!Smart.workstation || !Smart.workstation.areasid) {
             Smart.Msg.showToast('Estação de Trabalho Não Configurada!','error');
             return false;
         }
-
-        // Ext.Ajax.request({
-        //     scope: me,
-        //     url: storeHold.getUrl(),
-        //     params: storeHold.getExtraParams(),
-        //     callback: function (options, success, response) {
-        //         var result = Ext.decode(response.responseText);
-        //
-        //         if(!success || !result.success) {
-        //             return false;
-        //         }
-        //
-        //         storeHold.removeAll();
-        //
-        //         if(result.rows) {
-        //             storeHold.loadData(result.rows);
-        //         }
-        //     }
-        // });
 
         Ext.Ajax.request({
             scope: me,
