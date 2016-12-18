@@ -68,6 +68,9 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                     return false;
                 }
                 materialmessage.update(result.rows[0]);
+
+                searchmaterial.selectText();
+                searchmaterial.focus(false,200);
             }
         });
     },
@@ -94,6 +97,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                         text: 'Consultar Material'
                     }, {
                         margin: '20 0 0 0',
+                        selectOnFocus: true,
                         name: 'materialname',
                         xtype: 'searchmaterial',
                         hiddenNameId: 'materialid',
