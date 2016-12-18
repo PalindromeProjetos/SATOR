@@ -122,9 +122,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
 
                 holdview.store.each(function (record) {
                     var obj = Ext.Array.findBy(result.rows, function(item) {
-                            if (item.id == record.get('id')) {
-                                return true;
-                            }
+                            return ((record) && (record.get('id') == item.id));
                         });
 
                     if(!obj) {
