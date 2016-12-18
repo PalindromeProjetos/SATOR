@@ -21,6 +21,12 @@ class flowprocessingcharge extends \Smart\Data\Model {
 //    private $equipmentid;
 
     /**
+     * @Policy {"nullable":false}
+     * @Column {"description":"", "type":"integer", "policy":true, "logallow":true, "default":""}
+     */
+    private $areasid;
+
+    /**
      * @Policy {"nullable":true}
      * @Column {"description":"", "type":"integer", "policy":true, "logallow":true, "default":""}
      */
@@ -108,19 +114,35 @@ class flowprocessingcharge extends \Smart\Data\Model {
         return $this;
     }
 
+//    /**
+//     * @return type integer
+//     */
+//    public function getEquipmentid() {
+//        return $this->equipmentid;
+//    }
+//
+//    /**
+//     * @param type $equipmentid
+//     * @return \iSterilization\Model\flowprocessingcharge
+//     */
+//    public function setEquipmentid($equipmentid) {
+//        $this->equipmentid = $equipmentid;
+//        return $this;
+//    }
+
     /**
      * @return type integer
      */
-    public function getEquipmentid() {
-        return $this->equipmentid;
+    public function getAreasid() {
+        return $this->areasid;
     }
 
     /**
-     * @param type $equipmentid
+     * @param type $areasid
      * @return \iSterilization\Model\flowprocessingcharge
      */
-    public function setEquipmentid($equipmentid) {
-        $this->equipmentid = $equipmentid;
+    public function setAreasid($areasid) {
+        $this->areasid = $areasid;
         return $this;
     }
 

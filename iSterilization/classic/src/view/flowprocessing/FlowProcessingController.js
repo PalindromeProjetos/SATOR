@@ -2020,6 +2020,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
                         store.insert(0,{
                             barcode: result.rows.barcode,
+                            areasid: Smart.workstation.areasid,
                             countitems: result.rows.countitems,
                             flowprocessingchargeid: id.getValue(),
                             materialname: result.rows.materialname,
@@ -2106,6 +2107,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
                         store.insert(0,{
                             barcode: result.rows.barcode,
+                            areasid: Smart.workstation.areasid,
                             countitems: result.rows.countitems,
                             flowprocessingchargeid: id.getValue(),
                             materialname: result.rows.materialname,
