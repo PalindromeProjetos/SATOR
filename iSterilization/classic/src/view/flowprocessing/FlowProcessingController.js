@@ -2020,7 +2020,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
                         store.insert(0,{
                             barcode: result.rows.barcode,
-                            areasid: Smart.workstation.areasid,
                             countitems: result.rows.countitems,
                             flowprocessingchargeid: id.getValue(),
                             materialname: result.rows.materialname,
@@ -2107,7 +2106,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
                         store.insert(0,{
                             barcode: result.rows.barcode,
-                            areasid: Smart.workstation.areasid,
                             countitems: result.rows.countitems,
                             flowprocessingchargeid: id.getValue(),
                             materialname: result.rows.materialname,
@@ -3835,7 +3833,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             doCallBack = function (rows) {
                 store.add({
                     chargeflag: '005',
-                    chargeuser: rows.username
+                    chargeuser: rows.username,
+                    areasid: Smart.workstation.areasid
                 });
 
                 view.setLoading('Criando Lote Avulso!');
@@ -3943,6 +3942,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             form = view.down('form'),
             doCallBack = function (rows) {
                 form.down('hiddenfield[name=chargeuser]').setValue(rows.username);
+                form.down('hiddenfield[name=areasid]').setValue(Smart.workstation.areasid);
 
                 me.setModuleForm(form);
                 me.setModuleData('flowprocessingcharge');

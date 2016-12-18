@@ -68,6 +68,9 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_PREPARA_LOTE
                         name: 'chargeuser'
                     }, {
                         xtype: 'hiddenfield',
+                        name: 'areasid'
+                    }, {
+                        xtype: 'hiddenfield',
                         name: 'equipmentid'
                     }, {
                         xtype: 'hiddenfield',
