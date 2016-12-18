@@ -70,8 +70,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
 
     updateType: function () {
         var me = this,
-            holdview = me.down('flowprocessingholdview'),
-            storeHold = me.down('gridpanel[name=releasesHold]').getStore();
+            holdview = me.down('flowprocessingholdview');
+            // storeHold = me.down('gridpanel[name=releasesHold]').getStore();
 
         if(!Smart.workstation || !Smart.workstation.areasid) {
             Smart.Msg.showToast('Estação de Trabalho Não Configurada!','error');
@@ -154,7 +154,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
                 margin: '10 0 0 0',
                 xtype: 'container',
                 layout: {
-                    type: 'hbox',
+                    type: 'vbox',
                     align: 'stretch'
                 },
                 items: [
@@ -168,10 +168,47 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
                         },
                         items: [
                             {
-                                xtype: 'label',
-                                cls: 'processing-field-font',
-                                text: 'Estação de Trabalho Não Configurada',
-                                name: 'labelareas'
+                                xtype: 'container',
+                                layout: 'hbox',
+                                defaultType: 'label',
+                                defaults: {
+                                    height: 37,
+                                    cls: 'processing-field-font',
+                                    style : { 'line-height': '47px' }
+                                },
+                                items: [
+                                    {
+                                        flex: 1,
+                                        text: 'Estação de Trabalho Não Configurada',
+                                        name: 'labelareas'
+                                    }, {
+                                        xtype: 'splitter'
+                                    }, {
+                                        width: 120,
+                                        text: 'Consultar',
+                                        name: 'labelitem'
+                                    }, {
+                                        xtype: 'splitter'
+                                    }, {
+                                        width: 300,
+                                        name: 'search',
+                                        showClear: true,
+                                        xtype: 'textfield',
+                                        useUpperCase: true,
+                                        useReadColor: false,
+                                        inputType: 'password',
+                                        cls: 'processing-field',
+                                        labelCls: 'processing-field-font',
+                                        listeners: {
+                                            specialkey: function (field, e, eOpts) {
+                                                var view = field.up('flowprocessinghold');
+                                                if ([e.ENTER].indexOf(e.getKey()) != -1) {
+                                                    view.fireEvent('queryreader', field, e, eOpts);
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }, {
                                 flex: 1,
                                 xtype: 'flowprocessingholdview',
@@ -203,87 +240,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
                                         }
                                     }
                                 }
-                            }
-                        ]
-                    }, {
-                        xtype: 'splitter'
-                    }, {
-                        width: 385,
-                        xtype: 'container',
-                        layout: {
-                            type: 'vbox',
-                            align: 'stretch'
-                        },
-                        items: [
-                            {
-                                xtype: 'label',
-                                cls: 'processing-field-font',
-                                text: 'Processos',
-                                name: 'labelitem'
-                            }, {
-                                name: 'search',
-                                showClear: true,
-                                xtype: 'textfield',
-                                useUpperCase: true,
-                                useReadColor: false,
-                                inputType: 'password',
-                                cls: 'processing-field',
-                                labelCls: 'processing-field-font',
-                                listeners: {
-                                    specialkey: function (field, e, eOpts) {
-                                        var view = field.up('flowprocessinghold');
-                                        if ([e.ENTER].indexOf(e.getKey()) != -1) {
-                                            view.fireEvent('queryreader', field, e, eOpts);
-                                        }
-                                    }
-                                }
-                            }, {
-                                flex: 1,
-                                // rowLines: true,
-                                margin: '10 0 0 0',
-                                xtype: 'gridpanel',
-                                name: 'releasesHold',
-                                cls: 'flowprocessinghold',
-                                bodyStyle: 'background:transparent;',
-
-                                url: '../iSterilization/business/Calls/Heart/HeartFlowProcessing.php',
-
-                                params: {
-                                    action: 'select',
-                                    method: 'selectHold',
-                                    areasid: Smart.workstation.areasid
-                                },
-
-                                fields: [
-                                    {
-                                        name: 'id',
-                                        type: 'int'
-                                    }, {
-                                        name: 'barcode',
-                                        type: 'auto'
-                                    }, {
-                                        name: 'materialname',
-                                        type: 'auto'
-                                    }, {
-                                        name: 'clientname',
-                                        type: 'auto'
-                                    }
-                                ],
-
-                                columns: [
-                                    {
-                                        flex: 1,
-                                        renderer: function (value,metaData,record) {
-                                            var barcode = record.get('barcode'),
-                                                clientname = record.get('clientname'),
-                                                materialname = record.get('materialname'),
-                                                strRow =    '<div style="font-weight: 700; font-size: 16px; line-height: 24px;">' +
-                                                                '<div>{0}</div><div>{1}</div><div>{2}</div>' +
-                                                            '</div>';
-                                            return Ext.String.format(strRow,clientname,materialname,barcode);
-                                        }
-                                    }
-                                ]
                             }
                         ]
                     }
