@@ -1515,6 +1515,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         view.setLoading(false);
 
         if(!result.success) {
+            Smart.ion.sound.play("computer_error");
             Smart.Msg.showToast(result.text);
         }
 
@@ -1537,6 +1538,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             view = me.getView();
 
         view.setLoading(false);
+        Smart.ion.sound.play("computer_error");
         Smart.Msg.showToast(action.result.text,'info');
         // view.down('textfield[name=password]').focus(false,200);
     },
