@@ -13,7 +13,8 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_MOVIMENTO_IN
         'iSterilization.view.flowprocessing.FlowProcessingController'
     ],
 
-    width: 500,
+    // width: 500,
+    width: 810,
     modal: true,
     header: false,
     resizable: false,
@@ -67,7 +68,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_MOVIMENTO_IN
                         items: [
                             {
                                 flex: 4,
-                                text: 'Movimento'
+                                text: 'Movimento/Retorno'
                             }, {
                                 flex: 2,
                                 name: 'countitems',
@@ -125,7 +126,6 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_MOVIMENTO_IN
                         defaults: {
                             useReadColor: true,
                             fieldCls: 'smart-field-style-action'
-                            // labelCls: 'smart-field-style-action'
                         },
                         items: [
                             {
@@ -160,13 +160,21 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_MOVIMENTO_IN
                         },
 
                         listeners: {
-                            beforeedit: 'onBeforeEditMOVIMENTO_OF'
+                            beforeedit: 'onBeforeEditMOVIMENTO_OF',
+                            rowkeydown: function ( viewTable , record , tr , rowIndex , e , eOpts) {
+                                if ([e.ESC].indexOf(e.getKey()) != -1) {
+                                    viewTable.up('window').close();
+                                }
+                            }
                         },
 
                         columns: [
                             {
                                 flex: 1,
                                 dataIndex: 'materialname'
+                            }, {
+                                dataIndex: 'barcode',
+                                width: 160
                             }, {
                                 width: 180,
                                 dataIndex: 'armorylocaldescription'
@@ -199,19 +207,6 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_MOVIMENTO_IN
                 ]
             }
         ]
-    },
-
-    buttonAlign: 'center',
-
-    buttons: [
-        {
-            scale: 'medium',
-            text: 'Cancelar',
-            showSmartTheme: 'red',
-            handler: function (btn) {
-                btn.windowClose();
-            }
-        }
-    ]
+    }
 
 });

@@ -170,22 +170,9 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_MOVIMENTO_TO
                 },
                 items: [
                     {
-                        xtype: 'container',
-                        layout: 'hbox',
-                        defaultType: 'label',
-                        defaults: {
-                            cls: 'title-label'
-                        },
-                        items: [
-                            {
-                                flex: 4,
-                                text: 'Movimento'
-                            }, {
-                                flex: 2,
-                                name: 'countitems',
-                                style : { 'text-align': 'right', 'color': 'rgb(173, 20, 87)' }
-                            }
-                        ]
+                        xtype: 'label',
+                        cls: 'title-label',
+                        text: 'Criar Movimento/Saída'
                     }, {
                         margin: '10 0 10 0',
                         xtype: 'fieldcontainer',

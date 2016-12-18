@@ -67,7 +67,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_MOVIMENTO_OF
                         items: [
                             {
                                 flex: 4,
-                                text: 'Movimento'
+                                text: 'Movimento/Entrada'
                             }, {
                                 flex: 2,
                                 name: 'countitems',

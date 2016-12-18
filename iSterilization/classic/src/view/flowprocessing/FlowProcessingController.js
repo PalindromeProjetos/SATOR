@@ -512,6 +512,11 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                     return false;
                 }
 
+                if(store.findRecord('barcode',value)) {
+                    Smart.Msg.showToast("O item lido já foi lançado neste movimento!",'info');
+                    return false;
+                }
+
                 var data = result.rows[0],
                     armorymovementid = view.down('hiddenfield[name=id]').getValue();
 
@@ -598,6 +603,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         var me = this,
             view = me.getView(),
             value = field.getValue(),
+            id = view.down('hiddenfield[name=id]'),
             store = Ext.getStore('armorymovementitem');
 
         field.reset();
@@ -627,26 +633,38 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
                 view.setLoading(false);
 
-                if(!success || !result.success || result.records == 0) {
+                if(!success || !result.success) {
+                    Smart.ion.sound.play("computer_error");
                     Smart.Msg.showToast(result.text,'error');
+                    field.reset();
+                    field.focus(false,200);
                     return false;
                 }
 
-                if(result.rows[0].available == 0) {
-                    Smart.Msg.showToast("O item lido já foi lançado em outro movimento!",'error');
-                    return false;
-                }
+                // if(!success || !result.success || result.records == 0) {
+                //     Smart.Msg.showToast(result.text,'error');
+                //     return false;
+                // }
+                //
+                // if(result.rows[0].available == 0) {
+                //     Smart.Msg.showToast("O item lido já foi lançado em outro movimento!",'error');
+                //     return false;
+                // }
 
-                store.add({
+                var data = result.rows;
+
+                store.insert(0,{
                     outputtype: 'P',
-                    barcode: result.rows[0].barcode,
-                    colorschema: result.rows[0].colorschema,
-                    materialname: result.rows[0].materialname,
-                    armorymovementid: view.down('hiddenfield[name=id]').getValue(),
-                    flowprocessingstepid: result.rows[0].flowprocessingstepid
+                    armorymovementid: id.getValue(),
+                    barcode: data.barcode,
+                    colorschema: data.colorschema,
+                    materialname: data.materialname,
+                    flowprocessingstepid: data.flowprocessingstepid
                 });
 
                 store.sync();
+                Smart.ion.sound.play("button_tiny");
+
             }
         });
     },

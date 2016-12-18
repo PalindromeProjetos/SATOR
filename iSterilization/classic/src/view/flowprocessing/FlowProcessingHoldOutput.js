@@ -57,9 +57,22 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHoldOutput', {
                 },
                 items: [
                     {
-                        xtype: 'label',
-                        cls: 'title-label',
-                        text: 'Movimento'
+                        xtype: 'container',
+                        layout: 'hbox',
+                        defaultType: 'label',
+                        defaults: {
+                            cls: 'title-label'
+                        },
+                        items: [
+                            {
+                                flex: 4,
+                                text: 'Movimento/Saída'
+                            }, {
+                                flex: 2,
+                                name: 'countitems',
+                                style : { 'text-align': 'right', 'color': 'rgb(173, 20, 87)' }
+                            }
+                        ]
                     }, {
                         xtype: 'container',
                         layout: {
@@ -183,18 +196,23 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHoldOutput', {
                             clicksToEdit: 1
                         },
 
-                        // listeners: {
-                        //     beforeedit: 'onBeforeEditMOVIMENTO_OF'
-                        // },
+                        listeners: {
+                            rowkeydown: function ( viewTable , record , tr , rowIndex , e , eOpts) {
+                                if ([e.ESC].indexOf(e.getKey()) != -1) {
+                                    viewTable.up('window').close();
+                                }
+                            }
+                        },
 
                         columns: [
                             {
-                                xtype: 'rownumberer'
-                            }, {
                                 flex: 1,
                                 sortable: false,
                                 dataIndex: 'materialname',
                                 text: 'Material / kit'
+                            }, {
+                                dataIndex: 'barcode',
+                                width: 160
                             }, {
                                 width: 150,
                                 text: 'Schema',
@@ -225,24 +243,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHoldOutput', {
                                         handler: 'delReleasesItem',
                                         iconCls: "fa fa-minus-circle action-delete-color-font",
                                         tooltip: 'Descartar lançamento!'
-                                    }
-                                ]
-                            }
-                        ],
-
-                        dockedItems: [
-                            {
-                                xtype: 'pagingtoolbar',
-                                store: 'armorymovementitem',
-                                dock: 'bottom',
-                                displayInfo: true,
-                                items: [
-                                    {
-                                        xtype: 'button',
-                                        iconCls: "fa fa-times",
-                                        handler: function (btn) {
-                                            btn.windowClose();
-                                        }
                                     }
                                 ]
                             }

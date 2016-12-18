@@ -20,6 +20,7 @@ class armorymovementitem extends \Smart\Data\Cache {
                 ami.*,
                 fp.barcode,
                 t.materialname,
+                dbo.getEnum('regresstype','001') as regresstypedescription,
                 dbo.getEnum('outputtype',ami.outputtype) as outputtypedescription,
                 dbo.getEnum('armorylocal',ami.armorylocal) as armorylocaldescription,
                 colorschema = (

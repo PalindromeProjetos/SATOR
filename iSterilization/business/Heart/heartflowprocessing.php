@@ -2097,7 +2097,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 @barcode varchar(20) = :barcode;
             
             select
-                a.id, 
+                a.id,
+                fp.barcode,
                 a.flowprocessingstepid, 
                 a.armorystatus, 
                 a.armorylocal,
@@ -2144,21 +2145,6 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 								inner join material m on ( m.id = ib.id )
 							where ib.id = fp.materialid
 						) tb
-						/*
-                        outer apply (
-                            select top 1
-                                ib.name,
-                                m.armorylocal
-                            from
-                                flowprocessingstep b
-                                inner join flowprocessingstepmaterial c on ( c.flowprocessingstepid = b.id )
-                                inner join itembase ib on ( ib.id = c.materialid )
-                                inner join material m on ( m.id = ib.id )
-                            where b.flowprocessingid = fp.id
-                                and b.id < fps.id
-                                and ( b.stepflaglist like '%001%' or b.stepflaglist like '%019%' )
-                        ) tb
-                        */
                     where a.id = fp.id
                 ) t
             where a.armorystatus = 'A'
@@ -2167,10 +2153,23 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         try {
             $pdo = $this->prepare($sql);
             $pdo->bindValue(":barcode", $barcode, \PDO::PARAM_STR);
-            $pdo->execute();
-            $rows = $pdo->fetchAll();
+			$callback = $pdo->execute();
 
-            self::_setRows($rows);
+			if(!$callback) {
+				throw new \PDOException(self::$FAILURE_STATEMENT);
+			}
+
+			$rows = $pdo->fetchAll();
+
+			if(count($rows) == 0) {
+				throw new \PDOException('Não foi possível localizar o material!');
+			}
+
+			if($rows[0]['available'] == 0) {
+				throw new \PDOException('O material <b>não está disponível</b> para lançamento!');
+			}
+
+			self::_setRows($rows[0]);
 
         } catch ( \PDOException $e ) {
             self::_setSuccess(false);
@@ -2329,19 +2328,6 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 							inner join material m on ( m.id = ib.id )
 						where ib.id = fp.materialid
 					) tb
-					/*
-					outer apply (
-						select top 1
-							ib.name
-						from
-							flowprocessingstep b
-							inner join flowprocessingstepmaterial c on ( c.flowprocessingstepid = b.id )
-							inner join itembase ib on ( ib.id = c.materialid )
-						where b.flowprocessingid = fp.id
-							and b.id < fps.id
-							and ( b.stepflaglist like '%001%' or b.stepflaglist like '%019%' )
-					) tb
-					*/
 				where a.id = fp.id
 			) t
 		where fp.barcode = @barcode
