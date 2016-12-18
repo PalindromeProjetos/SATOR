@@ -1154,11 +1154,9 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
 			self::_setSuccess(true);
 
-			$stepsettings = isset($data['stepsettings']) ? $data['stepsettings'] : '{"tagprinter":""}';
+			$printlocate = isset($data['printlocate']) ? $data['printlocate'] : '';
 
-			$stepsettings = self::jsonToObject($stepsettings);
-
-			if((($cyclestatus == 'FINAL') || ($cyclestatus == 'PRINT'))&&(strlen($stepsettings->tagprinter) != 0)) {
+			if((($cyclestatus == 'FINAL') || ($cyclestatus == 'PRINT'))&&(strlen($printlocate) != 0)) {
 				$this->imprimeEtiqueta($data);
 			}
 
