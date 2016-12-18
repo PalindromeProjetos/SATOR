@@ -1540,7 +1540,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         view.setLoading(false);
         Smart.ion.sound.play("computer_error");
         Smart.Msg.showToast(action.result.text,'info');
-        // view.down('textfield[name=password]').focus(false,200);
     },
 
     selectDatePicker: function (datePicker, date, eOpts) {
