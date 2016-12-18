@@ -166,7 +166,11 @@ class flowprocessingstepaction extends \Smart\Data\Cache {
 				o.originplace,
 				t.targetplace,
                 items = (
-                    select dbo.getLeftPad(3,'0',count(*)) from flowprocessingstepmaterial where flowprocessingstepid = fps.id
+                    select
+						dbo.getLeftPad(3,'0',count(*))
+					from
+						flowprocessingstepmaterial
+					where flowprocessingstepid = fps.id
                 )
             from 
                 flowprocessingstepaction fpsa
@@ -212,12 +216,12 @@ class flowprocessingstepaction extends \Smart\Data\Cache {
                             where mb.id = a.materialboxid
                         ) ta
                         outer apply (
-                            select top 1
-                                ib.name
-                            from
-                                flowprocessingstepmaterial mb
-                                inner join itembase ib on ( ib.id = mb.materialid )
-                            where mb.flowprocessingstepid = b.id
+							select
+								ib.name
+							from
+								itembase ib
+								inner join material m on ( m.id = ib.id )
+							where ib.id = fp.materialid
                         ) tb
                     where a.id = fp.id
                 ) m
@@ -237,188 +241,108 @@ class flowprocessingstepaction extends \Smart\Data\Cache {
             union all
 
 			select
-				t.id,
-				t.steptype,
-				t.dateof, 
-				t.barcode,
-				t.username, 
-				t.stepflaglist,
-				t.flowstepaction, 
-				t.sterilizationtypename,	
-				t.version,
-				t.flowprocessingid,
-				t.flowprocessingstepid,
-				t.flowprocessingstepactionid,
-				t.timeof,
-				t.materialname,
-				t.originplace,
-				t.targetplace,
-				t.items
-			from
-				flowprocessingstep fps
-				cross apply (
+                fpc.id,
+                'C' as steptype,
+                fpc.chargedate as dateof,
+                fpc.barcode,
+                fpc.cyclestartuser as username,
+                null as stepflaglist,
+                fpc.chargeflag as flowstepaction,
+                c.name as sterilizationtypename,
+                null as version,
+                null as flowprocessingid,
+                null as flowprocessingstepid,
+                null as flowprocessingstepactionid,
+                substring(convert(varchar(16), fpc.chargedate, 121),9,8) as timeof,
+                ('T.' + convert(varchar,fpc.temperature) + 'º D.' + convert(varchar,fpc.duration) + 'm A.' + convert(varchar,fpc.timetoopen) +'m' ) as materialname,
+				fps.elementname as originplace,
+                ta.targetplace,
+                items = (
+                    select
+                        dbo.getLeftPad(3,'0',count(fpci.id))
+                    from
+                        flowprocessingchargeitem fpci
+                    where fpci.flowprocessingchargeid = fpc.id
+                )
+            from
+                flowprocessingcharge fpc
+				inner join equipmentcycle ec on ( ec.id = fpc.equipmentcycleid )
+				inner join cycle c on ( c.id = ec.cycleid )
+				inner join flowprocessingstep fps on ( 
+						fps.equipmentid = ec.equipmentid
+					and fps.target = fpc.areasid
+				)
+				outer apply (
 					select
-						fpc.id,
-						'C' as steptype,
-						fpc.chargedate as dateof, 
-						fpc.barcode,
-						fpc.cyclestartuser as username, 
-						null as stepflaglist,
-						fpc.chargeflag as flowstepaction, 
-						c.name as sterilizationtypename,	
-						null as version,
-						null as flowprocessingid,
-						null as flowprocessingstepid,
-						null as flowprocessingstepactionid,
-						substring(convert(varchar(16), fpc.chargedate, 121),9,8) as timeof,
-						('T.' + convert(varchar,fpc.temperature) + 'º D.' + convert(varchar,fpc.duration) + 'm A.' + convert(varchar,fpc.timetoopen) +'m' ) as materialname,
-						a.elementname as originplace,
-						ta.targetplace,
-						items = (
-							select
-								dbo.getLeftPad(3,'0',count(*))
-							from
-								flowprocessingchargeitem
-							where flowprocessingchargeid = fpc.id
-						)
+						b.elementname as targetplace
 					from
-						flowprocessingstep a
-						inner join equipmentcycle ec on ( ec.equipmentid = a.equipmentid )
-						inner join cycle c on ( c.id = ec.cycleid )
-						inner join flowprocessingcharge fpc on ( fpc.equipmentcycleid =  ec.id )
-						outer apply (
-							select top 1
-								b.elementname as targetplace
-							from
-								flowprocessingstep b
-							where b.id = a.target
-						) ta
-					where a.source = fps.id
-					  and fpc.chargeflag = '001'
-					group by
-						fpc.id,
-						fpc.chargedate, 
-						fpc.barcode,
-						fpc.cyclestartuser, 
-						fpc.chargeflag, 
-						c.name,
-						fpc.cyclestart,
-						fpc.temperature,
-						fpc.duration,
-						fpc.timetoopen,
-						a.elementname,
-						ta.targetplace
-				) t
-			where fps.areasid = @areasid
-			group by
-				t.id,
-				t.steptype,
-				t.dateof, 
-				t.barcode,
-				t.username, 
-				t.stepflaglist,
-				t.flowstepaction, 
-				t.sterilizationtypename,
-				t.version,
-				t.flowprocessingid,
-				t.flowprocessingstepid,
-				t.flowprocessingstepactionid,
-				t.timeof,
-				t.materialname,
-				t.originplace,
-				t.targetplace,
-				t.items
+						flowprocessingstep b
+					where b.id = fps.target
+				) ta
+            where fpc.chargeflag = '001'
+              and fpc.areasid = @areasid
 
 			union all
 
-			select
-				t.id,
-				t.steptype,
-				t.dateof, 
-				t.barcode,
-				t.username, 
-				t.stepflaglist,
-				t.flowstepaction, 
-				t.sterilizationtypename,	
-				t.version,
-				t.flowprocessingid,
-				t.flowprocessingstepid,
-				t.flowprocessingstepactionid,
-				t.timeof,
-				t.materialname,
-				t.originplace,
-				t.targetplace,
-				dbo.getLeftPad(3,'0',t.items) as items
+			select distinct
+				ta.id,
+				ta.steptype,
+				ta.dateof,
+				ta.barcode,
+				ta.username,
+				null as stepflaglist,
+				ta.flowstepaction,
+				ta.sterilizationtypename,
+				null as version,
+				null as flowprocessingid,
+				null as flowprocessingstepid,
+				null as flowprocessingstepactionid,
+				ta.timeof,
+				ta.materialname,
+				ta.originplace,
+				ta.targetplace,
+				ta.items
 			from
 				flowprocessingstep fps
+				inner join flowprocessing fp on ( fp.id = fps.flowprocessingid )
 				cross apply (
 					select
 						fpc.id,
 						'T' as steptype,
-						fpc.cyclestart as dateof, 
+						fpc.cyclestart as dateof,
 						fpc.barcode,
-						fpc.cyclestartuser as username, 
-						null as stepflaglist,
-						fpc.chargeflag as flowstepaction, 
-						c.name as sterilizationtypename,	
-						null as version,
-						null as flowprocessingid,
-						null as flowprocessingstepid,
-						null as flowprocessingstepactionid,
+						fpc.cyclestartuser as username,
+						fpc.chargeflag as flowstepaction,
+						c.name as sterilizationtypename,
 						substring(convert(varchar(16), fpc.cyclestart, 121),9,8) as timeof,
-						('T.' + convert(varchar,fpc.temperature) + ' D.' + convert(varchar,fpc.duration) + ' A.' + convert(varchar,fpc.timetoopen) ) as materialname,
+						('T.' + convert(varchar,fpc.temperature) + 'º D.' + convert(varchar,fpc.duration) + 'm A.' + convert(varchar,fpc.timetoopen) +'m' ) as materialname,
 						a.elementname as originplace,
-						ta.targetplace,
-						dbo.getLeftPad(3,'0',count(*)) as items
+						i.targetplace,
+						items = (
+							select
+								dbo.getLeftPad(3,'0',count(fpci.id))
+							from
+								flowprocessingchargeitem fpci
+							where fpci.flowprocessingchargeid = fpc.id
+						)
 					from
 						flowprocessingstep a
-						inner join equipmentcycle ec on ( ec.equipmentid = a.equipmentid )
+						inner join flowprocessingchargeitem fpci on ( fpci.flowprocessingstepid = a.source )
+						inner join flowprocessingcharge fpc on ( fpc.id = fpci.flowprocessingchargeid )
+						inner join equipmentcycle ec on ( ec.id = fpc.equipmentcycleid and ec.equipmentid = a.equipmentid)
 						inner join cycle c on ( c.id = ec.cycleid )
-						inner join flowprocessingcharge fpc on ( fpc.equipmentcycleid =  ec.id )
-						inner join flowprocessingchargeitem fpci on ( fpci.flowprocessingchargeid =  fpc.id )
 						outer apply (
-							select top 1
+							select
 								b.elementname as targetplace
 							from
 								flowprocessingstep b
 							where b.source = a.target
-						) ta
+						) i
 					where a.target = fps.id
-					--where a.source = fps.id
 					  and fpc.chargeflag = '002'
-					group by
-						fpc.id,
-						fpc.cyclestart, 
-						fpc.barcode,
-						fpc.cyclestartuser, 
-						fpc.chargeflag, 
-						c.name,
-						fpc.cyclestart,
-						fpc.temperature,
-						fpc.duration,
-						fpc.timetoopen,
-						a.elementname,
-						ta.targetplace
-				) t
+				) ta
 			where fps.areasid = @areasid
-			group by
-				t.id,
-				t.steptype,
-				t.dateof, 
-				t.barcode,
-				t.username, 
-				t.stepflaglist,
-				t.flowstepaction, 
-				t.sterilizationtypename,	
-				t.version,
-				t.flowprocessingid,
-				t.flowprocessingstepid,
-				t.flowprocessingstepactionid,
-				t.timeof,
-				t.materialname,
-				t.originplace,
-				t.targetplace,
-				t.items
+			  and fp.flowstatus = 'I'
 
 			union all
 

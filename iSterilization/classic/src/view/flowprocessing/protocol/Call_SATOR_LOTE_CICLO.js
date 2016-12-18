@@ -135,7 +135,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_CICLO',
                                 flex: 1
                             }, {
                                 dataIndex: 'countitems',
-                                width: 40
+                                width: 60
                             }, {
                                 dataIndex: 'barcode',
                                 width: 160

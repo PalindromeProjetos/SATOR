@@ -1154,7 +1154,11 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
 			self::_setSuccess(true);
 
-			if(($cyclestatus == 'FINAL') || ($cyclestatus == 'PRINT')) {
+			$stepsettings = isset($data['stepsettings']) ? $data['stepsettings'] : '{"tagprinter":""}';
+
+			$stepsettings = self::jsonToObject($stepsettings);
+
+			if((($cyclestatus == 'FINAL') || ($cyclestatus == 'PRINT'))&&(strlen($stepsettings->tagprinter) != 0)) {
 				$this->imprimeEtiqueta($data);
 			}
 
@@ -1560,6 +1564,13 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                       inner join flowprocessingcharge b on ( b.id = a.flowprocessingchargeid )
                   where a.flowprocessingstepid = fps.id
                     and b.chargeflag in ('001','002','003','005')
+				),
+				countitems = (
+					select
+						count(fpsm.id)
+					from
+						flowprocessingstepmaterial fpsm
+					where fpsm.flowprocessingstepid = fps.id
 				)
             from
                 flowprocessing fp
@@ -1573,15 +1584,14 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                     where mb.id = fp.materialboxid
                 ) ta
                 outer apply (
-                    select top 1
+					select
 						ib.name,
 						1 as cycleenabled
-                    from
-                        flowprocessingstepmaterial b
-                        inner join itembase ib on ( ib.id = b.materialid )
-						inner join materialcycle mc on ( mc.materialid = b.materialid )
+					from
+						itembase ib						
+						inner join materialcycle mc on ( mc.materialid = ib.id )
 						inner join equipmentcycle ec on ( ec.cycleid = mc.cycleid and ec.id = @equipmentcycleid )
-                    where b.flowprocessingstepid = fps.id
+					where ib.id = fp.materialid
                 ) tb
             where fps.areasid = @areasid
 			  and fp.barcode = @barcode_p
@@ -2636,7 +2646,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
     //<editor-fold desc="Etiqueta">
 
     public function imprimeEtiqueta(array $data) {
-        $stepsettings = isset($data['stepsettings']) ? $data['stepsettings'] : null;
+        $stepsettings = isset($data['stepsettings']) ? $data['stepsettings'] : '{"tagprinter":"001"}'; // Etiqueta de Processo
 
         $stepsettings = self::jsonToObject($stepsettings);
         $tagprinter = 'imprimeEtiqueta' . $stepsettings->tagprinter;
