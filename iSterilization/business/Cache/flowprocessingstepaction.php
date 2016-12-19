@@ -240,7 +240,7 @@ class flowprocessingstepaction extends \Smart\Data\Cache {
 
             union all
 
-			select
+            select
                 fpc.id,
                 'C' as steptype,
                 fpc.chargedate as dateof,
@@ -255,33 +255,28 @@ class flowprocessingstepaction extends \Smart\Data\Cache {
                 null as flowprocessingstepactionid,
                 substring(convert(varchar(16), fpc.chargedate, 121),9,8) as timeof,
                 ('T.' + convert(varchar,fpc.temperature) + 'º D.' + convert(varchar,fpc.duration) + 'm A.' + convert(varchar,fpc.timetoopen) +'m' ) as materialname,
-				fps.elementname as originplace,
-                ta.targetplace,
-                items = (
-                    select
-                        dbo.getLeftPad(3,'0',count(fpci.id))
-                    from
-                        flowprocessingchargeitem fpci
-                    where fpci.flowprocessingchargeid = fpc.id
-                )
+                ib.name as originplace,
+                coalesce(t.targetplace,'Sem Lançamentos') as targetplace,
+                dbo.getLeftPad(3,'0',coalesce(t.items,0)) as items
             from
                 flowprocessingcharge fpc
-				inner join equipmentcycle ec on ( ec.id = fpc.equipmentcycleid )
-				inner join cycle c on ( c.id = ec.cycleid )
-				inner join flowprocessingstep fps on ( 
-						fps.equipmentid = ec.equipmentid
-					and fps.target = fpc.areasid
-				)
-				outer apply (
-					select
-						b.elementname as targetplace
-					from
-						flowprocessingstep b
-					where b.id = fps.target
-				) ta
-            where fpc.chargeflag = '001'
-              and fpc.areasid = @areasid
-
+                inner join equipmentcycle ec on ( ec.id = fpc.equipmentcycleid )
+                inner join cycle c on ( c.id = ec.cycleid )
+                inner join itembase ib on ( ib.id = ec.equipmentid )
+                outer apply (
+                    select
+                        dbo.getLeftPad(3,'0',count(fpci.id)) as items,
+                        t.elementname as targetplace
+                    from
+                        flowprocessingchargeitem fpci
+                        inner join flowprocessingstep s on ( s.id = fpci.flowprocessingstepid )
+                        inner join flowprocessingstep t on ( t.source = s.target )
+                    where fpci.flowprocessingchargeid = fpc.id
+                    group by t.elementname
+                ) t
+            where fpc.areasid = @areasid
+              and fpc.chargeflag = '001'
+  
 			union all
 
 			select distinct
