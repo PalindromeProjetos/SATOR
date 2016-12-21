@@ -68,49 +68,15 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
         window.clearInterval(me.timeoutID);
     },
 
-    updateType: function () {
-        var me = this,
-            holdview = me.down('flowprocessingholdview');
+    updateType : function () {
+        var store = Ext.getStore('flowprocessingholdarea');
 
         if(!Smart.workstation || !Smart.workstation.areasid) {
             Smart.Msg.showToast('Estação de Trabalho Não Configurada!','error');
             return false;
         }
 
-        Ext.Ajax.request({
-            scope: me,
-            url: holdview.getUrl(),
-            params: holdview.getParams(),
-            callback: function (options, success, response) {
-                var result = Ext.decode(response.responseText);
-
-                if(!success || !result.success) {
-                    return false;
-                }
-                
-                Ext.each(result.rows,function (item) {
-                    var record = holdview.store.findRecord('id',item.id);
-
-                    if(!record) {
-                        holdview.store.add(item);
-                    }
-
-                    if(record) {
-                        record.set('item',item.item);
-                    }
-                });
-
-                holdview.store.each(function (record) {
-                    var obj = Ext.Array.findBy(result.rows, function(item) {
-                            return ((record) && (record.get('id') == item.id));
-                        });
-
-                    if(!obj) {
-                        holdview.store.remove(record);
-                    }
-                });
-            }
-        });
+        store.load();
     },
 
     initComponent: function () {
@@ -126,7 +92,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
     buildItems: function () {
         var me = this;
 
-        Ext.create('iSterilization.store.flowprocessing.FlowProcessingStepAction');
+        Ext.create('iSterilization.store.flowprocessing.FlowProcessingHoldArea');
 
         me.items = [
             {
@@ -153,40 +119,13 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
                                 defaultType: 'label',
                                 defaults: {
                                     height: 37,
-                                    cls: 'processing-field-font',
-                                    style : { 'line-height': '47px' }
+                                    cls: 'processing-field-font'
                                 },
                                 items: [
                                     {
                                         flex: 1,
                                         text: 'Estação de Trabalho Não Configurada',
                                         name: 'labelareas'
-                                    }, {
-                                        xtype: 'splitter'
-                                    }, {
-                                        width: 120,
-                                        text: 'Consultar',
-                                        name: 'labelitem'
-                                    }, {
-                                        xtype: 'splitter'
-                                    }, {
-                                        width: 300,
-                                        name: 'search',
-                                        showClear: true,
-                                        xtype: 'textfield',
-                                        useUpperCase: true,
-                                        useReadColor: false,
-                                        inputType: 'password',
-                                        cls: 'processing-field',
-                                        labelCls: 'processing-field-font',
-                                        listeners: {
-                                            specialkey: function (field, e, eOpts) {
-                                                var view = field.up('flowprocessinghold');
-                                                if ([e.ENTER].indexOf(e.getKey()) != -1) {
-                                                    view.fireEvent('queryreader', field, e, eOpts);
-                                                }
-                                            }
-                                        }
                                     }
                                 ]
                             }, {
@@ -211,13 +150,16 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
                                 ],
                                 listeners: {
                                     change: function ( field , newValue , oldValue , eOpts) {
-                                        var me = field.up('flowprocessinghold').down('flowprocessingholdview');
+                                        var view = field.up('flowprocessinghold'),
+                                            hold = view.down('flowprocessingholdview');
 
-                                        me.store.clearFilter();
+                                        hold.store.clearFilter();
 
                                         if(['001','002','003','004'].indexOf(newValue.movementtype) != -1) {
-                                            me.store.filter('movementtype', newValue.movementtype);
+                                            hold.store.filter('movementtype', newValue.movementtype);
                                         }
+
+                                        view.down('textfield[name=search]').focus(false,200);
                                     }
                                 }
                             }
@@ -226,6 +168,48 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
                 ]
             }
         ];
-    }
+    },
+
+    dockedItems: [
+        {
+            xtype: 'pagingtoolbar',
+            store: 'flowprocessingholdarea',
+            dock: 'bottom',
+            items: [
+                {
+                    width: 90,
+                    labelWidth: 40,
+                    useReadColor: true,
+                    name: 'totalrecords',
+                    xtype: 'textfield',
+                    labelAlign: 'left',
+                    fieldLabel: 'total',
+                    value: 0
+                }, '->', {
+                    labelAlign: 'left',
+                    fieldLabel: 'Consulta',
+                    width: 400,
+                    name: 'search',
+                    labelWidth: 70,
+                    showClear: true,
+                    xtype: 'textfield',
+                    useUpperCase: true,
+                    useReadColor: false,
+                    inputType: 'password',
+                    listeners: {
+                        specialkey: function (field, e, eOpts) {
+                            var view = field.up('flowprocessinghold');
+                            if ([e.ESC].indexOf(e.getKey()) != -1) {
+                                field.reset();
+                            }
+                            if ([e.ENTER].indexOf(e.getKey()) != -1) {
+                                view.fireEvent('queryreader', field, e, eOpts);
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
 
 });

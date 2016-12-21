@@ -19,6 +19,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 load: 'onLoadStepArea',
                 beforeload: 'onBeforeLoadStepArea'
             },
+            '#flowprocessingholdarea': {
+                load: 'onLoadHoldArea',
+                beforeload: 'onBeforeLoadHoldArea'
+            },
             '#armorymovementitem': {
                 datachanged: 'onChangedCharge'
             },
@@ -61,18 +65,20 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         });
     },
 
-    onLoadStepArea: function (store, records) {
+    onLoadStepArea: function (store, records, successful, operation, eOpts) {
         var me = this,
             data = [],
             view = me.getView(),
             dataView = view.down('flowprocessingdataview'),
-            storeView = dataView.getStore();
+            storeView = dataView.getStore(),
+            resultSet = operation.getResultSet();
 
         if(!dataView) {
             return false;
         }
 
         storeView.removeAll();
+        var totalrecords = view.down('textfield[name=totalrecords]');
 
         if (!records || records.length == 0) {
             return false;
@@ -84,9 +90,13 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
         storeView.loadData(data);
         view.setCycleStart(storeView);
+
+        if (totalrecords) {
+            totalrecords.setValue(resultSet.total);
+        }
     },
 
-    onBeforeLoadStepArea: function (store , operation , eOpts) {
+    onBeforeLoadStepArea: function (store, operation, eOpts) {
         var me = this,
             view = me.getView(),
             dataView = view.down('flowprocessingdataview');
@@ -98,10 +108,79 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         store.setParams(dataView.getParams());
         var limit = view.down('numberfield[name=limit]');
         var search = view.down('textfield[name=search]');
-
+        
         if(limit) {
             store.setPageSize(limit.getValue());
         }
+
+        if(search) {
+            search.focus(false,200);
+        }
+    },
+
+    onLoadHoldArea: function (store, records, successful, operation, eOpts) {
+        var me = this,
+            data = [],
+            view = me.getView(),
+            dataView = view.down('flowprocessingholdview'),
+            storeView = dataView.getStore(),
+            resultSet = operation.getResultSet();
+
+        if(!dataView) {
+            return false;
+        }
+
+        var totalrecords = view.down('textfield[name=totalrecords]');
+
+        if (!records || records.length == 0) {
+            return false;
+        }
+
+        Ext.each(records, function (record) {
+            var rec = storeView.findRecord('id',record.get('id'));
+
+            data.push(record.data);
+
+            if(!rec) {
+                storeView.add(record.data);
+            }
+
+            if(rec) {
+                rec.set('item',record.get('item'));
+            }
+        });
+
+        storeView.each(function (record) {
+            var obj = Ext.Array.findBy(data, function(item) {
+                return ((record) && (record.get('id') == item.id));
+            });
+
+            if(!obj) {
+                storeView.remove(record);
+            }
+        });
+
+        if (totalrecords) {
+            totalrecords.setValue(resultSet.total);
+        }
+    },
+
+    onBeforeLoadHoldArea: function (store, operation, eOpts) {
+        var me = this,
+            view = me.getView(),
+            dataView = view.down('flowprocessingholdview');
+
+        if(!dataView) {
+            return false;
+        }
+
+        store.setParams(dataView.getParams());
+        // var limit = view.down('numberfield[name=limit]');
+        var search = view.down('textfield[name=search]');
+
+        // if(limit) {
+        //     store.setPageSize(limit.getValue());
+        // }
 
         if(search) {
             search.focus(false,200);

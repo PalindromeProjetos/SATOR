@@ -177,29 +177,29 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
                                     removecharge: 'onFlowStepRemoveCharge',
                                     selectcharge: 'onFlowStepSelectCharge'
                                 }
-                            }, {
-                                columns: 4,
-                                vertical: false,
-                                xtype: 'radiogroup',
-                                cls: 'flowprocessinghold',
-                                labelCls: 'processing-field-font',
-                                items: [
-                                    { boxLabel: 'Todos', name: 'movementtype', inputValue: '000', checked: true },
-                                    { boxLabel: 'Ciclo', name: 'movementtype', inputValue: '001' },
-                                    { boxLabel: 'Carga', name: 'movementtype', inputValue: '002' },
-                                    { boxLabel: 'Processos', name: 'movementtype', inputValue: '003' }
-                                ]
-                                // listeners: {
-                                //     change: function ( field , newValue , oldValue , eOpts) {
-                                //         var me = field.up('flowprocessinghold').down('flowprocessingholdview');
-                                //
-                                //         me.store.clearFilter();
-                                //
-                                //         if(['001','002','003','004'].indexOf(newValue.movementtype) != -1) {
-                                //             me.store.filter('movementtype', newValue.movementtype);
-                                //         }
-                                //     }
-                                // }
+                            // }, {
+                            //     columns: 4,
+                            //     vertical: false,
+                            //     xtype: 'radiogroup',
+                            //     cls: 'flowprocessinghold',
+                            //     labelCls: 'processing-field-font',
+                            //     items: [
+                            //         { boxLabel: 'Todos', name: 'steptype', inputValue: 'A', checked: true },
+                            //         { boxLabel: 'Ciclo', name: 'steptype', inputValue: 'T' },
+                            //         { boxLabel: 'Carga', name: 'steptype', inputValue: 'C' },
+                            //         { boxLabel: 'Processos', name: 'steptype', inputValue: 'P' }
+                            //     ],
+                            //     listeners: {
+                            //         change: function ( field , newValue , oldValue , eOpts) {
+                            //             var me = field.up('flowprocessingstep').down('flowprocessingdataview');
+                            //
+                            //             me.store.clearFilter();
+                            //
+                            //             if(['T','C','P'].indexOf(newValue.steptype) != -1) {
+                            //                 me.store.filter('steptype', newValue.steptype);
+                            //             }
+                            //         }
+                            //     }
                             }
                         ]
                     }
@@ -213,26 +213,36 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
             xtype: 'pagingtoolbar',
             store: 'flowprocessingsteparea',
             dock: 'bottom',
-            // displayInfo: true,
             items: [
                 {
                     value: 25,
-                    width: 150,
+                    width: 120,
                     minValue: 10,
                     maxValue: 100,
+                    labelWidth: 70,
                     hideTrigger: true,
                     labelAlign: 'left',
                     name: 'limit',
                     xtype: 'numberfield',
-                    fieldLabel: 'Por página',
+                    fieldLabel: 'processos',
                     listeners: {
                         specialkey: 'totalResultsSearch'
                     }
+                }, {
+                    width: 90,
+                    labelWidth: 40,
+                    useReadColor: true,
+                    name: 'totalrecords',
+                    xtype: 'textfield',
+                    labelAlign: 'left',
+                    fieldLabel: 'total',
+                    value: 0
                 }, '->', {
                     labelAlign: 'left',
                     fieldLabel: 'Consulta',
                     width: 400,
                     name: 'search',
+                    labelWidth: 70,
                     showClear: true,
                     xtype: 'textfield',
                     useUpperCase: true,

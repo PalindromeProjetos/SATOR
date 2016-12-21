@@ -80,7 +80,7 @@ Ext.define( 'iSterilization.store.flowprocessing.FlowProcessingStepArea', {
     config: {
         extraParams: {
             action: 'select',
-            method: 'selectArea'
+            method: 'selectStepArea'
         }
     }
 

@@ -11,8 +11,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingDataView', {
     trackOver: true,
     autoScroll: true,
     multiSelect: false,
-    // name: 'flowprocessingstepaction',
-    // store: 'flowprocessingsteparea',
     itemSelector: 'div.step',
 
     url: '../iSterilization/business/Calls/Heart/HeartFlowProcessing.php',
@@ -117,7 +115,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingDataView', {
 
         me.params = {
             action: 'select',
-            method: 'selectArea',
+            method: 'selectStepArea',
             query: Smart.workstation.areasid
         };
 

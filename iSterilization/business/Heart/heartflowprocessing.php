@@ -2446,76 +2446,6 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         return self::getResultToJson();
     }
 
-    public function releasesTypeA(array $data) {
-        $areasid = $data['areasid'];
-
-        $sql = "
-            declare
-                @areasid int = :areasid,
-                @releasestype char(1) = :releasestype;
-
-            select
-                am.id,
-                am.areasid,
-                coalesce(o.lineone,(convert(varchar, dbo.getLeftPad(8,'0',am.id)))) as lineone,
-                a.name as areasname,
-                am.movementuser,
-                coalesce(o.patientname, convert(char(10), am.movementdate, 103)) as linetwo,
-                am.movementtype,
-                dbo.getEnum('movementtype',am.movementtype) as movementtypedescription,
-                am.releasestype,
-                dbo.getEnum('releasestype',am.releasestype) as releasestypedescription,
-                o.patientname,
-                o.dateof,
-                o.timeof,
-                item = ( 
-                	select
-						case am.movementtype
-							when '001' then 'E-' + dbo.getLeftPad(3,'0',count(id))
-							when '002' then 'S-' + dbo.getLeftPad(3,'0',count(id))
-							when '003' then 'R-' + dbo.getLeftPad(3,'0',count(id))
-							when '004' then 'X-' + dbo.getLeftPad(3,'0',count(id))
-							else dbo.getLeftPad(3,'0',count(id))
-						end as items                		
-                	from
-                		armorymovementitem
-                	where armorymovementid = am.id
-                )
-            from
-                armorymovement am
-                inner join areas a on ( a.id = am.areasid )
-                outer apply (
-                    select
-                        c.name as lineone,
-                        amo.patientname,
-                        amo.dateof,
-                        amo.timeof,
-                        amo.barcode
-                    from
-                        armorymovementoutput amo
-                        inner join client c on ( c.id = amo.clientid )
-                    where amo.id = am.id
-                ) o
-            where am.areasid = @areasid
-                and am.releasestype = @releasestype;";
-
-        try {
-            $pdo = $this->prepare($sql);
-            $pdo->bindValue(":areasid", $areasid, \PDO::PARAM_INT);
-            $pdo->bindValue(":releasestype", "A", \PDO::PARAM_STR);
-            $pdo->execute();
-            $rows = $pdo->fetchAll();
-
-            self::_setRows($rows);
-
-        } catch ( \PDOException $e ) {
-            self::_setSuccess(false);
-            self::_setText($e->getMessage());
-        }
-
-        return self::getResultToJson();
-    }
-
     public function selectFlowDash(array $data) {
         $query = $data['query'];
 
@@ -2641,7 +2571,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         return self::getResultToJson();
     }
 
-    //<editor-fold desc="Etiqueta">
+    //<editor-fold desc="Imprime Etiqueta">
 
     public function imprimeEtiqueta(array $data) {
         $stepsettings = isset($data['stepsettings']) ? $data['stepsettings'] : '{"tagprinter":"001"}'; // Etiqueta de Processo
@@ -2926,7 +2856,9 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
     //</editor-fold>
 
-	public function selectArea(array $data) {
+	//<editor-fold desc="Prepara Areas">
+
+	public function selectStepArea(array $data) {
 		$query = $data['query'];
 		$start = $data['start'];
 		$limit = $data['limit'];
@@ -3174,5 +3106,77 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
 		return self::getResultToJson();
 	}
+
+	public function selectHoldArea(array $data) {
+		$areasid = $data['areasid'];
+
+		$sql = "
+            declare
+                @areasid int = :areasid,
+                @releasestype char(1) = :releasestype;
+
+            select
+                am.id,
+                am.areasid,
+                coalesce(o.lineone,(convert(varchar, dbo.getLeftPad(8,'0',am.id)))) as lineone,
+                a.name as areasname,
+                am.movementuser,
+                coalesce(o.patientname, convert(char(10), am.movementdate, 103)) as linetwo,
+                am.movementtype,
+                dbo.getEnum('movementtype',am.movementtype) as movementtypedescription,
+                am.releasestype,
+                dbo.getEnum('releasestype',am.releasestype) as releasestypedescription,
+                o.patientname,
+                o.dateof,
+                o.timeof,
+                item = ( 
+                	select
+						case am.movementtype
+							when '001' then 'E-' + dbo.getLeftPad(3,'0',count(id))
+							when '002' then 'S-' + dbo.getLeftPad(3,'0',count(id))
+							when '003' then 'R-' + dbo.getLeftPad(3,'0',count(id))
+							when '004' then 'X-' + dbo.getLeftPad(3,'0',count(id))
+							else dbo.getLeftPad(3,'0',count(id))
+						end as items                		
+                	from
+                		armorymovementitem
+                	where armorymovementid = am.id
+                )
+            from
+                armorymovement am
+                inner join areas a on ( a.id = am.areasid )
+                outer apply (
+                    select
+                        c.name as lineone,
+                        amo.patientname,
+                        amo.dateof,
+                        amo.timeof,
+                        amo.barcode
+                    from
+                        armorymovementoutput amo
+                        inner join client c on ( c.id = amo.clientid )
+                    where amo.id = am.id
+                ) o
+            where am.areasid = @areasid
+                and am.releasestype = @releasestype;";
+
+		try {
+			$pdo = $this->prepare($sql);
+			$pdo->bindValue(":areasid", $areasid, \PDO::PARAM_INT);
+			$pdo->bindValue(":releasestype", "A", \PDO::PARAM_STR);
+			$pdo->execute();
+			$rows = $pdo->fetchAll();
+
+			self::_setRows($rows);
+
+		} catch ( \PDOException $e ) {
+			self::_setSuccess(false);
+			self::_setText($e->getMessage());
+		}
+
+		return self::getResultToJson();
+	}
+
+	//</editor-fold>
 
 }

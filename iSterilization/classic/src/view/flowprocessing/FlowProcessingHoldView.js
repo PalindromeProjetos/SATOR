@@ -88,7 +88,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHoldView', {
 
         me.params = {
             action: 'select',
-            method: 'releasesTypeA',
+            method: 'selectHoldArea',
             areasid: Smart.workstation.areasid
         };
 
