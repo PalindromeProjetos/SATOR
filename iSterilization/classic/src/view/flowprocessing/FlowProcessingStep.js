@@ -221,7 +221,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
                     minValue: 10,
                     maxValue: 100,
                     hideTrigger: true,
-                    labelAlign: 'right',
+                    labelAlign: 'left',
                     name: 'limit',
                     xtype: 'numberfield',
                     fieldLabel: 'Por página',
@@ -229,7 +229,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
                         specialkey: 'totalResultsSearch'
                     }
                 }, '->', {
-                    labelAlign: 'right',
+                    labelAlign: 'left',
                     fieldLabel: 'Consulta',
                     width: 400,
                     name: 'search',
@@ -241,6 +241,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
                     listeners: {
                         specialkey: function (field, e, eOpts) {
                             var view = field.up('flowprocessingstep');
+                            if ([e.ESC].indexOf(e.getKey()) != -1) {
+                                field.reset();
+                            }
                             if ([e.ENTER].indexOf(e.getKey()) != -1) {
                                 view.fireEvent('queryreader', field, e, eOpts);
                             }

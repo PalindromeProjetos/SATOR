@@ -97,9 +97,14 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
         store.setParams(dataView.getParams());
         var limit = view.down('numberfield[name=limit]');
+        var search = view.down('textfield[name=search]');
 
         if(limit) {
             store.setPageSize(limit.getValue());
+        }
+
+        if(search) {
+            search.focus(false,200);
         }
     },
 
