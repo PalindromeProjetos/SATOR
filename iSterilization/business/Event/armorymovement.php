@@ -140,7 +140,7 @@ class armorymovement extends \Smart\Data\Event {
                         $sql = "
                             declare
                                 @flowprocessingid int,
-                                @flowprocessingstepid int = {$flowprocessingstepid};
+                                @flowprocessingstepid int = :flowprocessingstepid;
 
                             select
                                 @flowprocessingid = flowprocessingid
@@ -152,9 +152,11 @@ class armorymovement extends \Smart\Data\Event {
 
                             update flowprocessingstepaction set isactive = 0 where flowprocessingstepid = @flowprocessingstepid;";
 
-                        $affected = $proxy->exec($sql);
+                        $pdo = $proxy->prepare($sql);
+                        $pdo->bindValue(":flowprocessingstepid", $flowprocessingstepid, \PDO::PARAM_INT);
+                        $callback = $pdo->execute();
 
-                        if ($affected === false) {
+                        if(!$callback) {
                             throw new \PDOException(self::$FAILURE_STATEMENT);
                         }
                     }
@@ -162,7 +164,7 @@ class armorymovement extends \Smart\Data\Event {
                     if($newmovementtype == '002') {
                         $sql = "
                             declare
-                               @flowprocessingstepid int = {$flowprocessingstepid};
+                               @flowprocessingstepid int = :flowprocessingstepid;
 
                             update
                                 armorystock
@@ -170,9 +172,11 @@ class armorymovement extends \Smart\Data\Event {
                                 armorystatus = 'E'
                             where flowprocessingstepid = @flowprocessingstepid";
 
-                        $affected = $proxy->exec($sql);
+                        $pdo = $proxy->prepare($sql);
+                        $pdo->bindValue(":flowprocessingstepid", $flowprocessingstepid, \PDO::PARAM_INT);
+                        $callback = $pdo->execute();
 
-                        if ($affected === false) {
+                        if(!$callback) {
                             throw new \PDOException(self::$FAILURE_STATEMENT);
                         }
                     }
@@ -180,8 +184,8 @@ class armorymovement extends \Smart\Data\Event {
                     if($newmovementtype == '003') {
                         $sql = "
                             declare
-                               @armorylocal char(3) = '{$armorylocal}',
-                               @flowprocessingstepid int = {$flowprocessingstepid};
+                               @armorylocal char(3) = :armorylocal,
+                               @flowprocessingstepid int = :flowprocessingstepid;
 
                             update
                                 armorystock
@@ -191,9 +195,12 @@ class armorymovement extends \Smart\Data\Event {
                               and armorystatus = 'E'
                               and armorylocal = @armorylocal";
 
-                        $affected = $proxy->exec($sql);
+                        $pdo = $proxy->prepare($sql);
+                        $pdo->bindValue(":armorylocal", $armorylocal, \PDO::PARAM_STR);
+                        $pdo->bindValue(":flowprocessingstepid", $flowprocessingstepid, \PDO::PARAM_INT);
+                        $callback = $pdo->execute();
 
-                        if ($affected === false) {
+                        if(!$callback) {
                             throw new \PDOException(self::$FAILURE_STATEMENT);
                         }
                     }
