@@ -6,6 +6,8 @@ Ext.define( 'iSterilization.store.flowprocessing.FlowProcessingStepMaterial', {
 
     storeId: 'flowprocessingstepmaterial',
 
+    pageSize: 0,
+
     requires: [
         'iSterilization.model.flowprocessing.FlowProcessingStepMaterial'
     ],

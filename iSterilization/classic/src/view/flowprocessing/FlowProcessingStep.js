@@ -52,15 +52,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
         afterrender: 'onAfterRenderType'
     },
 
-    // html: [
-    //     '<div style="margin-bottom: 10px;" class="thumb-wrap">',
-    //         '<div class="thumb-task-001">',
-    //         '<a class="authorize">00</a>',
-    //         '</div>',
-    //         '<span><a style="font-size: 14px;">Liberar Processos</a></span>',
-    //     '</div>'
-    // ],
-
     bodyStyle: 'padding: 10px',
 
     timeoutInterval: (6000 * 10),
@@ -112,64 +103,14 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
     },
 
     updateType : function () {
-        var me = this,
-            store = Ext.getStore('flowprocessingstepaction'),
-            dataview = me.down('dataview[name=flowprocessingsteptask]');
+        var store = Ext.getStore('flowprocessingsteparea');
 
         if(!Smart.workstation || !Smart.workstation.areasid) {
             Smart.Msg.showToast('Estação de Trabalho Não Configurada!','error');
             return false;
         }
 
-        Ext.Ajax.request({
-            scope: me,
-            url: store.getUrl(),
-            params: {
-                action: 'select',
-                method: 'selectArea',
-                query: Smart.workstation.areasid
-            },
-            callback: function (options, success, response) {
-                var result = Ext.decode(response.responseText);
-
-                store.removeAll();
-
-                if(!success || !result.success) {
-                    return false;
-                }
-
-                if(result.rows) {
-                    store.loadData(result.rows);
-                    me.setCycleStart(store);
-                }
-            }
-        });
-
-        Ext.Ajax.request({
-            scope: me,
-            url: dataview.getUrl(),
-            params: {
-                action: 'select',
-                method: 'actionTask'
-            },
-            callback: function (options, success, response) {
-                var result = Ext.decode(response.responseText);
-
-                if(!success || !result.success) {
-                    return false;
-                }
-
-                if(!dataview.store) {
-                    return false;
-                }
-
-                dataview.store.removeAll();
-
-                if(result.rows) {
-                    dataview.store.loadData(result.rows);
-                }
-            }
-        });
+        store.load();
     },
 
     initComponent: function () {
@@ -192,132 +133,122 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
         Ext.create('iSterilization.store.flowprocessing.FlowProcessingStepMaterial');
         Ext.create('iSterilization.store.flowprocessing.FlowProcessingStepInputTree');
 
+        Ext.create('iSterilization.store.flowprocessing.FlowProcessingStepArea');
+
         me.items = [
             {
                 flex: 1,
                 margin: '10 0 0 0',
                 xtype: 'container',
                 layout: {
-                    type: 'hbox',
+                    type: 'vbox',
                     align: 'stretch'
                 },
                 items: [
                     {
                         flex: 1,
-                        xtype: 'container',
+                        xtype: 'panel',
+                        showSmartTransparent: true,
                         layout: {
                             type: 'vbox',
                             align: 'stretch'
                         },
                         items: [
                             {
-                                xtype: 'label',
-                                cls: 'processing-field-font',
-                                text: 'Estação de Trabalho Não Configurada',
-                                name: 'labelareas'
+                                xtype: 'container',
+                                layout: 'hbox',
+                                defaultType: 'label',
+                                defaults: {
+                                    height: 37,
+                                    cls: 'processing-field-font'
+                                },
+                                items: [
+                                    {
+                                        flex: 1,
+                                        text: 'Estação de Trabalho Não Configurada',
+                                        name: 'labelareas'
+                                    }
+                                ]
                             }, {
                                 flex: 1,
                                 xtype: 'flowprocessingdataview',
                                 listeners: {
-                                    select: 'onFlowStepSelect',
-                                    deselect: 'onFlowStepDeSelect',
                                     itemdblclick: 'onFlowStepAction',
                                     removecharge: 'onFlowStepRemoveCharge',
                                     selectcharge: 'onFlowStepSelectCharge'
                                 }
-                            }
-                        ]
-                    }, {
-                        xtype: 'splitter'
-                    }, {
-                        width: 400,
-                        xtype: 'container',
-                        layout: {
-                            type: 'vbox',
-                            align: 'stretch'
-                        },
-                        items: [
-                            {
-                                xtype: 'label',
-                                cls: 'processing-field-font',
-                                text: 'Consultar',
-                                name: 'labelitem'
                             }, {
-                                name: 'search',
-                                showClear: true,
-                                xtype: 'textfield',
-                                useUpperCase: true,
-                                useReadColor: false,
-                                inputType: 'password',
-                                cls: 'processing-field',
+                                columns: 4,
+                                vertical: false,
+                                xtype: 'radiogroup',
+                                cls: 'flowprocessinghold',
                                 labelCls: 'processing-field-font',
-                                listeners: {
-                                    specialkey: function (field, e, eOpts) {
-                                        var view = field.up('flowprocessingstep');
-                                        if ([e.ENTER].indexOf(e.getKey()) != -1) {
-                                            view.fireEvent('queryreader', field, e, eOpts);
-                                        }
-                                    }
-                                }
-                            }, {
-                                flex: 1,
-                                source: {},
-                                autoHeight: true,
-                                columnLines: false,
-                                xtype: 'propertygrid',
-                                defaults: { readOnly: true },
-                                disableSelection: true,
-                                cls: 'flowprocessingstep',
-                                frame: false,
-                                border: false,
-                                bodyStyle: 'background:transparent;',
-                                listeners: {
-                                    beforeedit: function (e) { return false; },
-                                    itemkeydown: function ( tableView, td, cellIndex, record, e, eOpts ) {
-                                        if(e.keyCode == 27) {
-                                            tableView.up('flowprocessingstep').searchToogle();
-                                        }
-                                    }
-                                }
-                            }, {
-                                height: 150,
-                                xtype: 'dataview',
-                                trackOver: true,
-                                autoScroll: true,
-                                multiSelect: false,
-                                name: 'flowprocessingsteptask',
-
-                                url: '../iSterilization/business/Calls/flowprocessingstepaction.php',
-
-                                params: {
-                                    action: 'select',
-                                    method: 'actionTask'
-                                },
-
-                                fields: [ 'taskcode', 'taskname', 'taskrows' ],
-
-                                itemSelector: 'div.thumb-wrap',
-
-                                tpl: [
-                                    '<tpl for=".">',
-                                    '<div style="margin-bottom: 10px;" class="thumb-wrap">',
-                                    '<div class="thumb-task-{taskcode}">',
-                                    '<a class="authorize">{taskrows}</a>',
-                                    '</div>',
-                                    '<span><a style="font-size: 14px;">{taskname}</a></span>',
-                                    '</div>',
-                                    '</tpl>'
-                                ],
-
-                                listeners: {
-                                    itemdblclick: 'onFlowTaskAction'
-                                }
+                                items: [
+                                    { boxLabel: 'Todos', name: 'movementtype', inputValue: '000', checked: true },
+                                    { boxLabel: 'Ciclo', name: 'movementtype', inputValue: '001' },
+                                    { boxLabel: 'Carga', name: 'movementtype', inputValue: '002' },
+                                    { boxLabel: 'Processos', name: 'movementtype', inputValue: '003' }
+                                ]
+                                // listeners: {
+                                //     change: function ( field , newValue , oldValue , eOpts) {
+                                //         var me = field.up('flowprocessinghold').down('flowprocessingholdview');
+                                //
+                                //         me.store.clearFilter();
+                                //
+                                //         if(['001','002','003','004'].indexOf(newValue.movementtype) != -1) {
+                                //             me.store.filter('movementtype', newValue.movementtype);
+                                //         }
+                                //     }
+                                // }
                             }
                         ]
                     }
                 ]
             }
         ];
-    }
+    },
+
+    dockedItems: [
+        {
+            xtype: 'pagingtoolbar',
+            store: 'flowprocessingsteparea',
+            dock: 'bottom',
+            // displayInfo: true,
+            items: [
+                {
+                    value: 25,
+                    width: 150,
+                    minValue: 10,
+                    maxValue: 100,
+                    hideTrigger: true,
+                    labelAlign: 'right',
+                    name: 'limit',
+                    xtype: 'numberfield',
+                    fieldLabel: 'Por página',
+                    listeners: {
+                        specialkey: 'totalResultsSearch'
+                    }
+                }, '->', {
+                    labelAlign: 'right',
+                    fieldLabel: 'Consulta',
+                    width: 400,
+                    name: 'search',
+                    showClear: true,
+                    xtype: 'textfield',
+                    useUpperCase: true,
+                    useReadColor: false,
+                    inputType: 'password',
+                    listeners: {
+                        specialkey: function (field, e, eOpts) {
+                            var view = field.up('flowprocessingstep');
+                            if ([e.ENTER].indexOf(e.getKey()) != -1) {
+                                view.fireEvent('queryreader', field, e, eOpts);
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
 
 });

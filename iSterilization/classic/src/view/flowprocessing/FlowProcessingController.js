@@ -15,6 +15,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
     listen: {
         store: {
+            '#flowprocessingsteparea': {
+                load: 'onLoadStepArea',
+                beforeload: 'onBeforeLoadStepArea'
+            },
             '#armorymovementitem': {
                 datachanged: 'onChangedCharge'
             },
@@ -55,6 +59,60 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 app.onMainPageView({xtype: 'flowprocessingview', xdata: store.getAt(0), barcode: barcode});
             }
         });
+    },
+
+    onLoadStepArea: function (store, records) {
+        var me = this,
+            data = [],
+            view = me.getView(),
+            dataView = view.down('flowprocessingdataview'),
+            storeView = dataView.getStore();
+
+        if(!dataView) {
+            return false;
+        }
+
+        storeView.removeAll();
+
+        if (!records || records.length == 0) {
+            return false;
+        }
+
+        Ext.each(records, function (record) {
+            data.push(record.data);
+        });
+
+        storeView.loadData(data);
+        view.setCycleStart(storeView);
+    },
+
+    onBeforeLoadStepArea: function (store , operation , eOpts) {
+        var me = this,
+            view = me.getView(),
+            dataView = view.down('flowprocessingdataview');
+
+        if(!dataView) {
+            return false;
+        }
+
+        store.setParams(dataView.getParams());
+        var limit = view.down('numberfield[name=limit]');
+
+        if(limit) {
+            store.setPageSize(limit.getValue());
+        }
+    },
+
+    totalResultsSearch: function (field, e, eOpts) {
+        var value = field.getValue();
+
+        if(!value || value.length == 0 ) {
+            return false;
+        }
+
+        if ([e.ENTER].indexOf(e.getKey()) != -1) {
+            Ext.getStore('flowprocessingsteparea').load();
+        }
     },
 
     //routes ===================================>>
@@ -3380,50 +3438,50 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         Ext.getStore('flowprocessingstepaction').removeAll();
     },
 
-    onFlowStepSelect: function (view,record,eOpts) {
-        var me = this,
-            view = me.getView(),
-            store = Ext.getStore('flowprocessing'),
-            propertygrid = view.down('propertygrid');
+    // onFlowStepSelect: function (view,record,eOpts) {
+    //     var me = this,
+    //         view = me.getView(),
+    //         store = Ext.getStore('flowprocessing'),
+    //         propertygrid = view.down('propertygrid');
+    //
+    //     if(record.get('steptype') == 'P') {
+    //         store.setParams({
+    //             method: 'selectDashStep',
+    //             query: record.get('flowprocessingid')
+    //         }).load({
+    //             scope: me,
+    //             callback: function(records, operation, success) {
+    //                 var source = {},
+    //                     record = records[0],
+    //                     fields = [
+    //                         'patientname',
+    //                         'materialboxname',
+    //                         'surgicalwarning',
+    //                         'healthinsurance',
+    //                         'sterilizationtypename'
+    //                     ];
+    //
+    //                 Ext.each(fields,function(item) {
+    //                     source[item] = record.get(item);
+    //                 });
+    //
+    //                 propertygrid.setSource(source);
+    //                 propertygrid.getColumns()[0].hide();
+    //             }
+    //         });
+    //     }
+    //
+    // },
 
-        if(record.get('steptype') == 'P') {
-            store.setParams({
-                method: 'selectDashStep',
-                query: record.get('flowprocessingid')
-            }).load({
-                scope: me,
-                callback: function(records, operation, success) {
-                    var source = {},
-                        record = records[0],
-                        fields = [
-                            'patientname',
-                            'materialboxname',
-                            'surgicalwarning',
-                            'healthinsurance',
-                            'sterilizationtypename'
-                        ];
-
-                    Ext.each(fields,function(item) {
-                        source[item] = record.get(item);
-                    });
-
-                    propertygrid.setSource(source);
-                    propertygrid.getColumns()[0].hide();
-                }
-            });
-        }
-
-    },
-
-    onFlowStepDeSelect: function () {
-        var me = this,
-            view = me.getView(),
-            store = Ext.getStore('flowprocessing'),
-            propertygrid = view.down('propertygrid');
-
-        store.removeAll();
-        propertygrid.setSource({});
-    },
+    // onFlowStepDeSelect: function () {
+    //     var me = this,
+    //         view = me.getView(),
+    //         store = Ext.getStore('flowprocessing'),
+    //         propertygrid = view.down('propertygrid');
+    //
+    //     store.removeAll();
+    //     propertygrid.setSource({});
+    // },
 
     onFlowStepSelectCharge: function (viewView,rec) {
         var me = this,

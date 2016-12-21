@@ -193,7 +193,7 @@
 
 .step-004-P:after {
     color: #EDD500;
-    content: 'BLOQUEADO';
+    content: 'GOBACK';
     font-family: Monda;
     position: absolute;
     line-height: 86px;
@@ -578,6 +578,8 @@
 
 .flow-processing .x-toolbar-default {
     background-color: #d0d0d0;
+    /*background-color: transparent !important;*/
+    /*background: rgba(255, 237, 79, .8);*/
 }
 
 /*

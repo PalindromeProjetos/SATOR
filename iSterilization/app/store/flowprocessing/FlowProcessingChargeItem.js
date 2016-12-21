@@ -6,6 +6,8 @@ Ext.define( 'iSterilization.store.flowprocessing.FlowProcessingChargeItem', {
 
     storeId: 'flowprocessingchargeitem',
 
+    pageSize: 0,
+
     requires: [
         'iSterilization.model.flowprocessing.FlowProcessingChargeItem'
     ],

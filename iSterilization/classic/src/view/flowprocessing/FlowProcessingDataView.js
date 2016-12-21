@@ -11,9 +11,78 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingDataView', {
     trackOver: true,
     autoScroll: true,
     multiSelect: false,
-    name: 'flowprocessingstepaction',
-    store: 'flowprocessingstepaction',
+    // name: 'flowprocessingstepaction',
+    // store: 'flowprocessingsteparea',
     itemSelector: 'div.step',
+
+    url: '../iSterilization/business/Calls/Heart/HeartFlowProcessing.php',
+
+    fields: [
+        {
+            name: 'id',
+            type: 'int'
+        }, {
+            name: 'flowprocessingstepid',
+            type: 'int'
+        }, {
+            name: 'flowprocessingid',
+            type: 'int'
+        }, {
+            name: 'flowstepaction',
+            type: 'auto'
+        }, {
+            name: 'isactive',
+            type: 'int'
+        }, {
+            name: 'username',
+            type: 'auto'
+        }, {
+            name: 'barcode',
+            type: 'auto'
+        }, {
+            name: 'patientname',
+            type: 'auto'
+        }, {
+            name: 'dateof',
+            type: 'auto'
+        }, {
+            name: 'dateto',
+            type: 'auto'
+        }, {
+            name: 'timeof',
+            type: 'auto'
+        }, {
+            name: 'clientname',
+            type: 'auto'
+        }, {
+            name: 'originplace',
+            type: 'auto'
+        }, {
+            name: 'targetplace',
+            type: 'auto'
+        }, {
+            name: 'authorizedby',
+            type: 'auto'
+        }, {
+            name: 'sterilizationtypename',
+            type: 'auto'
+        }, {
+            name: 'version',
+            type: 'int'
+        }, {
+            name: 'steptype',
+            type: 'auto'
+        }, {
+            name: 'donetype',
+            type: 'auto'
+        }, {
+            name: 'items',
+            type: 'int'
+        }, {
+            name: 'materialname',
+            type: 'auto'
+        }
+    ],
 
     tpl: [
         '<tpl for=".">',
@@ -46,7 +115,14 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingDataView', {
     initComponent: function () {
         var me = this;
 
+        me.params = {
+            action: 'select',
+            method: 'selectArea',
+            query: Smart.workstation.areasid
+        };
+
         me.callParent();
+
         me.onAfter( 'afterrender', me.fnAfterRender, me);
     },
 

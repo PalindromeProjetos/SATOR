@@ -6,6 +6,8 @@ Ext.define( 'iSterilization.store.armory.ArmoryMovementItem', {
 
     storeId: 'armorymovementitem',
 
+    pageSize: 0,
+
     requires: [
         'iSterilization.model.armory.ArmoryMovementItem'
     ],

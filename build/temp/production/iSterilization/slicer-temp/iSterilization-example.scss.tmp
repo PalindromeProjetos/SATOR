@@ -1250,7 +1250,6 @@ $include-isterilization-model-flowprocessing-flowprocessingstepmaterial: dynamic
 $include-isterilization-model-flowprocessing-flowprocessingstepmessage: dynamic(true);;
 $include-isterilization-model-service-serviceitembase: dynamic(true);;
 $include-isterilization-model-service-serviceregistration: dynamic(true);;
-$include-isterilization-store-personnel: dynamic(true);;
 $include-isterilization-store-armory-armorymovement: dynamic(true);;
 $include-isterilization-store-armory-armorymovementitem: dynamic(true);;
 $include-isterilization-store-armory-armorymovementoutput: dynamic(true);;
@@ -1260,6 +1259,7 @@ $include-isterilization-store-flowprocessing-flowprocessingcharge: dynamic(true)
 $include-isterilization-store-flowprocessing-flowprocessingchargeitem: dynamic(true);;
 $include-isterilization-store-flowprocessing-flowprocessingstep: dynamic(true);;
 $include-isterilization-store-flowprocessing-flowprocessingstepaction: dynamic(true);;
+$include-isterilization-store-flowprocessing-flowprocessingsteparea: dynamic(true);;
 $include-isterilization-store-flowprocessing-flowprocessingstepinput: dynamic(true);;
 $include-isterilization-store-flowprocessing-flowprocessingstepinputtree: dynamic(true);;
 $include-isterilization-store-flowprocessing-flowprocessingstepmaterial: dynamic(true);;

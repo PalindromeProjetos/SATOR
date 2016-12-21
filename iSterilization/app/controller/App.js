@@ -88,7 +88,7 @@ Ext.define( 'iSterilization.controller.App', {
         Ext.Ajax.request({
             scope: me,
             async: false,
-            url: '../iAdmin/business/Calls/Areas.php',
+            url: '../iAdmin/business/Calls/areas.php',
             params: {
                 action: 'select',
                 method: 'selectCode',
