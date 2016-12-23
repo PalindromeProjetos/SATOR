@@ -182,7 +182,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         }
 
         if ([e.ENTER].indexOf(e.getKey()) != -1) {
-            Ext.getStore('flowprocessingsteparea').load({
+            var store = Ext.getStore('flowprocessingsteparea');
+            store.setPageSize(value);
+            store.load({
                 scope: view,
                 callback: function () {
                     view.down('textfield[name=search]').focus(false,200);
