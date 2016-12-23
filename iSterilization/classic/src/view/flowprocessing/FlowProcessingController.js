@@ -173,14 +173,21 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
     },
 
     totalResultsSearch: function (field, e, eOpts) {
-        var value = field.getValue();
+        var me = this,
+            view = me.getView(),
+            value = field.getValue();
 
         if(!value || value.length == 0 ) {
             return false;
         }
 
         if ([e.ENTER].indexOf(e.getKey()) != -1) {
-            Ext.getStore('flowprocessingsteparea').load();
+            Ext.getStore('flowprocessingsteparea').load({
+                scope: view,
+                callback: function () {
+                    view.down('textfield[name=search]').focus(false,200);
+                }
+            });
         }
     },
 

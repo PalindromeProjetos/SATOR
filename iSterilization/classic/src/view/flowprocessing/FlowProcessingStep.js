@@ -246,12 +246,29 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
             clickLast: 'onSearchFocus',
             clickFirst: 'onSearchFocus',
             clickPrior: 'onSearchFocus',
-            clickRefresh: 'onSearchFocus',
+            specialkeyInputItem: 'onSpecialKey',
 
             onSearchFocus: function () {
                 var me = this;
 
                 me.down('textfield[name=search]').focus(false,200);
+            },
+
+            onSpecialKey: function (field, e, eOpts) {
+                var me = this;
+                if ([e.ENTER].indexOf(e.getKey()) != -1) {
+                    me.onSearchFocus();
+                }
+            },
+
+            doRefresh: function(){
+                var me = this;
+                me.store.load({
+                    scope: me,
+                    callback: function () {
+                        me.onSearchFocus();
+                    }
+                });
             }
         }
     ]

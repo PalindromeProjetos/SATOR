@@ -17,7 +17,7 @@ Ext.define( 'Ext.overrides.toolbar.Paging', {
             last = me.down('#last'),
             prev = me.down('#prev'),
             first = me.down('#first'),
-            refresh = me.down('#refresh');
+            inputItem = me.down('#inputItem');
 
         if(next){
             next.on("click", me.clickNext, me);
@@ -35,16 +35,16 @@ Ext.define( 'Ext.overrides.toolbar.Paging', {
             prev.on("click", me.clickPrior, me);
         }
 
-        if(refresh){
-            refresh.on("click", me.clickRefresh, me);
+        if(inputItem) {
+            inputItem.on("specialkey", me.specialkeyInputItem, me);
         }
-
     },
 
     clickNext: Ext.emptyFn,
     clickLast: Ext.emptyFn,
     clickFirst: Ext.emptyFn,
     clickPrior: Ext.emptyFn,
-    clickRefresh: Ext.emptyFn
-
+    clickRefresh: Ext.emptyFn,
+    specialkeyInputItem: Ext.emptyFn
+    
 });
