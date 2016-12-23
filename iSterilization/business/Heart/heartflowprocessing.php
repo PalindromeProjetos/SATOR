@@ -689,6 +689,198 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         return self::getResultToJson();
     }
 
+	public function setStatusCiclo(array $data) {
+		$id = $data['id'];
+		$username = $data['username'];
+		$cyclestatus = $data['cyclestatus'];
+		$printlocate = isset($data['printlocate']) ? $data['printlocate'] : '';
+
+		try {
+
+			$sql = "
+                declare
+                    @id int = :id,
+                    @chargeflag varchar(3) = '002',
+                    @username varchar(80) = :username,
+                    @cyclestatus varchar(5) = :cyclestatus;
+             
+                if(@cyclestatus = 'START')
+                begin
+                    update 
+                        flowprocessingcharge
+                    set
+                        chargeflag = @chargeflag,
+                        cyclestart = getdate(),
+                        cyclestartuser = @username
+                    where id = @id;
+                end               
+                
+                if((@cyclestatus = 'FINAL') or (@cyclestatus = 'PRINT'))
+                begin                              
+                   
+                    if(@cyclestatus = 'FINAL') set @chargeflag = '003';
+                    if(@cyclestatus = 'PRINT') set @chargeflag = '006';
+                               
+                    update 
+                        flowprocessingcharge
+                    set
+                        chargeflag = @chargeflag,
+                        cyclefinal = getdate(),
+                        cyclefinaluser = @username
+                    where id = @id;                   
+                    
+                    update 
+                        flowprocessingstepmaterial
+                    set
+                        dateto = getdate(),
+                        unconformities = '010'
+                    where flowprocessingstepid in ( select flowprocessingstepid from flowprocessingchargeitem where flowprocessingchargeid = @id );
+                    
+                    update
+                        flowprocessingstepaction
+                    set
+                        dateto = getdate(),
+                        isactive = 0
+                    where flowstepaction = '001' 
+                      and flowprocessingstepid in ( select flowprocessingstepid from flowprocessingchargeitem where flowprocessingchargeid = @id );
+                end;";
+
+			$this->beginTransaction();
+
+			//Encerrando Status Source
+			$pdo = $this->prepare($sql);
+			$pdo->bindValue(":id", $id, \PDO::PARAM_INT);
+			$pdo->bindValue(":username", $username, \PDO::PARAM_STR);
+			$pdo->bindValue(":cyclestatus", $cyclestatus, \PDO::PARAM_STR);
+			$callback = $pdo->execute();
+
+			if(!$callback) {
+				throw new \PDOException(self::$FAILURE_STATEMENT);
+			}
+
+			if(($cyclestatus == 'FINAL') || ($cyclestatus == 'PRINT')) {
+
+				$sql = "
+                    declare
+                        @id int = :id;
+                 
+                    select
+                    	fpci.chargestatus,
+                        fps.flowprocessingid,
+                        fpci.flowprocessingstepid,
+                        fpsa.id as flowprocessingstepactionid
+                    from
+                        flowprocessingchargeitem fpci
+                        inner join flowprocessingstep fps on ( fps.id = fpci.flowprocessingstepid )
+                        inner join flowprocessingstepaction fpsa on ( fpsa.flowprocessingstepid = fps.id )
+                    where fpci.flowprocessingchargeid = @id
+                      and fpsa.flowstepaction = '001'";
+
+				$pdo = $this->prepare($sql);
+				$pdo->bindValue(":id", $id, \PDO::PARAM_INT);
+				$callback = $pdo->execute();
+
+				if(!$callback) {
+					throw new \PDOException(self::$FAILURE_STATEMENT);
+				}
+
+				$rows = $pdo->fetchAll();
+
+				//Processando Status Target
+				foreach ($rows as $item) {
+					$item['hasTran'] = 0;
+					$chargestatus = $item['chargestatus'];
+
+					switch ($chargestatus) {
+						case '001':
+
+							// Avança Duas Etapas
+							if(strlen($printlocate) != 0) {
+
+								$result = self::jsonToObject($this->setEncerrarLeitura($item));
+
+								if(!$result->success) {
+									throw new \PDOException(self::$FAILURE_STATEMENT);
+								}
+
+								//Obtendo StepAction da Primeira Etapa
+								{
+									$newid = $result->rows[0]->newid;
+
+									$tmp = "
+										declare
+											@id int = :id;
+											
+										select
+											fps.flowprocessingid,
+											fps.id as flowprocessingstepid,
+											fpsa.id as flowprocessingstepactionid 
+										from
+											flowprocessingstep fps
+											inner join flowprocessingstepaction fpsa on ( fpsa.flowprocessingstepid = fps.id )
+										where fps.id = @id
+										  and fpsa.flowstepaction = '001';";
+
+									$pdo = $this->prepare($tmp);
+									$pdo->bindValue(":id", $newid, \PDO::PARAM_INT);
+									$callback = $pdo->execute();
+
+									if(!$callback) {
+										throw new \PDOException(self::$FAILURE_STATEMENT);
+									}
+
+									$step = $pdo->fetchAll();
+
+									$step = $step[0];
+
+									$step['hasTran'] = 0;
+
+									$result = self::jsonToObject($this->setEncerrarLeitura($step));
+
+									if(!$result->success) {
+										throw new \PDOException(self::$FAILURE_STATEMENT);
+									}
+								}
+							}
+
+							break;
+						case '002':
+							$result = self::jsonToObject($this->setEncerrarLeitura($item));
+
+							if(!$result->success) {
+								throw new \PDOException(self::$FAILURE_STATEMENT);
+							}
+
+							break;
+					}
+				}
+
+				self::_setRows($rows);
+
+				$tagprinter['tagprinter'] = $cyclestatus == 'FINAL' ? '002' : '003';
+
+				$data['stepsettings'] = self::arrayToJson($tagprinter);
+			}
+
+			$this->commit();
+
+			self::_setSuccess(true);
+
+			if((($cyclestatus == 'FINAL') || ($cyclestatus == 'PRINT'))&&(strlen($printlocate) != 0)) {
+				$this->imprimeEtiqueta($data);
+			}
+
+		} catch ( \PDOException $e ) {
+			if ($this->inTransaction()) {
+				$this->rollBack();
+			}
+			self::_setSuccess(false);
+			self::_setText($e->getMessage());
+		}
+
+		return self::getResultToJson();
+	}
+
     public function setEncerrarLeitura (array $data) {
         $flowprocessingid = $data['flowprocessingid'];
         $flowprocessingstepid = $data['flowprocessingstepid'];
@@ -834,7 +1026,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				$this->commit();
 			}
 
-            self::_setSuccess(true);
+			self::_setRows($rows);
 
         } catch ( \PDOException $e ) {
 			if ($hasTran == 1 && $this->inTransaction()) {
@@ -1036,137 +1228,6 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 			self::_setSuccess(false);
 			self::_setText($e->getMessage());
 		}
-
-        return self::getResultToJson();
-    }
-
-    public function setStatusCiclo(array $data) {
-        $id = $data['id'];
-        $username = $data['username'];
-        $cyclestatus = $data['cyclestatus'];
-
-        try {
-
-            $sql = "
-                declare
-                    @id int = :id,
-                    @chargeflag varchar(3) = '002',
-                    @username varchar(80) = :username,
-                    @cyclestatus varchar(5) = :cyclestatus;
-             
-                if(@cyclestatus = 'START')
-                begin
-                    update 
-                        flowprocessingcharge
-                    set
-                        chargeflag = @chargeflag,
-                        cyclestart = getdate(),
-                        cyclestartuser = @username
-                    where id = @id;
-                end               
-                
-                if((@cyclestatus = 'FINAL') or (@cyclestatus = 'PRINT'))
-                begin                              
-                   
-                    if(@cyclestatus = 'FINAL') set @chargeflag = '003';
-                    if(@cyclestatus = 'PRINT') set @chargeflag = '006';
-                               
-                    update 
-                        flowprocessingcharge
-                    set
-                        chargeflag = @chargeflag,
-                        cyclefinal = getdate(),
-                        cyclefinaluser = @username
-                    where id = @id;                   
-                    
-                    update 
-                        flowprocessingstepmaterial
-                    set
-                        dateto = getdate(),
-                        unconformities = '010'
-                    where flowprocessingstepid in ( select flowprocessingstepid from flowprocessingchargeitem where flowprocessingchargeid = @id );
-                    
-                    update
-                        flowprocessingstepaction
-                    set
-                        dateto = getdate(),
-                        isactive = 0
-                    where flowstepaction = '001' 
-                      and flowprocessingstepid in ( select flowprocessingstepid from flowprocessingchargeitem where flowprocessingchargeid = @id );
-                end;";
-
-			$this->beginTransaction();
-
-            $pdo = $this->prepare($sql);
-            $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
-            $pdo->bindValue(":username", $username, \PDO::PARAM_STR);
-            $pdo->bindValue(":cyclestatus", $cyclestatus, \PDO::PARAM_STR);
-			$callback = $pdo->execute();
-
-			if(!$callback) {
-				throw new \PDOException(self::$FAILURE_STATEMENT);
-			}
-
-            if(($cyclestatus == 'FINAL') || ($cyclestatus == 'PRINT')) {
-
-                $sql = "
-                    declare
-                        @id int = :id;
-                 
-                    select
-                        fps.flowprocessingid,
-                        fpci.flowprocessingstepid,
-                        fpsa.id as flowprocessingstepactionid
-                    from
-                        flowprocessingchargeitem fpci
-                        inner join flowprocessingstep fps on ( fps.id = fpci.flowprocessingstepid )
-                        inner join flowprocessingstepaction fpsa on ( fpsa.flowprocessingstepid = fps.id )
-                    where fpci.flowprocessingchargeid = @id
-                      and fpsa.flowstepaction = '001'";
-
-				$pdo = $this->prepare($sql);
-				$pdo->bindValue(":id", $id, \PDO::PARAM_INT);
-				$callback = $pdo->execute();
-
-				if(!$callback) {
-					throw new \PDOException(self::$FAILURE_STATEMENT);
-				}
-
-				$rows = $pdo->fetchAll();
-
-				foreach ($rows as $item) {
-					$item['hasTran'] = 0;
-					$result = self::jsonToObject($this->setEncerrarLeitura($item));
-
-					if(!$result->success) {
-						throw new \PDOException(self::$FAILURE_STATEMENT);
-					}					
-				}
-
-				self::_setRows($rows);
-
-				$tagprinter['tagprinter'] = $cyclestatus == 'FINAL' ? '002' : '003';
-
-				$data['stepsettings'] = self::arrayToJson($tagprinter);
-			}
-
-			$this->commit();
-
-			self::_setSuccess(true);
-
-			$printlocate = isset($data['printlocate']) ? $data['printlocate'] : '';
-
-			if((($cyclestatus == 'FINAL') || ($cyclestatus == 'PRINT'))&&(strlen($printlocate) != 0)) {
-				$this->imprimeEtiqueta($data);
-			}
-
-		} catch ( \PDOException $e ) {
-			if ($this->inTransaction()) {
-				$this->rollBack();
-			}
-			self::_setSuccess(false);
-			self::_setText($e->getMessage());
-        }
 
         return self::getResultToJson();
     }
