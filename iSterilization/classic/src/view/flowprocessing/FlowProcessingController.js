@@ -3535,23 +3535,43 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         if(materialaccount) materialaccount.setText(Ext.String.format(score,count,store.getCount()));
     },
 
+    onLoadChargeItem: function (store) {
+        var me = this,
+            count = 0,
+            score = '{0}/{1}',
+            countitems = me.getView().down('textfield[name=countitems]');
+
+        if(!countitems) {
+            return false;
+        }
+
+        store.each(function (item) {
+            count += item.get('chargestatus') != '002' ? 1 : 0;
+        });
+
+        countitems.setValue(Ext.String.format(score,count,store.getCount()));
+    },
+
     onChangedCharge: function (store, eOpts) {
         var me = this,
-            count = store.getCount(),
             score = '',
-            titlelabel = me.getView().down('label[name=countitems]');
+            count = store.getCount(),
+            titlelabel = me.getView().down('label[name=countitems]'),
+            countitems = me.getView().down('textfield[name=countitems]');
 
         switch (count) {
             case 0:
                 break;
             case 1:
-                score += Ext.String.format(' {0}/item',store.getCount());
+                score += Ext.String.format(' {0}/item',count);
                 break;
             default:
-                score += Ext.String.format(' {0}/itens',store.getCount());
+                score += Ext.String.format(' {0}/itens',count);
         }
 
         if(titlelabel) titlelabel.setText(score);
+
+        me.onLoadChargeItem(store);
     },
 
     onSelectDataView: function (view,record,eOpts) {
@@ -3748,8 +3768,12 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                     me.callSATOR_RELATAR_CYCLE_STATUS('START',record);
                     break;
                 case '002':
-                    me.onFlowStepSelectCharge(null,record);
-                    // me.callSATOR_RELATAR_CYCLE_STATUS('FINAL',record);
+                    if(!Smart.workstation.printlocate) {
+                        me.callSATOR_RELATAR_CYCLE_STATUS('FINAL',record);
+                        return false
+                    } else {
+                        me.onFlowStepSelectCharge(null,record);
+                    }
                     break;
                 case '005':
                     me.callSATOR_RELATAR_CYCLE_STATUS('PRINT',record);
@@ -4267,8 +4291,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         var me = this,
             view = me.getView(),
             doCallBack = function (rows) {
-                var back = true,
-                    data = view.xdata.data,
+                var data = view.xdata.data,
+                    area = Ext.getCmp('flowprocessingstep'),
                     cyclestatus = view.down('form').getValues().cyclestatus;
 
                 data.action = 'select';
@@ -4277,6 +4301,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 data.cyclestatus = cyclestatus;
                 data.areasid = Smart.workstation.areasid;
                 data.printlocate = Smart.workstation.printlocate;
+
+                area.setLoading('Processando requisição...');
 
                 Ext.Ajax.request({
                     scope: me,
@@ -4293,8 +4319,11 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                     }
                 });
 
-                Ext.getCmp('flowprocessingstep').updateType();
                 view.close();
+
+                area.setLoading(false);
+
+                area.updateType();
 
                 return true;
             };
