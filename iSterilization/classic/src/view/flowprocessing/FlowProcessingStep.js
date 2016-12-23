@@ -195,7 +195,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
                     value: 25,
                     width: 120,
                     minValue: 10,
-                    maxValue: 100,
+                    maxValue: 50,
                     labelWidth: 70,
                     hideTrigger: true,
                     labelAlign: 'left',
@@ -206,13 +206,13 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
                         specialkey: 'totalResultsSearch'
                     }
                 }, {
-                    width: 90,
-                    labelWidth: 40,
+                    width: 60,
+                    labelWidth: 10,
                     useReadColor: true,
                     name: 'totalrecords',
                     xtype: 'textfield',
                     labelAlign: 'left',
-                    fieldLabel: 'total',
+                    fieldLabel: '/',
                     value: 0
                 }, '->', {
                     labelAlign: 'left',
