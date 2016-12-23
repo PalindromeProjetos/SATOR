@@ -2172,6 +2172,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                         }
 
                         store.insert(0,{
+                            chargestatus: '001',
                             barcode: result.rows.barcode,
                             countitems: result.rows.countitems,
                             flowprocessingchargeid: id.getValue(),
