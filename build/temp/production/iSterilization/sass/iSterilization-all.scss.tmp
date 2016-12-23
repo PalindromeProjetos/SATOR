@@ -683,6 +683,7 @@ $include-ext-overrides-panel-table: dynamic(true);;
 $include-ext-overrides-picker-date: dynamic(true);;
 $include-ext-overrides-plugin-abstract: dynamic(true);;
 $include-ext-overrides-resizer-splitter: dynamic(true);;
+$include-ext-overrides-toolbar-paging: dynamic(true);;
 $include-ext-overrides-util-format: dynamic(true);;
 $include-ext-overrides-util-positionable: dynamic(true);;
 $include-ext-overrides-view-view: dynamic(true);;

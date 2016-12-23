@@ -177,29 +177,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
                                     removecharge: 'onFlowStepRemoveCharge',
                                     selectcharge: 'onFlowStepSelectCharge'
                                 }
-                            // }, {
-                            //     columns: 4,
-                            //     vertical: false,
-                            //     xtype: 'radiogroup',
-                            //     cls: 'flowprocessinghold',
-                            //     labelCls: 'processing-field-font',
-                            //     items: [
-                            //         { boxLabel: 'Todos', name: 'steptype', inputValue: 'A', checked: true },
-                            //         { boxLabel: 'Ciclo', name: 'steptype', inputValue: 'T' },
-                            //         { boxLabel: 'Carga', name: 'steptype', inputValue: 'C' },
-                            //         { boxLabel: 'Processos', name: 'steptype', inputValue: 'P' }
-                            //     ],
-                            //     listeners: {
-                            //         change: function ( field , newValue , oldValue , eOpts) {
-                            //             var me = field.up('flowprocessingstep').down('flowprocessingdataview');
-                            //
-                            //             me.store.clearFilter();
-                            //
-                            //             if(['T','C','P'].indexOf(newValue.steptype) != -1) {
-                            //                 me.store.filter('steptype', newValue.steptype);
-                            //             }
-                            //         }
-                            //     }
                             }
                         ]
                     }
@@ -257,10 +234,25 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
                             if ([e.ENTER].indexOf(e.getKey()) != -1) {
                                 view.fireEvent('queryreader', field, e, eOpts);
                             }
+                        },
+                        afterrender: function (field,eOpts) {
+                            field.setFieldStyle('background-color: rgba(158, 158, 158, .2);');
                         }
                     }
                 }
-            ]
+            ],
+
+            clickNext: 'onSearchFocus',
+            clickLast: 'onSearchFocus',
+            clickFirst: 'onSearchFocus',
+            clickPrior: 'onSearchFocus',
+            clickRefresh: 'onSearchFocus',
+
+            onSearchFocus: function () {
+                var me = this;
+
+                me.down('textfield[name=search]').focus(false,200);
+            }
         }
     ]
 

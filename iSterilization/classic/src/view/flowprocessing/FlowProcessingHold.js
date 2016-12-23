@@ -205,10 +205,25 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
                             if ([e.ENTER].indexOf(e.getKey()) != -1) {
                                 view.fireEvent('queryreader', field, e, eOpts);
                             }
+                        },
+                        afterrender: function (field,eOpts) {
+                            field.setFieldStyle('background-color: rgba(158, 158, 158, .2);');
                         }
                     }
                 }
-            ]
+            ],
+
+            clickNext: 'onSearchFocus',
+            clickLast: 'onSearchFocus',
+            clickFirst: 'onSearchFocus',
+            clickPrior: 'onSearchFocus',
+            clickRefresh: 'onSearchFocus',
+
+            onSearchFocus: function () {
+                var me = this;
+
+                me.down('textfield[name=search]').focus(false,200);
+            }
         }
     ]
 

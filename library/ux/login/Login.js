@@ -48,9 +48,10 @@ Ext.define( 'Smart.ux.login.Login', {
                 flex: 1,
                 xtype: 'container'
             }, {
+                // flex: 2,
                 xtype: 'container',
                 name: 'userlogin',
-                width: 300,
+                width: 400,
                 layout: 'card',
                 items: [
                     {
