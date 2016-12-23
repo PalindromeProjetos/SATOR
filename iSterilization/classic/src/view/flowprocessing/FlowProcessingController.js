@@ -2192,6 +2192,72 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         }
     },
 
+    onReaderMaterialBoxFinal: function (field, e, eOpts) {
+        var me = this,
+            view = me.getView(),
+            form = view.down('form'),
+            value = field.getValue(),
+            record = form.getRecord(),
+            id = view.down('hiddenfield[name=id]'),
+            store = Ext.getStore('flowprocessingchargeitem');
+
+        if(!form.isValid()){
+            return false;
+        }
+
+        if ([e.ENTER].indexOf(e.getKey()) != -1) {
+            e.stopEvent();
+
+            field.reset();
+
+            if (!value || value.length == 0) {
+                return false;
+            }
+
+            if(value.indexOf('SATOR_ENCERRAR_LEITURA') != -1) {
+                if(store.getCount() == 0) {
+                    Smart.ion.sound.play("computer_error");
+                    Smart.Msg.showToast('Não existem materiais no equipamento para finalizar o ciclo!','error');
+                    return false;
+                }
+
+                view.close();
+
+                me.callSATOR_RELATAR_CYCLE_STATUS('FINAL',record);
+                return false;
+            }
+
+            var record = store.findRecord('barcode',value);
+
+            if(!record) {
+                Smart.ion.sound.play("computer_error");
+                Smart.Msg.showToast('O material/kit <b>não foi encontrado</b> na carga atual!', 'info');
+                return false;
+            }
+
+            var chargestatus = record.get('chargestatus');
+
+            record.set('chargestatus',(chargestatus == '001' ? '002' : '001'));
+
+            store.sync({
+                async: false,
+                callback: function (batch, options) {
+                    var resultSet = batch.getOperations().length != 0 ? batch.operations[0].getResultSet() : null;
+
+                    if ((resultSet == null) || (!resultSet.success)) {
+                        store.rejectChanges();
+                        Smart.Msg.showToast(resultSet.getMessage(), 'error');
+                        return false;
+                    }
+
+                    record.commit();
+                    Smart.ion.sound.play("button_tiny");
+                }
+            });
+
+        }        
+    },
+    
     onReaderMaterialBoxCiclo: function (field, e, eOpts) {
         var me = this,
             view = me.getView(),
@@ -2258,6 +2324,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                         }
 
                         store.insert(0,{
+                            chargestatus: '002',
                             barcode: result.rows.barcode,
                             countitems: result.rows.countitems,
                             flowprocessingchargeid: id.getValue(),
@@ -3584,6 +3651,15 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                             ciclo.down('textfield[name=materialboxname]').focus(false,200);
                         });
                         break;
+                    case '002':
+                        var ciclo = Ext.widget('call_SATOR_LOTE_CICLO_FINAL');
+                        ciclo.show(null,function () {
+                            ciclo.master = view;
+                            ciclo.down('form').loadRecord(record);
+                            ciclo.down('textfield[name=materialboxname]').setReadColor(false);
+                            ciclo.down('textfield[name=materialboxname]').focus(false,200);
+                        });
+                        break;
                     case '005':
                         var carga = Ext.widget('call_SATOR_LOTE_CARGA');
                         carga.show(null,function () {
@@ -3672,7 +3748,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                     me.callSATOR_RELATAR_CYCLE_STATUS('START',record);
                     break;
                 case '002':
-                    me.callSATOR_RELATAR_CYCLE_STATUS('FINAL',record);
+                    me.onFlowStepSelectCharge(null,record);
+                    // me.callSATOR_RELATAR_CYCLE_STATUS('FINAL',record);
                     break;
                 case '005':
                     me.callSATOR_RELATAR_CYCLE_STATUS('PRINT',record);

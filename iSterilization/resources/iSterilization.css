@@ -480,6 +480,10 @@
 .legend009 { background: rgb(189, 21, 80); }
 .legend010 { background: rgb(99, 98, 248); }
 
+.chargestatus001 { background: rgb(99, 98, 248); }
+
+.chargestatus002 { background: rgb(251, 228, 0); }
+
 .flowprocessingstep .x-grid-item {
     font-size: 16px;
     color: rgb(255, 255, 255);

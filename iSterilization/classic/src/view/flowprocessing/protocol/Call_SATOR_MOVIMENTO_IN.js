@@ -32,7 +32,11 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_MOVIMENTO_IN
     listeners: {
         queryreader: 'onArmoryInQuery',
         beforedestroy: function (view , eOpts) {
-            Ext.getCmp('flowprocessinghold').updateType();
+            var hold =  Ext.getCmp('flowprocessinghold');
+            if(hold) {
+                hold.updateType();
+                hold.down('textfield[name=search]').focus(false,200);
+            }
         }
     },
 
