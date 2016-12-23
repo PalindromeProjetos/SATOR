@@ -23,7 +23,11 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_CARGA',
 
     listeners: {
         beforedestroy: function (view , eOpts) {
-            Ext.getCmp('flowprocessingstep').updateType();
+            var step =  Ext.getCmp('flowprocessingstep');
+            if(step) {
+                step.updateType();
+                step.down('textfield[name=search]').focus(false,200);
+            }
         }
     },
 
