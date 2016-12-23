@@ -176,7 +176,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
             store: 'flowprocessingholdarea',
             dock: 'bottom',
             items: [
-                {
+                '-', {
                     width: 90,
                     labelWidth: 40,
                     useReadColor: true,

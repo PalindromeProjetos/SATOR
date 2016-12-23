@@ -191,7 +191,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
             store: 'flowprocessingsteparea',
             dock: 'bottom',
             items: [
-                {
+                 '-', {
                     value: 25,
                     width: 120,
                     minValue: 10,
