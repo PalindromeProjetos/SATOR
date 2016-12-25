@@ -216,7 +216,7 @@ class material extends \Smart\Data\Cache {
 
     public function insertCopy(array $data) {
         $id = $data['id'];
-        $username = $this->session->username;
+        $username = $this->stash->username;
         $proxy = $this->getStore()->getProxy();
 
 

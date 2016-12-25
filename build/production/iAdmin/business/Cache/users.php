@@ -106,6 +106,7 @@ class users extends \Smart\Data\Cache {
                 $this->stash->username = $result->rows[0]->username;
                 $this->stash->password = $result->rows[0]->password;
                 $this->stash->fullname = $result->rows[0]->fullname;
+                $result->rows[0]->lastactivity = $this->stash->setLastActivity();
             } else {
                 $result->text = sprintf("%s. Usuário não autenticado!",$passwordUser);
             }
@@ -129,6 +130,10 @@ class users extends \Smart\Data\Cache {
         $proxy = $this->getStore()->getProxy();
 
         $sql = "
+            declare
+                @moduleid varchar(80) = :moduleid,
+                @username varchar(80) = :username;
+
             select
                 u.id,
                 u.username,
@@ -144,8 +149,8 @@ class users extends \Smart\Data\Cache {
             from
                 users u,
 				module m
-            where u.username = :username
-			  and m.name = :moduleid";
+            where u.username = @username
+			  and m.name = @moduleid";
 
         try {
 
@@ -175,16 +180,20 @@ class users extends \Smart\Data\Cache {
         $birthdate = $data['birthdate'];
 
         $sql = "
-                select
-                    id,
-                    username,
-                    fullname,
-                    mainmail,
-                    replace(convert(varchar(10),birthdate,102),'.','-') as birthdate
-                from
-                    users
-                where username = :username
-                  and birthdate = :birthdate";
+            declare
+                @birthdate varchar(80) = :birthdate,
+                @username varchar(80) = :username;
+                
+            select
+                id,
+                username,
+                fullname,
+                mainmail,
+                replace(convert(varchar(10),birthdate,102),'.','-') as birthdate
+            from
+                users
+            where username = @username
+              and birthdate = @birthdate";
 
         try {
 
@@ -233,15 +242,19 @@ class users extends \Smart\Data\Cache {
         $invitate = $data['invitate'];
 
         $sql = "
-                select
-                    id,
-                    username,
-                    fullname,
-                    mainmail,
-                    convert(varchar(10),birthdate,101) as birthdate
-                from users
-                where username = :username
-                  and password = :invitate";
+            declare
+                @invitate varchar(80) = :invitate,
+                @username varchar(80) = :username;
+                
+            select
+                id,
+                username,
+                fullname,
+                mainmail,
+                convert(varchar(10),birthdate,101) as birthdate
+            from users
+            where username = @username
+              and password = @invitate";
 
         try {
 
