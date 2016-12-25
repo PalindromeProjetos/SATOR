@@ -222,4 +222,43 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
         return self::getResultToJson();
     }
 
+    public function selectByMaterialLote(array $data) {
+        $query = $data['query'];
+        $proxy = $this->getStore()->getProxy();
+
+        $sql = "
+            declare
+                @materialid int = :materialid;
+                            
+            select
+                fpc.id,
+                fpc.barcode,
+				fpc.chargeflag,
+				fpc.chargedate,
+				dbo.getEnum('chargeflag',fpc.chargeflag) as chargeflagdescription
+            from
+                flowprocessingstepmaterial fpm
+                inner join flowprocessingstep fps on ( fps.id = fpm.flowprocessingstepid )
+				inner join flowprocessingchargeitem fpci on ( fpci.flowprocessingstepid = fps.id )
+				inner join flowprocessingcharge fpc on ( fpc.id = fpci.flowprocessingchargeid )
+            where fpm.materialid = @materialid
+            order by fpc.chargedate desc";
+
+        try {
+            $pdo = $proxy->prepare($sql);
+            $pdo->bindValue(":materialid", $query, \PDO::PARAM_INT);
+
+            $pdo->execute();
+            $rows = $pdo->fetchAll();
+
+            self::_setRows($rows);
+
+        } catch ( \PDOException $e ) {
+            self::_setSuccess(false);
+            self::_setText($e->getMessage());
+        }
+
+        return self::getResultToJson();
+    }
+
 }

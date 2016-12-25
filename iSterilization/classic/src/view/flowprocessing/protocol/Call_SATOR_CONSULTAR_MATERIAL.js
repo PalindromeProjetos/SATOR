@@ -92,9 +92,38 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                 },
                 items: [
                     {
-                        xtype: 'label',
-                        cls: 'title-label',
-                        text: 'Consultar Material'
+                        xtype: 'container',
+                        layout: 'hbox',
+                        defaultType: 'label',
+                        defaults: {
+                            cls: 'title-label'
+                        },
+                        items: [
+                            {
+                                flex: 1,
+                                text: 'Consultar Material'
+                            }, {
+                                width: 30,
+                                height: 30,
+                                xtype: 'component',
+                                html: '<div class="smart-btn-header" style="padding-left: 7px;"><i class="fa fa-times"></i></div>',
+                                style: {
+                                    cursor: 'pointer',
+                                    fontSize: '20px;',
+                                    borderRadius: '50%',
+                                    backgroundColor:'rgb(246, 246, 246);'
+                                },
+                                listeners: {
+                                    render: function(c){
+                                        c.getEl().on({
+                                            click: function() {
+                                                me.close();
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        ]
                     }, {
                         margin: '20 0 0 0',
                         selectOnFocus: true,
@@ -166,6 +195,14 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                 params = {
                                                     query: record.get('id'),
                                                     areasid: Smart.workstation.areasid
+                                                };
+                                            newCard.down('gridpanel').getStore().removeAll();
+                                            newCard.down('gridpanel').getStore().load({params: params});
+                                        }
+                                        if(newCard.tabIndex == 3 && store.getCount() != 0) {
+                                            var record = store.getAt(0),
+                                                params = {
+                                                    query: record.get('id')
                                                 };
                                             newCard.down('gridpanel').getStore().removeAll();
                                             newCard.down('gridpanel').getStore().load({params: params});
@@ -243,6 +280,10 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                         type: 'auto'
                                                     }
                                                 ],
+
+                                                listeners: {
+                                                    select: 'onSelectMaterialFlowStepAction'
+                                                },
 
                                                 columns: [
                                                     {
@@ -347,12 +388,112 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                             var stepsettings = record.get('stepsettings'),
                                                                 tagprinter = (stepsettings) ? Ext.decode(stepsettings).tagprinter : "";
 
-                                                            return tagprinter.length != 0 ? "fa fa-tag action-delete-color-font" : "";
+                                                            return ((tagprinter.length != 0)&&((rowIndex == 0))) ? "fa fa-tag action-delete-color-font" : "";
                                                         },
                                                         isDisabled: function (view, rowIdx, colIdx, item, rec) {
                                                             var stepsettings = rec.get('stepsettings'),
                                                                 tagprinter = (stepsettings) ? Ext.decode(stepsettings).tagprinter : "";
-                                                            return tagprinter.length == 0;
+                                                            return ((tagprinter.length == 0)||(rowIdx != 0));
+                                                        },
+                                                        getTip: function(v, meta, rec) {
+                                                            var stepsettings = rec.get('stepsettings'),
+                                                                tagprinterdescription = (stepsettings) ? Ext.decode(stepsettings).tagprinterdescription : "";
+                                                            return tagprinterdescription;
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }, {
+                                        tabIndex: 3,
+                                        title: 'Lotes',
+                                        xtype: 'panel',
+                                        layout: 'fit',
+                                        items: [
+                                            {
+                                                xtype: 'gridpanel',
+                                                cls: 'update-grid',
+                                                hideHeaders: false,
+                                                headerBorders: false,
+                                                name: 'flowprocessinglote',
+                                                params: {
+                                                    action: 'select',
+                                                    method: 'selectByMaterialLote'
+                                                },
+
+                                                url: '../iSterilization/business/Calls/flowprocessingstepmaterial.php',
+
+                                                fields: [
+                                                    {
+                                                        name: 'id',
+                                                        type: 'int'
+                                                    }, {
+                                                        name: 'barcode',
+                                                        type: 'auto'
+                                                    }, {
+                                                        name: 'chargedate',
+                                                        type: 'auto'
+                                                    }, {
+                                                        name: 'flowstatus',
+                                                        type: 'auto'
+                                                    }, {
+                                                        name: 'flowstatusdescription',
+                                                        type: 'auto'
+                                                    }, {
+                                                        name: 'stepsettings',
+                                                        type: 'auto'
+                                                    }, {
+                                                        name: 'flowprocessingstepid',
+                                                        type: 'int'
+                                                    }, {
+                                                        name: 'charge',
+                                                        type: 'auto'
+                                                    }, {
+                                                        name: 'chargeflag',
+                                                        type: 'auto'
+                                                    }, {
+                                                        name: 'chargeflagdescription',
+                                                        type: 'auto'
+                                                    }
+                                                ],
+
+                                                columns: [
+                                                    {
+                                                        flex: 1,
+                                                        align: 'left',
+                                                        sortable: false,
+                                                        dataIndex: 'barcode',
+                                                        text: 'Código'
+                                                    }, {
+                                                        width: 120,
+                                                        align: 'center',
+                                                        sortable: false,
+                                                        dataIndex: 'chargedate',
+                                                        text: 'Data',
+                                                        renderer: function (value) {
+                                                            var readValue = Ext.util.Format.date(Ext.Date.parse(value.substring(0, 10),'Y-m-d'),'d/m/Y');
+                                                            return (readValue.length != 0) ? readValue: value;
+                                                        }
+                                                    }, {
+                                                        width: 110,
+                                                        sortable: false,
+                                                        dataIndex: 'chargeflagdescription',
+                                                        text: 'Status'
+                                                    }, {
+                                                        width: 40,
+                                                        align: 'center',
+                                                        xtype: 'actioncolumn',
+                                                        handler: 'printerTagItem',
+                                                        getClass: function(value, metaData, record, rowIndex, colIndex, store) {
+                                                            var stepsettings = record.get('stepsettings'),
+                                                                tagprinter = (stepsettings) ? Ext.decode(stepsettings).tagprinter : "";
+
+                                                            return ((tagprinter.length != 0)&&((rowIndex == 0))) ? "fa fa-tag action-delete-color-font" : "";
+                                                        },
+                                                        isDisabled: function (view, rowIdx, colIdx, item, rec) {
+                                                            var stepsettings = rec.get('stepsettings'),
+                                                                tagprinter = (stepsettings) ? Ext.decode(stepsettings).tagprinter : "";
+                                                            return ((tagprinter.length == 0)||(rowIdx != 0));
                                                         },
                                                         getTip: function(v, meta, rec) {
                                                             var stepsettings = rec.get('stepsettings'),
@@ -378,19 +519,6 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                 ]
             }
         ]
-    },
-
-    buttonAlign: 'center',
-
-    buttons: [
-        {
-            scale: 'medium',
-            text: 'Cancelar',
-            showSmartTheme: 'red',
-            handler: function (btn) {
-                btn.windowClose();
-            }
-        }
-    ]
+    }
 
 });

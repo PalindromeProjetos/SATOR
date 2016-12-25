@@ -797,6 +797,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 							// Avança Duas Etapas
 							if(strlen($printlocate) != 0) {
 
+								$item['rank'] = 2;
+
 								$result = self::jsonToObject($this->setEncerrarLeitura($item));
 
 								if(!$result->success) {
@@ -804,43 +806,43 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 								}
 
 								//Obtendo StepAction da Primeira Etapa
-								{
-									$newid = $result->rows[0]->newid;
-
-									$tmp = "
-										declare
-											@id int = :id;
-											
-										select
-											fps.flowprocessingid,
-											fps.id as flowprocessingstepid,
-											fpsa.id as flowprocessingstepactionid 
-										from
-											flowprocessingstep fps
-											inner join flowprocessingstepaction fpsa on ( fpsa.flowprocessingstepid = fps.id )
-										where fps.id = @id
-										  and fpsa.flowstepaction = '001';";
-
-									$pdo = $this->prepare($tmp);
-									$pdo->bindValue(":id", $newid, \PDO::PARAM_INT);
-									$callback = $pdo->execute();
-
-									if(!$callback) {
-										throw new \PDOException(self::$FAILURE_STATEMENT);
-									}
-
-									$step = $pdo->fetchAll();
-
-									$step = $step[0];
-
-									$step['hasTran'] = 0;
-
-									$result = self::jsonToObject($this->setEncerrarLeitura($step));
-
-									if(!$result->success) {
-										throw new \PDOException(self::$FAILURE_STATEMENT);
-									}
-								}
+//								{
+//									$newid = $result->rows[0]->newid;
+//
+//									$tmp = "
+//										declare
+//											@id int = :id;
+//
+//										select
+//											fps.flowprocessingid,
+//											fps.id as flowprocessingstepid,
+//											fpsa.id as flowprocessingstepactionid
+//										from
+//											flowprocessingstep fps
+//											inner join flowprocessingstepaction fpsa on ( fpsa.flowprocessingstepid = fps.id )
+//										where fps.id = @id
+//										  and fpsa.flowstepaction = '001';";
+//
+//									$pdo = $this->prepare($tmp);
+//									$pdo->bindValue(":id", $newid, \PDO::PARAM_INT);
+//									$callback = $pdo->execute();
+//
+//									if(!$callback) {
+//										throw new \PDOException(self::$FAILURE_STATEMENT);
+//									}
+//
+//									$step = $pdo->fetchAll();
+//
+//									$step = $step[0];
+//
+//									$step['hasTran'] = 0;
+//
+//									$result = self::jsonToObject($this->setEncerrarLeitura($step));
+//
+//									if(!$result->success) {
+//										throw new \PDOException(self::$FAILURE_STATEMENT);
+//									}
+//								}
 							}
 
 							break;
@@ -866,6 +868,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
 			self::_setSuccess(true);
 
+			//self::selectArray($data);
+
 			if((($cyclestatus == 'FINAL') || ($cyclestatus == 'PRINT'))&&(strlen($printlocate) != 0)) {
 				$this->imprimeEtiqueta($data);
 			}
@@ -882,6 +886,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 	}
 
     public function setEncerrarLeitura (array $data) {
+		$rank = isset($data['rank']) ? $data['rank'] : 1;
         $flowprocessingid = $data['flowprocessingid'];
         $flowprocessingstepid = $data['flowprocessingstepid'];
         $flowprocessingstepactionid = $data['flowprocessingstepactionid'];
@@ -896,38 +901,39 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
             $sql = "
                 declare
-                    @newid int,
-                    @oldid int,
+                	@rank int = :rank; 
                     @flowprocessingid int = :flowprocessingid,
-                    @flowprocessingstepid int = :flowprocessingstepid,
-                    @flowstepaction varchar(3);
+                    @flowprocessingstepid int = :flowprocessingstepid;
 
-                select top 1
-                    @newid = fps.id,
-					@oldid = ta.id,
-					@flowstepaction = ta.flowstepaction
-                from
-                    flowprocessingstep fps
-                    inner join areas a on ( a.id = fps.areasid )
-					outer apply (
+				select
+					newid, oldid, flowstepaction
+				from (
 						select
-							fpsa.id,
-							fpsa.flowstepaction
+							fps.id as newid, 
+							ta.id as oldid,
+							ta.flowstepaction,
+							RANK() OVER (PARTITION BY fps.flowprocessingid ORDER BY fps.id) AS rank
 						from
-							flowprocessingstepaction fpsa
-						where fpsa.flowprocessingstepid = fps.id
-						  and fpsa.flowstepaction = '005'
-						  and fpsa.isactive = 0
-					) ta
-                where fps.flowprocessingid = @flowprocessingid
-                    and (( fps.id > @flowprocessingstepid and ( fps.stepflaglist like '%001%' or fps.stepflaglist like '%019%' ) )
-					 or ( a.hasstock = 1 ))
-			    order by fps.id
-
-                select @newid as newid, @oldid as oldid, @flowstepaction as flowstepaction;";
+							flowprocessingstep fps
+							outer apply (
+								select
+									fpsa.id,
+									fpsa.flowstepaction
+								from
+									flowprocessingstepaction fpsa
+								where fpsa.flowprocessingstepid = fps.id
+									and fpsa.flowstepaction = '005'
+									and fpsa.isactive = 0
+							) ta
+						where fps.flowprocessingid = @flowprocessingid
+						  and fps.id > @flowprocessingstepid
+						  and fps.elementtype = 'basic.SubArea'
+					) result
+				where result.rank = @rank;";
 
             $pdo = $this->prepare($sql);
-            $pdo->bindValue(":flowprocessingid", $flowprocessingid, \PDO::PARAM_INT);
+			$pdo->bindValue(":rank", $rank, \PDO::PARAM_INT);
+			$pdo->bindValue(":flowprocessingid", $flowprocessingid, \PDO::PARAM_INT);
             $pdo->bindValue(":flowprocessingstepid", $flowprocessingstepid, \PDO::PARAM_INT);
 			$callback = $pdo->execute();
 
