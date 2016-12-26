@@ -1,16 +1,14 @@
 //@charset UTF-8
-Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_CICLO', {
+Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_TRIAGEM', {
     extend: 'Ext.window.Window',
 
-    xtype: 'call_SATOR_LOTE_CICLO',
+    xtype: 'call_SATOR_TRIAGEM',
 
     requires: [
         'Ext.form.Panel',
         'Smart.plugins.*',
         'Ext.window.Window',
         'iSterilization.store.*',
-        'iSterilization.view.flowprocessing.SearchCycle',
-        'iSterilization.view.flowprocessing.SearchEquipment',
         'iSterilization.view.flowprocessing.FlowProcessingController'
     ],
 
@@ -20,8 +18,6 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_CICLO',
     header: false,
     resizable: false,
     showAnimate: true,
-
-    editable: true,
 
     controller: 'flowprocessing',
 
@@ -53,12 +49,8 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_CICLO',
                 bodyPadding: 10,
                 layout: 'anchor',
                 margin: '10 0 0 0',
-                defaultType: 'textfield',
                 defaults: {
                     anchor: '100%',
-                    allowBlank: false,
-                    useUpperCase: true,
-                    useReadColor: true,
                     fieldCls: 'smart-field-style-action'
                 },
                 items: [
@@ -72,7 +64,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_CICLO',
                         items: [
                             {
                                 flex: 4,
-                                text: 'Ciclo de Equipamento'
+                                text: 'Prepara Triagem'
                             }, {
                                 flex: 2,
                                 name: 'countitems',
@@ -105,71 +97,29 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_CICLO',
                         xtype: 'hiddenfield',
                         name: 'id'
                     }, {
-                        xtype: 'hiddenfield',
-                        name: 'equipmentid'
-                    }, {
-                        xtype: 'hiddenfield',
-                        name: 'temperature'
-                    }, {
-                        xtype: 'hiddenfield',
-                        name: 'duration'
-                    }, {
-                        xtype: 'hiddenfield',
-                        name: 'timetoopen'
-                    }, {
-                        xtype: 'hiddenfield',
-                        name: 'equipmentcycleid'
-                    }, {
-                        style: 'margin-top: 20px',
-                        xtype: 'fieldcontainer',
-                        layout: 'hbox',
-                        defaults: {
-                            flex: 1,
-                            fieldCls: 'smart-field-style-action'
-                        },
-                        items: [
-                            {
-                                fieldLabel: 'Equipamento',
-                                name: 'equipmentname',
-                                xtype: 'displayfield'
-                            }, {
-                                fieldLabel: 'Ciclo',
-                                name: 'cyclename',
-                                xtype: 'displayfield'
-                            }
-                        ]
-                    }, {
+                        margin: '20 0 0 0',
                         fieldLabel: 'Consulta',
-                        showClear: true,
-                        allowBlank: true,
+                        xtype: 'textfield',
                         useUpperCase: true,
-                        useReadColor: me.editable,
                         name: 'materialboxname',
                         listeners: {
-                            specialkey: 'onReaderMaterialBoxCiclo'
+                            specialkey: 'onReaderMaterialBoxCarga'
                         }
                     }, {
                         height: 350,
                         xtype: 'gridpanel',
                         cls: 'update-grid',
-                        hideHeaders: false,
-                        headerBorders: false,
+
                         store: 'flowprocessingchargeitem',
 
                         columns: [
                             {
-                                sortable: false,
-                                text: 'Material / kit',
                                 dataIndex: 'materialname',
                                 flex: 1
                             }, {
-                                sortable: false,
-                                text: 'Itens',
                                 dataIndex: 'countitems',
-                                width: 60
+                                width: 40
                             }, {
-                                sortable: false,
-                                text: 'Código',
                                 dataIndex: 'barcode',
                                 width: 160
                             }, {

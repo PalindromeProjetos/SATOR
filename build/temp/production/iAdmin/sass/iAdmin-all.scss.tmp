@@ -1366,6 +1366,7 @@ $include-isterilization-store-flowprocessing-flowprocessing: dynamic(false);;
 $include-isterilization-store-flowprocessing-flowprocessingcharge: dynamic(false);;
 $include-isterilization-store-flowprocessing-flowprocessingchargeitem: dynamic(false);;
 $include-isterilization-store-flowprocessing-flowprocessingholdarea: dynamic(false);;
+$include-isterilization-store-flowprocessing-flowprocessingloadarea: dynamic(false);;
 $include-isterilization-store-flowprocessing-flowprocessingstep: dynamic(false);;
 $include-isterilization-store-flowprocessing-flowprocessingstepaction: dynamic(false);;
 $include-isterilization-store-flowprocessing-flowprocessingsteparea: dynamic(false);;

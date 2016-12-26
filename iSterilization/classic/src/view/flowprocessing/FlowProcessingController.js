@@ -1166,21 +1166,21 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         var me = this;
 
         switch(value) {
-            case 'SATOR_PREPARA_LEITURA':
-                me.callSATOR_PREPARA_LEITURA();
-                break;
+            //case 'SATOR_PREPARA_LEITURA':
+            //    me.callSATOR_PREPARA_LEITURA();
+            //    break;
             case 'SATOR_PROCESSAR_ITENS':
                 me.callSATOR_PROCESSAR_ITENS();
                 break;
             case 'SATOR_REVERTE_FASE':
                 me.callSATOR_REVERTE_FASE();
                 break;
-            case 'SATOR_VALIDA_CARGA':
-                me.callSATOR_VALIDA_CARGA();
-                break;
-            case 'SATOR_PREPARA_LOTE_AVULSO':
-                me.callSATOR_PREPARA_LOTE_AVULSO();
-                break;
+            //case 'SATOR_VALIDA_CARGA':
+            //    me.callSATOR_VALIDA_CARGA();
+            //    break;
+            //case 'SATOR_PREPARA_LOTE_AVULSO':
+            //    me.callSATOR_PREPARA_LOTE_AVULSO();
+            //    break;
             case 'SATOR_PREPARA_LOTE_CICLO':
                 me.callSATOR_PREPARA_LOTE_CICLO();
                 break;
@@ -1191,7 +1191,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 me.callSATOR_CONSULTAR_MATERIAL();
                 break;
             default:
-                Smart.Msg.showToast('Protocolo inválido para esta área');
+                Smart.Msg.showToast('Protocolo inválido para esta área', 'error');
         }
     },
 
@@ -1266,7 +1266,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 me.callSATOR_CONSULTAR_MATERIAL();
                 break;
             default:
-                Smart.Msg.showToast('Protocolo inválido para este local');
+                Smart.Msg.showToast('Protocolo inválido para este local', 'error');
         }
     },
 
@@ -1466,6 +1466,11 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 return true;
             };
 
+        if (Smart.workstation.startreader != 1) {
+            Smart.Msg.showToast('Protocolo inválido para esta área', 'error');
+            return false;
+        }
+
         Ext.widget('flowprocessinguser', {
             scope: me,
             doCallBack: doCallBack
@@ -1516,8 +1521,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             data = view.xdata,
             barcode = view.barcode,
             text = 'Material ({0})';
-            // colorschema = data.get('colorschema') ? data.get('colorschema').split(",") : null,
-            // schema = "<div style='width: 20px; background: {0}; height: 26px; float: right; border: 1px solid #111214; margin-left: 5px;'></div>";
 
         Ext.getStore('flowprocessingstepinputtree').setParams({
             flowprocessingid: data.get('flowprocessingid'),
@@ -1528,12 +1531,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             method: 'selectCode',
             query: data.get('id')
         }).load();
-
-        // if(colorschema) {
-        //     Ext.each(colorschema,function(item) {
-        //         list += Ext.String.format(schema,item);
-        //     });
-        // }
 
         view.down('hiddenfield[name=id]').setValue(data.get('id'));
         view.down('hiddenfield[name=materialboxid]').setValue(data.get('materialboxid'));

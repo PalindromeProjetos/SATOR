@@ -1,8 +1,7 @@
 {
     "apps": [
         "iAdmin",
-        "iSterilization",
-        "iTools"
+        "iSterilization"
     ],
     "build": {
         "dir": "${workspace.dir}/build"

@@ -729,3 +729,76 @@
     background-image: none;
     background-color: rgb(193, 230, 255);
 }
+
+/*
+    dashboard
+*/
+
+/*.dashboard .x-toolbar-default {*/
+    /*background: rgb(209, 196, 233) !important;*/
+    /*!*background-color: transparent !important;*!*/
+    /*!*background: rgba(255, 237, 79, .8);*!*/
+/*}*/
+
+
+.c-dash {
+    background: rgba(224, 224, 224, .8) !important;
+}
+
+.c-panel {
+    background-color: rgba(255, 255, 255, .4) !important;
+}
+
+.card-summary {
+    height: 60px;
+    font-weight: 500;
+    padding-left: 10px;
+    color: rgb(115, 135, 156);
+}
+
+.b-left {
+    width: 2%;
+    float: left;
+    height: 100%;
+    margin: 10px 0 10px 0;
+    border-left: 2px solid rgb(173, 178, 181);
+}
+
+.b-right {
+    width: 98%;
+    float: right;
+    padding-left: 15px;
+}
+
+.b-right:hover {
+    background-color: rgba(115, 135, 156, .1);
+}
+
+.total-value {
+    font-size: 40px;
+    line-height: 45px;
+    font-weight: 700;
+}
+
+.g-color {
+    color: rgb(26, 187, 156);
+}
+
+.dashboard .title-label {
+    font-size: 24px;
+    line-height: 32px;
+    color: rgb(115, 135, 156);
+}
+
+.dashboard .t-bold {
+    font-weight: 500;
+}
+
+.dashboard .sub-title-label {
+    font-size: 18px;
+    line-height: 18px;
+}
+
+.dashboard .x-panel-default-outer-border-trbl {
+    border-color: rgb(255, 255, 255) !important;
+}

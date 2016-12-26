@@ -11,13 +11,30 @@ Ext.define( 'iSterilization.view.main.MainController', {
 
     url: '../iAdmin/business/Calls/users.php',
 
+    onLoadToggle: function (btn) {
+        var pressed = btn.pressed,
+            appCtrll = Smart.app.getController('App'),
+            report = pressed ? 'flowprocessingload' : 'flowprocessingstep';
+
+        appCtrll.onMainPageView({ xtype: report, iconCls: null });
+    },
+
     doStart: function (view) {
         var me = this,
-            ctrll = Smart.app.getController('App'),
+            appCtrll = Smart.app.getController('App'),
             button = view.down('button[toggleHandler=onToggleMicro]');
 
-        ctrll.setFlowProcessingType();
-        me.onToggleMicro(button,true);
+        appCtrll.setFlowProcessingType();
+        me.onToggleMicro(button, true);
+
+        if (Smart.workstation.doscreening == 1) {
+            view.down('toolbar').insert(10, {
+                allowDepress: true,
+                enableToggle: true,
+                handler: 'onLoadToggle',
+                iconCls: "fa fa-eye"
+            });
+        }
     }
 
 });

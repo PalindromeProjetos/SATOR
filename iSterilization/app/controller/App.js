@@ -29,6 +29,9 @@ Ext.define( 'iSterilization.controller.App', {
         },
         'flowprocessingtype': {
             action: 'setFlowProcessingType'
+        },
+        'dashboardtemplate01': {
+            action: 'setDashBoardTemplate01'
         }
     },
 
@@ -76,6 +79,13 @@ Ext.define( 'iSterilization.controller.App', {
         return me.onMainPageView({ xtype: 'flowprocessingdash', iconCls: rc.get("iconCls") });
     },
 
+    setDashBoardTemplate01: function () {
+        var me = this,
+            rc = me.getMainTree().getSelection();
+
+        return me.onMainPageView({ xtype: 'dashboardtemplate01', iconCls: rc.get("iconCls") });
+    },
+
     setFlowProcessingType: function () {
         var me = this,
             rc = me.getMainTree().getSelection();
@@ -101,7 +111,11 @@ Ext.define( 'iSterilization.controller.App', {
                 if(!success || !result.success) {
                     return false;
                 }
+
                 var data = result.rows[0];
+
+                Smart.workstation.startreader = data.startreader;
+                Smart.workstation.doscreening = data.doscreening;
 
                 report = (data.hasstock == 1) ? 'flowprocessinghold' : report;
                 var returnClass = me.onMainPageView({ xtype: report, iconCls: (rc) ? rc.get("iconCls") : null });

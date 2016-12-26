@@ -31,6 +31,11 @@ Ext.define( 'iAdmin.model.areas.Areas', {
             persist: true,
             critical: true
         }, {
+            name: 'doscreening',
+            type: 'int',
+            persist: true,
+            critical: true
+        }, {
             name: 'areastype',
             type: 'auto'
         }, {

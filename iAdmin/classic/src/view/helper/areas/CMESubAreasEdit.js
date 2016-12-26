@@ -100,23 +100,21 @@ Ext.define( 'iAdmin.view.helper.areas.CMESubAreasEdit', {
                         layout: 'hbox',
                         items: [
                             {
-                                flex: 1,
                                 name: 'isactive',
-                                xtype: 'checkboxfield',
                                 fieldLabel: 'Status',
                                 boxLabel: 'Ativo'
                             }, {
-                                flex: 1,
                                 name: 'sterilizationflow',
-                                xtype: 'checkboxfield',
                                 fieldLabel: 'Fluxo',
-                                boxLabel: 'Ativo'
+                                boxLabel: 'Sim'
                             }, {
-                                flex: 1,
-                                name: 'hasstock',
-                                xtype: 'checkboxfield',
-                                fieldLabel: 'Arsenal',
-                                boxLabel: 'Possui'
+                                name: 'startreader',
+                                fieldLabel: 'Leitura',
+                                boxLabel: 'Sim'
+                            }, {
+                                name: 'doscreening',
+                                fieldLabel: 'Triagem',
+                                boxLabel: 'Sim'
                             }
                         ]
                     }

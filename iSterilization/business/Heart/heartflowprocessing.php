@@ -901,7 +901,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
             $sql = "
                 declare
-                	@rank int = :rank; 
+                	@rank int = :rank, 
                     @flowprocessingid int = :flowprocessingid,
                     @flowprocessingstepid int = :flowprocessingstepid;
 

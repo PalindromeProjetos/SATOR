@@ -40,9 +40,15 @@ class areas extends \Smart\Data\Model {
 
     /**
      * @Policy {"nullable":false}
-     * @Column {"description":"", "type":"boolean", "policy":true, "logallow":true, "default":"1"}
+     * @Column {"description":"", "type":"boolean", "policy":true, "logallow":true, "default":"0"}
      */
     private $startreader;
+
+	/**
+	 * @Policy {"nullable":false}
+	 * @Column {"description":"", "type":"boolean", "policy":true, "logallow":true, "default":"0"}
+	 */
+	private $doscreening;
 
     /**
      * @Policy {"nullable":false, "length":80}
@@ -170,17 +176,33 @@ class areas extends \Smart\Data\Model {
      * @return type boolean
      */
     public function getStartreader() {
-        return $this->isactive;
+		return $this->startreader;
     }
 
     /**
      * @param type $startreader
      * @return \iAdmin\Model\areas
      */
-    public function setStartreader($startreader) {
+	public function setStartreader($startreader) {
         $this->startreader = $startreader;
         return $this;
     }
+
+	/**
+	 * @return type boolean
+	 */
+	public function getDoscreening() {
+		return $this->doscreening;
+	}
+
+	/**
+	 * @param type $doscreening
+	 * @return \iAdmin\Model\areas
+	 */
+	public function setDoscreening($doscreening) {
+		$this->doscreening = $doscreening;
+		return $this;
+	}	
 
     /**
      * @return type string

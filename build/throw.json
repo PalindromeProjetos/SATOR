@@ -4,7 +4,6 @@
     "target": "src_target",
     "module": {
         "iAdmin": false,
-        "iSterilization": false,
-        "iTools": false
+        "iSterilization": false
     }
 }

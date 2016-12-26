@@ -80,6 +80,8 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_MOVIMENTO_OF
                                 name: 'countitems',
                                 style : { 'text-align': 'right', 'color': 'rgb(173, 20, 87)' }
                             }, {
+                                xtype: 'splitter'
+                            }, {
                                 width: 30,
                                 height: 30,
                                 xtype: 'component',

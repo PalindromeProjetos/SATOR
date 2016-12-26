@@ -105,11 +105,15 @@ Ext.define( 'iAdmin.view.helper.areas.CMEAreasEdit', {
                             }, {
                                 name: 'sterilizationflow',
                                 fieldLabel: 'Fluxo',
-                                boxLabel: 'Ativo'
+                                boxLabel: 'Sim'
                             }, {
-								name: 'isstartstate',
-								fieldLabel: 'Estado inicial',
-                                boxLabel: 'Ativo'
+                                name: 'startreader',
+								fieldLabel: 'Leitura',
+								boxLabel: 'Sim'
+                            }, {
+                                name: 'doscreening',
+                                fieldLabel: 'Triagem',
+                                boxLabel: 'Sim'
 							}
                         ]
                     }

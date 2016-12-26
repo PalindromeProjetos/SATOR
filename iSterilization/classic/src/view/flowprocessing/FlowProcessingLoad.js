@@ -1,13 +1,13 @@
 //@charset UTF-8
-Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
+Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingLoad', {
     extend: 'Ext.form.Panel',
 
-    xtype: 'flowprocessingstep',
+    xtype: 'flowprocessingload',
 
     requires: [
         'Smart.util.IonSound',
         'iSterilization.store.flowprocessing.*',
-        'iSterilization.view.flowprocessing.FlowProcessingDataView',
+        'iSterilization.view.flowprocessing.FlowProcessingLoadView',
         'iSterilization.view.flowprocessing.FlowProcessingController'
     ],
 
@@ -30,7 +30,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
     header: false,
 
     //header: {
-    //    title: 'Processos e Ações',
+    //    title: 'Triagem Pré-Leitura',
     //    defaultType: 'button',
     //    defaults: {
     //        showSmartTheme: 'header'
@@ -49,49 +49,16 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
     //    ]
     //},
 
-    listeners: {
-        queryreader: 'onStepDoQuery',
-        afterrender: 'onAfterRenderType'
-    },
+    //listeners: {
+    //    queryreader: 'onHoldDoQuery',
+    //    afterrender: 'onAfterRenderType'
+    //},
 
     bodyStyle: 'padding: 10px',
 
-    timeoutInterval: (6000 * 10),
+    timeoutInterval: (1000 * 10),
 
-    setCycleStart: function (store) {
-        var clock = Ext.dom.Query.select('div.steptype-clock');
-        var tools = Ext.dom.Query.select('div.steptype-tools');
-
-        store.each(function (item) {
-            var id = item.get('id');
-            var steptype = item.get('steptype');
-
-            if (steptype == 'T') {
-                var date1 = Ext.Date.parse(item.get('dateof').substring(0, 19), "Y-m-d H:i:s");
-                Ext.each(clock,function (node) {
-                    var el = Ext.get(node);
-                    if(el.id == ('clock-' + id)) {
-                        el.removeCls('step-hide');
-                        el.timeout = window.setInterval(function () {
-                            var date2 = new Date();
-                            el.update(Ext.Date.dateFormat(new Date(date2-date1), "i:s"));
-                        });
-                    }
-                });
-            }
-
-            if (steptype == 'C') {
-                Ext.each(tools,function (node) {
-                    var el = Ext.get(node);
-                    if(el.id == ('tools-' + id)) {
-                        el.removeCls('step-hide');
-                    }
-                });
-            }
-        });
-    },
-
-    selectStep: function() {
+    selectHold: function() {
         var me = this;
 
         me.timeoutID = window.setInterval(function () {
@@ -99,13 +66,13 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
         }, me.timeoutInterval);
     },
 
-    deselectStep: function () {
+    deselectHold: function () {
         var me = this;
         window.clearInterval(me.timeoutID);
     },
 
     updateType : function () {
-        var store = Ext.getStore('flowprocessingsteparea');
+        var store = Ext.getStore('flowprocessingloadarea');
 
         if(!Smart.workstation || !Smart.workstation.areasid) {
             Smart.Msg.showToast('Estação de Trabalho Não Configurada!','error');
@@ -121,21 +88,14 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
         me.buildItems();
         me.callParent();
 
-        me.onAfter('destroy', me.deselectStep, me);
-        me.onAfter('afterrender', me.selectStep, me);
+        me.onAfter('destroy', me.deselectHold, me);
+        me.onAfter('afterrender', me.selectHold, me);
     },
 
     buildItems: function () {
         var me = this;
 
-        Ext.create('iSterilization.store.flowprocessing.FlowProcessing');
-        Ext.create('iSterilization.store.flowprocessing.FlowProcessingStep');
-        Ext.create('iSterilization.store.flowprocessing.FlowProcessingStepInput');
-        Ext.create('iSterilization.store.flowprocessing.FlowProcessingStepAction');
-        Ext.create('iSterilization.store.flowprocessing.FlowProcessingStepMaterial');
-        Ext.create('iSterilization.store.flowprocessing.FlowProcessingStepInputTree');
-
-        Ext.create('iSterilization.store.flowprocessing.FlowProcessingStepArea');
+        Ext.create('iSterilization.store.flowprocessing.FlowProcessingLoadArea');
 
         me.items = [
             {
@@ -167,17 +127,43 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
                                 items: [
                                     {
                                         flex: 1,
-                                        text: 'Estação de Trabalho Não Configurada',
+                                        text: 'Triagem Pré-Leitura',
                                         name: 'labelareas'
                                     }
                                 ]
                             }, {
                                 flex: 1,
-                                xtype: 'flowprocessingdataview',
+                                xtype: 'flowprocessingloadview',
                                 listeners: {
-                                    itemdblclick: 'onFlowStepAction',
-                                    removecharge: 'onFlowStepRemoveCharge',
-                                    selectcharge: 'onFlowStepSelectCharge'
+                                    selectrecord: 'onFlowHoldSelect',
+                                    deleterecord: 'onFlowHoldDelete'
+                                }
+                            }, {
+                                columns: 5,
+                                vertical: false,
+                                xtype: 'radiogroup',
+                                cls: 'flowprocessingload',
+                                labelCls: 'processing-field-font',
+                                items: [
+                                    { boxLabel: 'Todos', name: 'movementtype', inputValue: '000', checked: true },
+                                    { boxLabel: 'Entradas', name: 'movementtype', inputValue: '001' },
+                                    { boxLabel: 'Saídas', name: 'movementtype', inputValue: '002' },
+                                    { boxLabel: 'Retornos', name: 'movementtype', inputValue: '003' },
+                                    { boxLabel: 'Estornos', name: 'movementtype', inputValue: '004' }
+                                ],
+                                listeners: {
+                                    change: function ( field , newValue , oldValue , eOpts) {
+                                        var view = field.up('flowprocessingload'),
+                                            hold = view.down('flowprocessingloadview');
+
+                                        hold.store.clearFilter();
+
+                                        if(['001','002','003','004'].indexOf(newValue.movementtype) != -1) {
+                                            hold.store.filter('movementtype', newValue.movementtype);
+                                        }
+
+                                        view.down('textfield[name=search]').focus(false,200);
+                                    }
                                 }
                             }
                         ]
@@ -190,31 +176,17 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
     dockedItems: [
         {
             xtype: 'pagingtoolbar',
-            store: 'flowprocessingsteparea',
+            store: 'flowprocessingloadarea',
             dock: 'bottom',
             items: [
-                 '-', {
-                    value: 25,
-                    width: 120,
-                    minValue: 10,
-                    maxValue: 50,
-                    labelWidth: 70,
-                    hideTrigger: true,
-                    labelAlign: 'left',
-                    name: 'limit',
-                    xtype: 'numberfield',
-                    fieldLabel: 'processos',
-                    listeners: {
-                        specialkey: 'totalResultsSearch'
-                    }
-                }, {
-                    width: 60,
-                    labelWidth: 10,
+                '-', {
+                    width: 90,
+                    labelWidth: 40,
                     useReadColor: true,
                     name: 'totalrecords',
                     xtype: 'textfield',
                     labelAlign: 'left',
-                    fieldLabel: '/',
+                    fieldLabel: 'total',
                     value: 0
                 }, '->', {
                     labelAlign: 'left',
@@ -229,7 +201,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
                     inputType: 'password',
                     listeners: {
                         specialkey: function (field, e, eOpts) {
-                            var view = field.up('flowprocessingstep');
+                            var view = field.up('flowprocessingload');
                             if ([e.ESC].indexOf(e.getKey()) != -1) {
                                 field.reset();
                             }

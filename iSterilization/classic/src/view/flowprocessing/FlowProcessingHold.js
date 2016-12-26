@@ -7,6 +7,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
     requires: [
         'Smart.util.IonSound',
         'iSterilization.store.flowprocessing.*',
+        'iSterilization.view.flowprocessing.FlowProcessingHoldView',
         'iSterilization.view.flowprocessing.FlowProcessingController'
     ],
 
@@ -23,28 +24,30 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
     bodyCls: 'flow-processing',
     cls: 'panel-frame panel-frame-tpTree',
 
-    iconCls: "fa fa-smile-o",
+    //iconCls: "fa fa-smile-o",
     showSmartAnimate: true,
 
-    header: {
-        title: 'Movimentar Arsenal',
-        defaultType: 'button',
-        defaults: {
-            showSmartTheme: 'header'
-        },
-        items: [
-            {
-                handler: 'onHistoryBack',
-                iconCls: "fa fa-arrow-left"
-            }, {
-                width: 5,
-                xtype: 'splitter'
-            }, {
-                handler: 'onDestroyView',
-                iconCls: "fa fa-times"
-            }
-        ]
-    },
+    header: false,
+
+    //header: {
+    //    title: 'Movimentar Arsenal',
+    //    defaultType: 'button',
+    //    defaults: {
+    //        showSmartTheme: 'header'
+    //    },
+    //    items: [
+    //        {
+    //            handler: 'onHistoryBack',
+    //            iconCls: "fa fa-arrow-left"
+    //        }, {
+    //            width: 5,
+    //            xtype: 'splitter'
+    //        }, {
+    //            handler: 'onDestroyView',
+    //            iconCls: "fa fa-times"
+    //        }
+    //    ]
+    //},
 
     listeners: {
         queryreader: 'onHoldDoQuery',
