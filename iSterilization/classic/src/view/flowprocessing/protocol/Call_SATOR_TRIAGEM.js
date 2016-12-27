@@ -12,7 +12,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_TRIAGEM', {
         'iSterilization.view.flowprocessing.FlowProcessingController'
     ],
 
-    width: 650,
+    width: 950,
     modal: true,
     layout: 'fit',
     header: false,
@@ -40,8 +40,8 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_TRIAGEM', {
     buildItems: function () {
         var me = this;
 
-        Ext.create('iSterilization.store.flowprocessing.FlowProcessingCharge');
-        Ext.create('iSterilization.store.flowprocessing.FlowProcessingChargeItem');
+        Ext.create('iSterilization.store.flowprocessing.FlowProcessingScreening');
+        Ext.create('iSterilization.store.flowprocessing.FlowProcessingScreeningItem');
 
         me.items = [
             {
@@ -51,7 +51,8 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_TRIAGEM', {
                 margin: '10 0 0 0',
                 defaults: {
                     anchor: '100%',
-                    fieldCls: 'smart-field-style-action'
+                    fieldCls: 'smart-field-style-action',
+                    labelCls: 'smart-field-style-action'
                 },
                 items: [
                     {
@@ -97,20 +98,21 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_TRIAGEM', {
                         xtype: 'hiddenfield',
                         name: 'id'
                     }, {
+                        anchor: '50%',
                         margin: '20 0 0 0',
                         fieldLabel: 'Consulta',
                         xtype: 'textfield',
                         useUpperCase: true,
-                        name: 'materialboxname',
-                        listeners: {
-                            specialkey: 'onReaderMaterialBoxCarga'
-                        }
+                        name: 'materialboxname'
+                        // listeners: {
+                        //     specialkey: 'onReaderMaterialBoxCarga'
+                        // }
                     }, {
-                        height: 350,
+                        height: 550,
                         xtype: 'gridpanel',
                         cls: 'update-grid',
 
-                        store: 'flowprocessingchargeitem',
+                        store: 'flowprocessingscreeningitem',
 
                         columns: [
                             {

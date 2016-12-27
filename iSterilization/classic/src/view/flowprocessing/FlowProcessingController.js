@@ -15,6 +15,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
     listen: {
         store: {
+            '#flowprocessingloadarea': {
+                load: 'onLoadArea',
+                beforeload: 'onBeforeLoadArea'
+            },
             '#flowprocessingsteparea': {
                 load: 'onLoadStepArea',
                 beforeload: 'onBeforeLoadStepArea'
@@ -63,6 +67,22 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 app.onMainPageView({xtype: 'flowprocessingview', xdata: store.getAt(0), barcode: barcode});
             }
         });
+    },
+
+    onLoadArea: function (store, records, successful, operation, eOpts) {
+
+    },
+
+    onBeforeLoadArea: function (store, operation, eOpts) {
+        var me = this,
+            view = me.getView(),
+            dataView = view.down('flowprocessingloadview');
+
+        if(!dataView) {
+            return false;
+        }
+
+        store.setParams(dataView.getParams());
     },
 
     onLoadStepArea: function (store, records, successful, operation, eOpts) {
@@ -206,33 +226,28 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
     onAfterRenderType: function () {
         var me = this,
-            view = me.getView();
+            view = me.getView(),
+            search = view.down('textfield[name=search]'),
+            labelareas = view.down('label[name=labelareas]');
 
         if(!Smart.workstation) {
             return false;
         }
 
-        view.down('textfield[name=search]').focus(false,200);
-        view.down('label[name=labelareas]').setText(Smart.workstation.areasname);
+        if(search) search.focus(false,200);
+        if(labelareas) labelareas.setText(Smart.workstation.areasname);
         view.updateType();
     },
 
-    onStepDoQuery: function (field, e, eOpts) {
+    onLoadDoQuery: function (field, e, eOpts) {
         var me = this,
-            value = field.getValue(),
-            itemC = new RegExp(/(C\d{6})\w+/g),
-            itemP = new RegExp(/(P\d{6})\w+/g);
+            value = field.getValue();
 
         field.reset();
 
         if(value && value.length != 0) {
-            if(value.indexOf('SATOR') != -1) {
-                me.stepProtocol(value);
-                return false;
-            }
-
-            if(itemC.test(value) || itemP.test(value)) {
-                me.stepMaterial(value);
+            if( value.indexOf('SATOR') != -1 ) {
+                me.loadProtocol(value);
                 return false;
             }
         }
@@ -258,7 +273,43 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             }
         }
 
-        Smart.Msg.showToast('Protocolo inválido para esta área');
+        Smart.Msg.showToast('Protocolo inválido para esta área','error');
+    },
+
+    onStepDoQuery: function (field, e, eOpts) {
+        var me = this,
+            value = field.getValue(),
+            itemC = new RegExp(/(C\d{6})\w+/g),
+            itemP = new RegExp(/(P\d{6})\w+/g);
+
+        field.reset();
+
+        if(value && value.length != 0) {
+            if(value.indexOf('SATOR') != -1) {
+                me.stepProtocol(value);
+                return false;
+            }
+
+            if(itemC.test(value) || itemP.test(value)) {
+                me.stepMaterial(value);
+                return false;
+            }
+        }
+    },
+
+    loadProtocol: function (value) {
+        var me = this;
+
+        switch(value) {
+            case 'SATOR_TRIAGEM':
+                me.callSATOR_TRIAGEM();
+                break;
+            case 'SATOR_CONSULTAR_MATERIAL':
+                me.callSATOR_CONSULTAR_MATERIAL();
+                break;
+            default:
+                Smart.Msg.showToast('Protocolo inválido para este local','error');
+        }
     },
 
     holdProtocol: function (value) {
@@ -317,6 +368,265 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 var record = Ext.create('iSterilization.model.flowprocessing.FlowProcessingStepAction', result.rows[0]);
                 me.onFlowStepAction(null,record);
             }
+        });
+    },
+
+    stepProtocol: function (value) {
+        var me = this;
+
+        switch(value) {
+            //case 'SATOR_PREPARA_LEITURA':
+            //    me.callSATOR_PREPARA_LEITURA();
+            //    break;
+            case 'SATOR_PROCESSAR_ITENS':
+                me.callSATOR_PROCESSAR_ITENS();
+                break;
+            case 'SATOR_REVERTE_FASE':
+                me.callSATOR_REVERTE_FASE();
+                break;
+            //case 'SATOR_VALIDA_CARGA':
+            //    me.callSATOR_VALIDA_CARGA();
+            //    break;
+            //case 'SATOR_PREPARA_LOTE_AVULSO':
+            //    me.callSATOR_PREPARA_LOTE_AVULSO();
+            //    break;
+            case 'SATOR_PREPARA_LOTE_CICLO':
+                me.callSATOR_PREPARA_LOTE_CICLO();
+                break;
+            case 'SATOR_PREPARA_LOTE_CARGA':
+                me.callSATOR_PREPARA_LOTE_CARGA();
+                break;
+            case 'SATOR_CONSULTAR_MATERIAL':
+                me.callSATOR_CONSULTAR_MATERIAL();
+                break;
+            default:
+                Smart.Msg.showToast('Protocolo inválido para esta área', 'error');
+        }
+    },
+
+    stepMaterial: function (value) {
+        var me = this,
+            view = me.getView(),
+            store = Ext.getStore('flowprocessingstepaction');
+
+        view.setLoading('Consultando materiais...');
+
+        Ext.Ajax.request({
+            scope: me,
+            url: store.getUrl(),
+            params: {
+                action: 'select',
+                method: 'selectTaskArea',
+                barcode: value,
+                areasid: Smart.workstation.areasid
+            },
+            callback: function (options, success, response) {
+                view.setLoading(false);
+                var result = Ext.decode(response.responseText);
+
+                if(!success || !result.success) {
+                    Smart.Msg.showToast(result.text,'error');
+                    return false;
+                }
+
+                var record = Ext.create('iSterilization.model.flowprocessing.FlowProcessingStepAction', result.rows[0]);
+                me.onFlowStepAction(null,record);
+            }
+        });
+    },
+
+    _onLoadDoQuery: function (field, e, eOpts) {
+        var me = this,
+            value = field.getValue(),
+            itemC = new RegExp(/(C\d{6})\w+/g),
+            itemP = new RegExp(/(P\d{6})\w+/g);
+
+        field.reset();
+
+        if(value && value.length != 0) {
+            if( value.indexOf('SATOR') != -1 || value.indexOf('MOV') != -1) {
+                me.loadProtocol(value);
+                return false;
+            }
+
+            if(itemC.test(value) || itemP.test(value)) {
+                me.loadMaterial(value);
+                return false;
+            }
+        }
+
+        Smart.Msg.showToast('Protocolo inválido para esta área');
+    },
+
+    _loadProtocol: function (value) {
+        var me = this;
+
+        switch(value) {
+            case 'SATOR_ENCERRAR_LEITURA':
+                me.preSATOR_ENCERRAR_LEITURA();
+                break;
+            case 'SATOR_CANCELAR_LEITURAS':
+                me.preSATOR_CANCELAR_LEITURAS();
+                break;
+            case 'SATOR_CANCELAR_ULTIMA_LEITURA':
+                me.preSATOR_CANCELAR_ULTIMA_LEITURA();
+                break;
+            case 'SATOR_CONSULTAR_MATERIAL':
+                me.callSATOR_CONSULTAR_MATERIAL();
+                break;
+            default:
+                Smart.Msg.showToast('Protocolo inválido para este local', 'error');
+        }
+    },
+
+    _loadMaterial: function (value) {
+        var me = this,
+            view = me.getView(),
+            form = view.down('form'),
+            data = form.getValues(),
+            grid = view.down('gridpanel');
+
+        data.barcode = value;
+        data.action = 'select';
+        data.method = 'selectPreLoad';
+
+        Ext.Ajax.request({
+            scope: me,
+            url: me.url,
+            params: data,
+            callback: function (options, success, response) {
+                var result = Ext.decode(response.responseText);
+
+                if(!success || !result.success) {
+                    Smart.Msg.showToast(result.text,'error');
+                    return false;
+                }
+
+                var rows = result.rows[0];
+
+                if(grid.getStore().findRecord('barcode',rows.barcode)) {
+                    Smart.Msg.showToast("O item lido <b>já está aguardando processamento!</b>",'info');
+                    return false;
+                }
+
+                if(rows.clientid != data.clientid) {
+                    Smart.Msg.showToast("O item lido não pode ser confirmado pois é <b>de origem diferente!</b>",'error');
+                    return false;
+                }
+
+                if(rows.areavailable == 0) {
+                    Smart.Msg.showToast("O item lido <b>não está disponível</b> para este processamento!",'info');
+                    return false;
+                }
+
+                rows.id = grid.getStore().getCount()+1;
+                grid.getStore().add(rows);
+            }
+        });
+    },
+
+    callSATOR_TRIAGEM: function () {
+        var me = this,
+            view = me.getView(),
+            store = Ext.getStore('flowprocessingscreening') || Ext.create('iSterilization.store.flowprocessing.FlowProcessingScreening'),
+            doCallBack = function (rows) {
+                store.add({
+                    screeningflag: '001',
+                    screeninguser: rows.username,
+                    areasid: Smart.workstation.areasid
+                });
+
+                view.setLoading('Preparando Triagem!');
+
+                store.sync({
+                    success: function (batch, options) {
+                        var resultSet = batch.getOperations().length != 0 ? batch.operations[0].getResultSet() : null;
+
+                        view.setLoading(false);
+
+                        if((resultSet !== null) && (resultSet.success)) {
+                            var opr = batch.getOperations()[0],
+                                rec = opr.getRecords()[0];
+
+                            Ext.getCmp('flowprocessingload').updateType();
+                            Smart.ion.sound.play("button_tiny");
+                            // me.onFlowStepSelectCharge(view,rec);
+                        }
+                    },
+                    failure: function (batch, options) {
+                        var resultSet = batch.getOperations().length != 0 ? batch.operations[0].getResultSet() : null;
+
+                        view.setLoading(false);
+
+                        if(resultSet) {
+                            Smart.ion.sound.play("computer_error");
+                            Smart.Msg.showToast(resultSet.text,'error');
+                        }
+                    }
+                });
+
+                // Ext.widget('call_SATOR_TRIAGEM', {
+                //     scope: me
+                //     // doCallBack: function () {
+                //     //     var value = this.down('form').getValues(),
+                //     //         store = Ext.create('iSterilization.store.armory.ArmoryMovement');
+                //     //
+                //     //     store.removeAll();
+                //     //
+                //     //     store.load({
+                //     //         scope: this,
+                //     //         params: {
+                //     //             method: 'selectCode',
+                //     //             rows: Ext.encode({id: data.get('id')})
+                //     //         },
+                //     //         callback: function(records, operation, success) {
+                //     //
+                //     //             if(!success || records.length == 0) {
+                //     //                 view.close();
+                //     //                 return false;
+                //     //             }
+                //     //
+                //     //             var record = records[0];
+                //     //             record.set('boxsealone', value.boxsealone);
+                //     //             record.set('boxsealtwo', value.boxsealtwo);
+                //     //             record.set('transportedby', value.transportedby);
+                //     //             record.set('releasestype', 'E');
+                //     //             record.set('closedby', rows.username);
+                //     //             store.sync({
+                //     //                 scope: this,
+                //     //                 callback: function (batch, options) {
+                //     //                     var resultSet = batch.getOperations().length != 0 ? batch.operations[0].getResultSet() : null;
+                //     //
+                //     //                     if ((resultSet == null) || (!resultSet.success)) {
+                //     //                         Smart.Msg.showToast(resultSet.getMessage(), 'error');
+                //     //                         return false;
+                //     //                     }
+                //     //
+                //     //                     var url = 'business/Calls/Quick/DispensingReport.php?id={0}';
+                //     //                     window.open(Ext.String.format(url,data.get('id')));
+                //     //
+                //     //                     this.close();
+                //     //                     Ext.getCmp('flowprocessinghold').updateType();
+                //     //                     view.close();
+                //     //                 }
+                //     //             });
+                //     //         }
+                //     //     });
+                //     // }
+                // }).show(null, function () {
+                //     this.master = view;
+                //     // this.down('textfield[name=closedby]').setValue(rows.username);
+                //     this.down('textfield[name=materialboxname]').focus(false, 200);
+                // });
+
+                return true;
+            };
+
+        Ext.widget('flowprocessinguser', {
+            doCallBack: doCallBack
+        }).show(null,function () {
+            this.down('form').reset();
+            this.down('textfield[name=usercode]').focus(false,200);
         });
     },
 
@@ -1160,160 +1470,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         }
 
         me.updateRecord();
-    },
-
-    stepProtocol: function (value) {
-        var me = this;
-
-        switch(value) {
-            //case 'SATOR_PREPARA_LEITURA':
-            //    me.callSATOR_PREPARA_LEITURA();
-            //    break;
-            case 'SATOR_PROCESSAR_ITENS':
-                me.callSATOR_PROCESSAR_ITENS();
-                break;
-            case 'SATOR_REVERTE_FASE':
-                me.callSATOR_REVERTE_FASE();
-                break;
-            //case 'SATOR_VALIDA_CARGA':
-            //    me.callSATOR_VALIDA_CARGA();
-            //    break;
-            //case 'SATOR_PREPARA_LOTE_AVULSO':
-            //    me.callSATOR_PREPARA_LOTE_AVULSO();
-            //    break;
-            case 'SATOR_PREPARA_LOTE_CICLO':
-                me.callSATOR_PREPARA_LOTE_CICLO();
-                break;
-            case 'SATOR_PREPARA_LOTE_CARGA':
-                me.callSATOR_PREPARA_LOTE_CARGA();
-                break;
-            case 'SATOR_CONSULTAR_MATERIAL':
-                me.callSATOR_CONSULTAR_MATERIAL();
-                break;
-            default:
-                Smart.Msg.showToast('Protocolo inválido para esta área', 'error');
-        }
-    },
-
-    stepMaterial: function (value) {
-        var me = this,
-            view = me.getView(),
-            store = Ext.getStore('flowprocessingstepaction');
-
-        view.setLoading('Consultando materiais...');
-
-        Ext.Ajax.request({
-            scope: me,
-            url: store.getUrl(),
-            params: {
-                action: 'select',
-                method: 'selectTaskArea',
-                barcode: value,
-                areasid: Smart.workstation.areasid
-            },
-            callback: function (options, success, response) {
-                view.setLoading(false);
-                var result = Ext.decode(response.responseText);
-
-                if(!success || !result.success) {
-                    Smart.Msg.showToast(result.text,'error');
-                    return false;
-                }
-
-                var record = Ext.create('iSterilization.model.flowprocessing.FlowProcessingStepAction', result.rows[0]);
-                me.onFlowStepAction(null,record);
-            }
-        });
-    },
-
-    onLoadDoQuery: function (field, e, eOpts) {
-        var me = this,
-            value = field.getValue(),
-            itemC = new RegExp(/(C\d{6})\w+/g),
-            itemP = new RegExp(/(P\d{6})\w+/g);
-
-        field.reset();
-
-        if(value && value.length != 0) {
-            if( value.indexOf('SATOR') != -1 || value.indexOf('MOV') != -1) {
-                me.loadProtocol(value);
-                return false;
-            }
-
-            if(itemC.test(value) || itemP.test(value)) {
-                me.loadMaterial(value);
-                return false;
-            }
-        }
-
-        Smart.Msg.showToast('Protocolo inválido para esta área');
-    },
-
-    loadProtocol: function (value) {
-        var me = this;
-
-        switch(value) {
-            case 'SATOR_ENCERRAR_LEITURA':
-                me.preSATOR_ENCERRAR_LEITURA();
-                break;
-            case 'SATOR_CANCELAR_LEITURAS':
-                me.preSATOR_CANCELAR_LEITURAS();
-                break;
-            case 'SATOR_CANCELAR_ULTIMA_LEITURA':
-                me.preSATOR_CANCELAR_ULTIMA_LEITURA();
-                break;
-            case 'SATOR_CONSULTAR_MATERIAL':
-                me.callSATOR_CONSULTAR_MATERIAL();
-                break;
-            default:
-                Smart.Msg.showToast('Protocolo inválido para este local', 'error');
-        }
-    },
-
-    loadMaterial: function (value) {
-        var me = this,
-            view = me.getView(),
-            form = view.down('form'),
-            data = form.getValues(),
-            grid = view.down('gridpanel');
-
-        data.barcode = value;
-        data.action = 'select';
-        data.method = 'selectPreLoad';
-
-        Ext.Ajax.request({
-            scope: me,
-            url: me.url,
-            params: data,
-            callback: function (options, success, response) {
-                var result = Ext.decode(response.responseText);
-
-                if(!success || !result.success) {
-                    Smart.Msg.showToast(result.text,'error');
-                    return false;
-                }
-
-                var rows = result.rows[0];
-
-                if(grid.getStore().findRecord('barcode',rows.barcode)) {
-                    Smart.Msg.showToast("O item lido <b>já está aguardando processamento!</b>",'info');
-                    return false;
-                }
-
-                if(rows.clientid != data.clientid) {
-                    Smart.Msg.showToast("O item lido não pode ser confirmado pois é <b>de origem diferente!</b>",'error');
-                    return false;
-                }
-
-                if(rows.areavailable == 0) {
-                    Smart.Msg.showToast("O item lido <b>não está disponível</b> para este processamento!",'info');
-                    return false;
-                }
-
-                rows.id = grid.getStore().getCount()+1;
-                grid.getStore().add(rows);
-            }
-        });
     },
 
     preSATOR_ENCERRAR_LEITURA: function () {

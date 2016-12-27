@@ -78,6 +78,8 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_CICLO_F
                                 name: 'countitems',
                                 style : { 'text-align': 'right', 'color': 'rgb(173, 20, 87)' }
                             }, {
+                                xtype: 'splitter'
+                            }, {
                                 width: 30,
                                 height: 30,
                                 xtype: 'component',
@@ -171,7 +173,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_CICLO_F
                             }
                         ]
                     }, {
-                        height: 350,
+                        height: 550,
                         xtype: 'gridpanel',
                         cls: 'update-grid',
                         hideHeaders: false,

@@ -21,33 +21,12 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHold', {
     },
 
     controller: 'flowprocessing',
-    bodyCls: 'flow-processing',
-    cls: 'panel-frame panel-frame-tpTree',
+    bodyCls: 'hold-processing',
+    // cls: 'panel-frame panel-frame-tpTree',
 
-    //iconCls: "fa fa-smile-o",
     showSmartAnimate: true,
 
     header: false,
-
-    //header: {
-    //    title: 'Movimentar Arsenal',
-    //    defaultType: 'button',
-    //    defaults: {
-    //        showSmartTheme: 'header'
-    //    },
-    //    items: [
-    //        {
-    //            handler: 'onHistoryBack',
-    //            iconCls: "fa fa-arrow-left"
-    //        }, {
-    //            width: 5,
-    //            xtype: 'splitter'
-    //        }, {
-    //            handler: 'onDestroyView',
-    //            iconCls: "fa fa-times"
-    //        }
-    //    ]
-    //},
 
     listeners: {
         queryreader: 'onHoldDoQuery',

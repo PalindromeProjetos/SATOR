@@ -1243,6 +1243,8 @@ $include-isterilization-model-armory-armorystock: dynamic(true);;
 $include-isterilization-model-flowprocessing-flowprocessing: dynamic(true);;
 $include-isterilization-model-flowprocessing-flowprocessingcharge: dynamic(true);;
 $include-isterilization-model-flowprocessing-flowprocessingchargeitem: dynamic(true);;
+$include-isterilization-model-flowprocessing-flowprocessingscreening: dynamic(true);;
+$include-isterilization-model-flowprocessing-flowprocessingscreeningitem: dynamic(true);;
 $include-isterilization-model-flowprocessing-flowprocessingstep: dynamic(true);;
 $include-isterilization-model-flowprocessing-flowprocessingstepaction: dynamic(true);;
 $include-isterilization-model-flowprocessing-flowprocessingstepinput: dynamic(true);;
@@ -1260,6 +1262,8 @@ $include-isterilization-store-flowprocessing-flowprocessingcharge: dynamic(true)
 $include-isterilization-store-flowprocessing-flowprocessingchargeitem: dynamic(true);;
 $include-isterilization-store-flowprocessing-flowprocessingholdarea: dynamic(true);;
 $include-isterilization-store-flowprocessing-flowprocessingloadarea: dynamic(true);;
+$include-isterilization-store-flowprocessing-flowprocessingscreening: dynamic(true);;
+$include-isterilization-store-flowprocessing-flowprocessingscreeningitem: dynamic(true);;
 $include-isterilization-store-flowprocessing-flowprocessingstep: dynamic(true);;
 $include-isterilization-store-flowprocessing-flowprocessingstepaction: dynamic(true);;
 $include-isterilization-store-flowprocessing-flowprocessingsteparea: dynamic(true);;
@@ -1282,8 +1286,8 @@ $include-isterilization-view-flowprocessing-flowprocessingholdsearch: dynamic(tr
 $include-isterilization-view-flowprocessing-flowprocessingholdview: dynamic(true);;
 $include-isterilization-view-flowprocessing-flowprocessinginput: dynamic(true);;
 $include-isterilization-view-flowprocessing-flowprocessinglist: dynamic(false);;
-$include-isterilization-view-flowprocessing-flowprocessingload: dynamic(true);;
-$include-isterilization-view-flowprocessing-flowprocessingloadview: dynamic(true);;
+$include-isterilization-view-flowprocessing-flowprocessingload: dynamic(false);;
+$include-isterilization-view-flowprocessing-flowprocessingloadview: dynamic(false);;
 $include-isterilization-view-flowprocessing-flowprocessingmaterial: dynamic(true);;
 $include-isterilization-view-flowprocessing-flowprocessingmessage: dynamic(true);;
 $include-isterilization-view-flowprocessing-flowprocessingopen: dynamic(true);;
@@ -1317,7 +1321,7 @@ $include-isterilization-view-flowprocessing-protocol-call_sator_prepara_lote_cic
 $include-isterilization-view-flowprocessing-protocol-call_sator_relatar_cycle_status: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_relatar_exception: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_reverte_fase: dynamic(true);;
-$include-isterilization-view-flowprocessing-protocol-call_sator_triagem: dynamic(false);;
+$include-isterilization-view-flowprocessing-protocol-call_sator_triagem: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_unconformities: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_valida_carga: dynamic(false);;
 $include-isterilization-view-login-login: dynamic(true);;

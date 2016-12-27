@@ -63,21 +63,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingLoadView', {
 
     tpl: [
         '<tpl for=".">',
-            '<div class="hold hold-{movementtype}">',
-                '<div class="hold-l">',
-                    '<div><img src="../iSterilization/business/Calls/armorymovement.php?action=select&method=renderCode&barCode={id}"/></div>',
-                    '<div class="items">{item}</div>',
-                '</div>',
-                '<div class="hold-btn">',
-                    '<i class="select fa fa-info-circle action-select-color-font"></i>',
-                    '<i class="delete fa fa-minus-circle action-delete-color-font"></i>',
-                '</div>',
-                '<div class="hold-r">',
-                    '<div class="line-one">{lineone}</div>',
-                    '<div class="line-two">{linetwo}</div>',
-                    '<div class="line-two">{movementuser}</div>',
-                '</div>',
-            '</div>',
         '</tpl>'
     ],
 
@@ -88,7 +73,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingLoadView', {
 
         me.params = {
             action: 'select',
-            method: 'selectLoaddArea',
+            method: 'selectLoadArea',
             areasid: Smart.workstation.areasid
         };
 

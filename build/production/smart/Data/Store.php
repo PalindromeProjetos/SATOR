@@ -106,8 +106,8 @@ class Store {
             self::_setRows($rows);
 
         } catch ( \PDOException $e ) {
-            self::_setRestart(true);
             self::_setSuccess(false);
+			self::_setRestart(!$have);
             self::_setText($e->getMessage());
         }
 
@@ -147,8 +147,8 @@ class Store {
             self::_setRecords($pdo->rowCount());
 
         } catch ( \PDOException $e ) {
-            self::_setRestart(true);
             self::_setSuccess(false);
+			self::_setRestart(!$have);
             self::_setText($e->getMessage());
         }
 
@@ -196,8 +196,8 @@ class Store {
             self::_setRows($this->getRecord());
 
         } catch ( \PDOException $e ) {
-            self::_setRestart(true);
             self::_setSuccess(false);
+			self::_setRestart(!$have);
             self::_setText($e->getMessage());
         }
 
@@ -236,8 +236,8 @@ class Store {
             self::_setRecords($pdo->rowCount());
 
         } catch ( \PDOException $e ) {
-            self::_setRestart(true);
             self::_setSuccess(false);
+			self::_setRestart(!$have);
             self::_setText($e->getMessage());
         }
 

@@ -21,38 +21,17 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingLoad', {
     },
 
     controller: 'flowprocessing',
-    bodyCls: 'flow-processing',
-    cls: 'panel-frame panel-frame-tpTree',
+    bodyCls: 'load-processing',
+    // cls: 'panel-frame panel-frame-tpTree',
 
-    //iconCls: "fa fa-smile-o",
     showSmartAnimate: true,
 
     header: false,
 
-    //header: {
-    //    title: 'Triagem Pré-Leitura',
-    //    defaultType: 'button',
-    //    defaults: {
-    //        showSmartTheme: 'header'
-    //    },
-    //    items: [
-    //        {
-    //            handler: 'onHistoryBack',
-    //            iconCls: "fa fa-arrow-left"
-    //        }, {
-    //            width: 5,
-    //            xtype: 'splitter'
-    //        }, {
-    //            handler: 'onDestroyView',
-    //            iconCls: "fa fa-times"
-    //        }
-    //    ]
-    //},
-
-    //listeners: {
-    //    queryreader: 'onHoldDoQuery',
-    //    afterrender: 'onAfterRenderType'
-    //},
+    listeners: {
+       queryreader: 'onLoadDoQuery',
+       afterrender: 'onAfterRenderType'
+    },
 
     bodyStyle: 'padding: 10px',
 
@@ -127,8 +106,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingLoad', {
                                 items: [
                                     {
                                         flex: 1,
-                                        text: 'Triagem Pré-Leitura',
-                                        name: 'labelareas'
+                                        text: 'Triagem Pré-Leitura'
                                     }
                                 ]
                             }, {
@@ -137,33 +115,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingLoad', {
                                 listeners: {
                                     selectrecord: 'onFlowHoldSelect',
                                     deleterecord: 'onFlowHoldDelete'
-                                }
-                            }, {
-                                columns: 5,
-                                vertical: false,
-                                xtype: 'radiogroup',
-                                cls: 'flowprocessingload',
-                                labelCls: 'processing-field-font',
-                                items: [
-                                    { boxLabel: 'Todos', name: 'movementtype', inputValue: '000', checked: true },
-                                    { boxLabel: 'Entradas', name: 'movementtype', inputValue: '001' },
-                                    { boxLabel: 'Saídas', name: 'movementtype', inputValue: '002' },
-                                    { boxLabel: 'Retornos', name: 'movementtype', inputValue: '003' },
-                                    { boxLabel: 'Estornos', name: 'movementtype', inputValue: '004' }
-                                ],
-                                listeners: {
-                                    change: function ( field , newValue , oldValue , eOpts) {
-                                        var view = field.up('flowprocessingload'),
-                                            hold = view.down('flowprocessingloadview');
-
-                                        hold.store.clearFilter();
-
-                                        if(['001','002','003','004'].indexOf(newValue.movementtype) != -1) {
-                                            hold.store.filter('movementtype', newValue.movementtype);
-                                        }
-
-                                        view.down('textfield[name=search]').focus(false,200);
-                                    }
                                 }
                             }
                         ]

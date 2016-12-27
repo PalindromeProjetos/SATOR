@@ -797,7 +797,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 							// Avança Duas Etapas
 							if(strlen($printlocate) != 0) {
 
-								$item['rank'] = 2;
+								$item['rank'] = ($cyclestatus == 'FINAL') ? 2 : 1;
 
 								$result = self::jsonToObject($this->setEncerrarLeitura($item));
 
@@ -806,7 +806,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 								}
 
 								//Obtendo StepAction da Primeira Etapa
-//								{
+//								if($cyclestatus == 'FINAL') {
 //									$newid = $result->rows[0]->newid;
 //
 //									$tmp = "
@@ -915,6 +915,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 							RANK() OVER (PARTITION BY fps.flowprocessingid ORDER BY fps.id) AS rank
 						from
 							flowprocessingstep fps
+							inner join areas a on ( a.id = fps.areasid )
 							outer apply (
 								select
 									fpsa.id,
@@ -927,7 +928,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 							) ta
 						where fps.flowprocessingid = @flowprocessingid
 						  and fps.id > @flowprocessingstepid
-						  and fps.elementtype = 'basic.SubArea'
+						  and ( fps.stepflaglist like '%001%' or fps.stepflaglist like '%019%' or a.hasstock = 1 )
 					) result
 				where result.rank = @rank;";
 
@@ -2924,6 +2925,43 @@ class heartflowprocessing extends \Smart\Data\Proxy {
     //</editor-fold>
 
 	//<editor-fold desc="Prepara Areas">
+
+	public function selectLoadArea(array $data) {
+		$areasid = $data['areasid'];
+
+		$sql = "
+            declare
+                @areasid int = :areasid;
+
+			select
+				fps.*,
+				a.items
+			from
+				flowprocessingscreening fps
+				outer apply (
+					select
+						dbo.getLeftPad(3,'0',count(fpsi.id)) as items
+					from
+						flowprocessingscreeningitem fpsi
+					where fpsi.flowprocessingscreeningid = fps.id
+				) a
+			where fps.areasid = @areasid";
+
+		try {
+			$pdo = $this->prepare($sql);
+			$pdo->bindValue(":areasid", $areasid, \PDO::PARAM_INT);
+			$pdo->execute();
+			$rows = $pdo->fetchAll();
+
+			self::_setRows($rows);
+
+		} catch ( \PDOException $e ) {
+			self::_setSuccess(false);
+			self::_setText($e->getMessage());
+		}
+
+		return self::getResultToJson();
+	}
 
 	public function selectStepArea(array $data) {
 		$query = $data['query'];
