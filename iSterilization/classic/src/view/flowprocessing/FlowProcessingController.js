@@ -70,7 +70,50 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
     },
 
     onLoadArea: function (store, records, successful, operation, eOpts) {
+        var me = this,
+            data = [],
+            view = me.getView(),
+            dataView = view.down('flowprocessingloadview'),
+            storeView = dataView.getStore(),
+            resultSet = operation.getResultSet();
 
+        if(!dataView) {
+            return false;
+        }
+
+        var totalrecords = view.down('textfield[name=totalrecords]');
+
+        if (!records || records.length == 0) {
+            return false;
+        }
+
+        Ext.each(records, function (record) {
+            var rec = storeView.findRecord('id',record.get('id'));
+
+            data.push(record.data);
+
+            if(!rec) {
+                storeView.add(record.data);
+            }
+
+            if(rec) {
+                rec.set('item',record.get('item'));
+            }
+        });
+
+        storeView.each(function (record) {
+            var obj = Ext.Array.findBy(data, function(item) {
+                return ((record) && (record.get('id') == item.id));
+            });
+
+            if(!obj) {
+                storeView.remove(record);
+            }
+        });
+
+        if (totalrecords) {
+            totalrecords.setValue(resultSet.total);
+        }
     },
 
     onBeforeLoadArea: function (store, operation, eOpts) {
@@ -744,6 +787,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                     this.down('textfield[name=closedby]').setValue(rows.username);
                     this.down('fieldcontainer[name=boxseal]').setVisible(data.get('movementtype') == '002');
                 });
+
+                return true;
             };
 
         Ext.widget('flowprocessinguser', {

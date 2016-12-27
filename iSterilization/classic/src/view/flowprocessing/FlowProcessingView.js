@@ -22,30 +22,12 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingView', {
     },
 
     controller: 'flowprocessing',
-    bodyCls: 'flow-processing',
-    cls: 'panel-frame panel-frame-tpTree',
-    iconCls: "fa fa-users",
+    bodyCls: 'step-processing',
+    // cls: 'panel-frame panel-frame-tpTree',
+
     showSmartAnimate: true,
 
-    header: {
-        title: 'Processamento de Materiais',
-        defaultType: 'button',
-        defaults: {
-            showSmartTheme: 'header'
-        },
-        items: [
-            {
-                handler: 'onHistoryBack',
-                iconCls: "fa fa-arrow-left"
-            }, {
-                width: 5,
-                xtype: 'splitter'
-            }, {
-                handler: 'onDestroyView',
-                iconCls: "fa fa-times"
-            }
-        ]
-    },
+    header: false,
 
     listeners: {
         afterrender: 'onAfterRenderView',
