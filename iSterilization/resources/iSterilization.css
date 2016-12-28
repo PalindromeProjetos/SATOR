@@ -579,9 +579,11 @@
     LoadView begin
 */
 .load {
+    float: left;
     width: 250px;
     height: 70px;
     cursor: pointer;
+    margin: 10px 0 10px 10px;
     border-top-left-radius: 35px;
     border-bottom-left-radius: 35px;
     background: rgba(0, 145, 234, .3);
