@@ -15,7 +15,7 @@ Ext.define( 'iSterilization.store.flowprocessing.FlowProcessingLoadArea', {
             name: 'id',
             type: 'int'
         }, {
-            name: 'item',
+            name: 'items',
             type: 'int'
         }, {
             name: 'barcode',

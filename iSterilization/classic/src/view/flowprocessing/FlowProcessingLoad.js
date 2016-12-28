@@ -113,8 +113,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingLoad', {
                                 flex: 1,
                                 xtype: 'flowprocessingloadview',
                                 listeners: {
-                                    selectrecord: 'onFlowHoldSelect',
-                                    deleterecord: 'onFlowHoldDelete'
+                                    selectrecord: 'onFlowLoadSelect',
+                                    deleterecord: 'onFlowLoadDelete'
                                 }
                             }
                         ]

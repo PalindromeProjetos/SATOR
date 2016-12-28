@@ -499,19 +499,6 @@
     display: none;
 }
 
-
-/*<span class="notification-icon icon-comment" aria-hidden=""></span>*/
-/*.unread .notification-icon {*/
-    /*color: #f55567;*/
-/*}*/
-/*.notification-icon {*/
-    /*position: absolute;*/
-    /*top: 0;*/
-    /*left: 0;*/
-    /*font-size: 19px;*/
-    /*transition: color .1s;*/
-/*}*/
-
 .flowprocessinghold .x-grid-item {
     font-size: 16px;
     color: rgb(255, 255, 255);
@@ -548,10 +535,6 @@
     color: rgb(255, 255, 255);
     text-shadow: 1px 1px 2px rgb(0, 0, 0);
 }
-
-/*.flowprocessinghold .x-form-cb-checked .x-form-radio-default:before {*/
-    /*color: rgb(16, 232, 196);*/
-/*}*/
 
 .flowprocessinghold {
     z-index: 0 !important;
@@ -593,7 +576,81 @@
 }
 
 /*
-    dataview
+    LoadView begin
+*/
+.load {
+    width: 250px;
+    height: 70px;
+    cursor: pointer;
+    border-top-left-radius: 35px;
+    border-bottom-left-radius: 35px;
+    background: rgba(0, 145, 234, .3);
+}
+
+.load .buble {
+    float: left;
+    width: 70px;
+    height: 100%;
+    color: white;
+    font-size: 24px;
+    background: red;
+    font-weight: 700;
+    line-height: 70px;
+    border-radius: 50%;
+    text-align: center;
+}
+
+.load:hover {
+    background: rgba(0, 145, 234, .5);
+}
+
+.load .lines {
+    float: right;
+    width: 170px;
+    height: 100%;
+    margin-left: 10px;
+}
+
+.lines .line-01 {
+    font-size: 24px;
+    overflow: hidden;
+    font-weight: 700;
+    line-height: 30px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.lines .line-02 {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 16px;
+}
+
+.lines .line-03 {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+}
+
+.load .load-btn {
+    float: right;
+    height: 40px;
+    font-size: 34px;
+    margin-top: -21px;
+    line-height: 40px;
+    text-align: center;
+}
+
+.load .load-btn .select {
+    padding-left: 10px;
+}
+
+/*
+    LoadView end
+*/
+
+/*
+    HoldView
 */
 .hold {
     float: left;
@@ -621,10 +678,6 @@
     background: rgba(255, 237, 79, .8);
     border-radius: 3px;
 }
-
-/*.hold .items:hover {*/
-    /*background: rgba(248, 202, 0, .3);*/
-/*}*/
 
 .hold .hold-btn {
     line-height: 48px;
@@ -735,17 +788,6 @@
     background-image: none;
     background-color: rgb(193, 230, 255);
 }
-
-/*
-    dashboard
-*/
-
-/*.dashboard .x-toolbar-default {*/
-    /*background: rgb(209, 196, 233) !important;*/
-    /*!*background-color: transparent !important;*!*/
-    /*!*background: rgba(255, 237, 79, .8);*!*/
-/*}*/
-
 
 .c-dash {
     background: rgba(224, 224, 224, .8) !important;

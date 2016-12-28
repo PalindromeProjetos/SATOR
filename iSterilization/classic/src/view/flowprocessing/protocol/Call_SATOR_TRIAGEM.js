@@ -23,10 +23,10 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_TRIAGEM', {
 
     listeners: {
         beforedestroy: function (view , eOpts) {
-            var step =  Ext.getCmp('flowprocessingload');
-            if(step) {
-                step.updateType();
-                step.down('textfield[name=search]').focus(false,200);
+            var load =  Ext.getCmp('flowprocessingload');
+            if (load) {
+                load.updateType();
+                load.down('textfield[name=search]').focus(false, 200);
             }
         }
     },

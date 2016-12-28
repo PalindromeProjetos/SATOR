@@ -10,5 +10,17 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library name="PHARS">
+        <CLASSES>
+          <root url="phar://$MODULE_DIR$/apigen.phar/" />
+          <root url="phar://$MODULE_DIR$/smart/apigen.phar/" />
+        </CLASSES>
+        <SOURCES>
+          <root url="phar://$MODULE_DIR$/apigen.phar/" />
+          <root url="phar://$MODULE_DIR$/smart/apigen.phar/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
 </module>

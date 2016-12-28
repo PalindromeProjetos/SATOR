@@ -2945,7 +2945,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 						flowprocessingscreeningitem fpsi
 					where fpsi.flowprocessingscreeningid = fps.id
 				) a
-			where fps.areasid = @areasid";
+			where fps.areasid = @areasid
+			  and fps.screeningflag = '001'";
 
 		try {
 			$pdo = $this->prepare($sql);

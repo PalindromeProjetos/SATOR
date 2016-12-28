@@ -178,26 +178,22 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
     onLoadHoldArea: function (store, records, successful, operation, eOpts) {
         var me = this,
-            data = [],
             view = me.getView(),
-            dataView = view.down('flowprocessingholdview'),
-            storeView = dataView.getStore(),
-            resultSet = operation.getResultSet();
+            resultSet = operation.getResultSet(),
+            totalrecords = view.down('textfield[name=totalrecords]'),
+            storeView = view.down('flowprocessingholdview').getStore();
 
-        if(!dataView) {
-            return false;
+        if (totalrecords) {
+            totalrecords.setValue(resultSet.total);
         }
-
-        var totalrecords = view.down('textfield[name=totalrecords]');
 
         if (!records || records.length == 0) {
+            storeView.removeAll();
             return false;
         }
 
-        Ext.each(records, function (record) {
+        store.each(function (record) {
             var rec = storeView.findRecord('id',record.get('id'));
-
-            data.push(record.data);
 
             if(!rec) {
                 storeView.add(record.data);
@@ -209,18 +205,12 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         });
 
         storeView.each(function (record) {
-            var obj = Ext.Array.findBy(data, function(item) {
-                return ((record) && (record.get('id') == item.id));
-            });
+            var rec = store.findRecord('id', record.get('id'));
 
-            if(!obj) {
+            if (!rec) {
                 storeView.remove(record);
             }
         });
-
-        if (totalrecords) {
-            totalrecords.setValue(resultSet.total);
-        }
     },
 
     onBeforeLoadHoldArea: function (store, operation, eOpts) {
@@ -1077,6 +1067,42 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             model = grid.getStore().getAt(rowIndex);
 
         me.getMovementType(model);
+    },
+
+    onFlowLoadSelect: function (viewView,store) {
+        var me = this,
+            record = viewView.getSelectionModel().getSelection()[0];
+
+        console.info(record.data);
+
+        //me.getMovementType(record);
+    },
+
+    onFlowLoadDelete: function (viewView,store) {
+        var me = this,
+            record = viewView.getSelectionModel().getSelection()[0];
+
+        Ext.Msg.confirm('Cancelar movimento', 'Confirma o cancelamento do movimento selecionado?',
+            function (choice) {
+                if (choice === 'yes') {
+                    console.info(record.data);
+                    // var store = Ext.getStore('armorymovement') || Ext.create('iSterilization.store.armory.ArmoryMovement');
+                    // store.setParams({
+                    //     method: 'selectCode',
+                    //     rows: Ext.encode({ id: record.get('id') })
+                    // }).load({
+                    //     scope: me,
+                    //     callback: function () {
+                    //         var model = store.getAt(0);
+                    //
+                    //         model.set('releasestype','C');
+                    //         store.sync();
+                    //         viewView.getStore().remove(record);
+                    //     }
+                    // });
+                }
+            }
+        );
     },
 
     onSearchMoviment: function (field, e, eOpts) {
@@ -3734,25 +3760,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         if(materialaccount) materialaccount.setText(Ext.String.format(score,count,store.getCount()));
     },
 
-    onLoadChargeItem: function (store) {
-        var me = this,
-            count = 0,
-            score = '{0}/{1}',
-            countitems = me.getView().down('textfield[name=countitems]');
-
-        if(!countitems) {
-            return false;
-        }
-
-        store.each(function (item) {
-            count += item.get('chargestatus') != '002' ? 1 : 0;
-        });
-
-        countitems.setValue(Ext.String.format(score,count,store.getCount()));
-    },
-
     onChangedCharge: function (store, eOpts) {
         var me = this,
+            total = 0,
             score = '',
             count = store.getCount(),
             titlelabel = me.getView().down('label[name=countitems]'),
@@ -3768,9 +3778,19 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 score += Ext.String.format(' {0}/itens',count);
         }
 
-        if(titlelabel) titlelabel.setText(score);
+        if (titlelabel) {
+            titlelabel.setText(score);
+        };
 
-        me.onLoadChargeItem(store);
+        if (countitems) {
+            score = '{0}/{1}';
+
+            store.each(function (record) {
+                total += record.get('chargestatus') == '001' ? 1 : 0;
+            });
+
+            countitems.setValue(Ext.String.format(score, total, count));
+        }
     },
 
     onSelectDataView: function (view,record,eOpts) {

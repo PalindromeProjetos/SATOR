@@ -115,7 +115,6 @@ Ext.define( 'iSterilization.controller.App', {
                 var data = result.rows[0];
 
                 Smart.workstation.startreader = data.startreader;
-                Smart.workstation.doscreening = data.doscreening;
 
                 report = (data.hasstock == 1) ? 'flowprocessinghold' : report;
                 var returnClass = me.onMainPageView({ xtype: report, iconCls: (rc) ? rc.get("iconCls") : null });

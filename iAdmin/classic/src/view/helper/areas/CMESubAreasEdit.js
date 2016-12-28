@@ -111,10 +111,6 @@ Ext.define( 'iAdmin.view.helper.areas.CMESubAreasEdit', {
                                 name: 'startreader',
                                 fieldLabel: 'Leitura',
                                 boxLabel: 'Sim'
-                            }, {
-                                name: 'doscreening',
-                                fieldLabel: 'Triagem',
-                                boxLabel: 'Sim'
                             }
                         ]
                     }

@@ -27,7 +27,7 @@ Ext.define( 'iSterilization.view.main.MainController', {
         appCtrll.setFlowProcessingType();
         me.onToggleMicro(button, true);
 
-        if (Smart.workstation.doscreening == 1) {
+        if (Smart.workstation.startreader == 1) {
             view.down('toolbar').insert(10, {
                 allowDepress: true,
                 enableToggle: true,

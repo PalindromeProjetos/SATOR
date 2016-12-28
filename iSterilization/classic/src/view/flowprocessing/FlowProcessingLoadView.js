@@ -20,49 +20,64 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingLoadView', {
             name: 'id',
             type: 'int'
         }, {
-            name: 'item',
+            name: 'items',
             type: 'int'
         }, {
-            name: 'barcode',
+            name: 'screeningdate',
+            type: 'auto',
+            serializeType: 'date',
+            convert: function (value, record) {
+                return ( !value || value.length == 0) ? null : Ext.util.Format.date(value,'d/m/Y H:i');
+            }
+        }, {
+            name: 'screeningflag',
             type: 'auto'
         }, {
-            name: 'lineone',
+            name: 'screeningflagdescription',
             type: 'auto'
         }, {
-            name: 'linetwo',
-            type: 'auto'
+            name: 'screeninguser',
+            type: 'auto',
+            convert: function (value, record) {
+                var screeninguser = '',
+                    username = value.split('.');
+
+                Ext.each(username,function (name) {
+                    screeninguser += name.charAt(0).toUpperCase() + name.slice(1) + ' ';
+                });
+
+                return screeninguser;
+            }
         }, {
-            name: 'movementdate',
-            type: 'auto'
-        }, {
-            name: 'movementtype',
-            type: 'auto'
-        }, {
-            name: 'movementtypedescription',
-            type: 'auto'
-        }, {
-            name: 'releasestype',
-            type: 'auto'
-        }, {
-            name: 'releasestypedescription',
-            type: 'auto'
-        }, {
-            name: 'movementuser',
-            type: 'auto'
-        }, {
-            name: 'patientname',
-            type: 'auto'
-        }, {
-            name: 'dateof',
-            type: 'auto'
-        }, {
-            name: 'timeof',
-            type: 'auto'
+            name: 'screeningname',
+            type: 'auto',
+            convert: function (value, record) {
+                var screeningname = '',
+                    username = record.get('screeninguser').split(' ');
+
+                Ext.each(username,function (name) {
+                    screeningname += name.charAt(0);
+                });
+
+                return screeningname;
+            }
         }
     ],
 
     tpl: [
         '<tpl for=".">',
+            '<div class="load">',
+                '<div class="buble">{screeningname}</div>',
+                '<div class="lines">',
+                    '<div class="line-01">{screeninguser}</div>',
+                    '<div class="line-02">{screeningdate}</div>',
+                    '<div class="line-03">Itens: {items}</div>',
+                    '<div class="load-btn">',
+                        '<i class="delete fa fa-minus-circle action-delete-color-font"></i>',
+                        '<i class="select fa fa-info-circle action-select-color-font"></i>',
+                    '</div>',
+                '</div>',
+            '</div>',
         '</tpl>'
     ],
 
