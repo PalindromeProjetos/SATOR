@@ -791,30 +791,18 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 					$item['hasTran'] = 0;
 					$chargestatus = $item['chargestatus'];
 
-					// Rank das etapas
-					$item['rank'] = ($cyclestatus == 'FINAL') ? 2 : 1;
+					if(strlen($printlocate) != 0) {
+						$item['rank'] = ($cyclestatus == 'FINAL') ? 2 : 1;
+					}
 
-					switch ($chargestatus) {
-						case '001':
+					if($chargestatus == '002') {
+						$item['rank'] = 1;
+					}
 
-							//if(strlen($printlocate) != 0) {
+					$result = self::jsonToObject($this->setEncerrarLeitura($item));
 
-								$result = self::jsonToObject($this->setEncerrarLeitura($item));
-
-								if(!$result->success) {
-									throw new \PDOException(self::$FAILURE_STATEMENT);
-								}
-							//}
-
-							break;
-						case '002':
-							$result = self::jsonToObject($this->setEncerrarLeitura($item));
-
-							if(!$result->success) {
-								throw new \PDOException(self::$FAILURE_STATEMENT);
-							}
-
-							break;
+					if(!$result->success) {
+						throw new \PDOException(self::$FAILURE_STATEMENT);
 					}
 				}
 
