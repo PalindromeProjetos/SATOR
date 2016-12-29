@@ -66,7 +66,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingLoadView', {
 
     tpl: [
         '<tpl for=".">',
-            '<div class="load">',
+            '<div class="load animated rollIn">',
                 '<div class="buble">{screeningname}</div>',
                 '<div class="lines">',
                     '<div class="line-01">{screeninguser}</div>',

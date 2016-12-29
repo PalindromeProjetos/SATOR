@@ -1,8 +1,8 @@
 //@charset UTF-8
-Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_TRIAGEM', {
+Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM', {
     extend: 'Ext.window.Window',
 
-    xtype: 'call_SATOR_TRIAGEM',
+    xtype: 'call_SATOR_LOTE_TRIAGEM',
 
     requires: [
         'Ext.form.Panel',
@@ -12,7 +12,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_TRIAGEM', {
         'iSterilization.view.flowprocessing.FlowProcessingController'
     ],
 
-    width: 950,
+    width: 600,
     modal: true,
     layout: 'fit',
     header: false,
@@ -65,7 +65,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_TRIAGEM', {
                         items: [
                             {
                                 flex: 4,
-                                text: 'Prepara Triagem'
+                                text: 'Triagem de Materiais'
                             }, {
                                 flex: 2,
                                 name: 'countitems',
@@ -98,7 +98,6 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_TRIAGEM', {
                         xtype: 'hiddenfield',
                         name: 'id'
                     }, {
-                        anchor: '50%',
                         margin: '20 0 0 0',
                         fieldLabel: 'Consulta',
                         xtype: 'textfield',
@@ -108,7 +107,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_TRIAGEM', {
                         //     specialkey: 'onReaderMaterialBoxCarga'
                         // }
                     }, {
-                        height: 550,
+                        height: 650,
                         xtype: 'gridpanel',
                         cls: 'update-grid',
 

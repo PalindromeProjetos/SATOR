@@ -791,59 +791,20 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 					$item['hasTran'] = 0;
 					$chargestatus = $item['chargestatus'];
 
+					// Rank das etapas
+					$item['rank'] = ($cyclestatus == 'FINAL') ? 2 : 1;
+
 					switch ($chargestatus) {
 						case '001':
 
-							// Avança Duas Etapas
-							if(strlen($printlocate) != 0) {
-
-								$item['rank'] = ($cyclestatus == 'FINAL') ? 2 : 1;
+							//if(strlen($printlocate) != 0) {
 
 								$result = self::jsonToObject($this->setEncerrarLeitura($item));
 
 								if(!$result->success) {
 									throw new \PDOException(self::$FAILURE_STATEMENT);
 								}
-
-								//Obtendo StepAction da Primeira Etapa
-//								if($cyclestatus == 'FINAL') {
-//									$newid = $result->rows[0]->newid;
-//
-//									$tmp = "
-//										declare
-//											@id int = :id;
-//
-//										select
-//											fps.flowprocessingid,
-//											fps.id as flowprocessingstepid,
-//											fpsa.id as flowprocessingstepactionid
-//										from
-//											flowprocessingstep fps
-//											inner join flowprocessingstepaction fpsa on ( fpsa.flowprocessingstepid = fps.id )
-//										where fps.id = @id
-//										  and fpsa.flowstepaction = '001';";
-//
-//									$pdo = $this->prepare($tmp);
-//									$pdo->bindValue(":id", $newid, \PDO::PARAM_INT);
-//									$callback = $pdo->execute();
-//
-//									if(!$callback) {
-//										throw new \PDOException(self::$FAILURE_STATEMENT);
-//									}
-//
-//									$step = $pdo->fetchAll();
-//
-//									$step = $step[0];
-//
-//									$step['hasTran'] = 0;
-//
-//									$result = self::jsonToObject($this->setEncerrarLeitura($step));
-//
-//									if(!$result->success) {
-//										throw new \PDOException(self::$FAILURE_STATEMENT);
-//									}
-//								}
-							}
+							//}
 
 							break;
 						case '002':
@@ -1004,13 +965,14 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
                 $sql = "
                     declare
+						@newid int = :newid,
                         @flowprocessingstepid int = :flowprocessingstepid;
                         
                     insert into
                           flowprocessingstepmaterial
                           ( flowprocessingstepid, materialid, unconformities, dateof )  
                     select
-                          {$newid} as flowprocessingstepid,
+                          @newid as flowprocessingstepid,
                           materialid,
                           '001' as unconformities,
                           getdate() dateof
@@ -1020,6 +982,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
                 if($flowstepaction != '005') {
                     $pdo = $this->prepare($sql);
+					$pdo->bindValue(":newid", $newid, \PDO::PARAM_INT);
                     $pdo->bindValue(":flowprocessingstepid", $flowprocessingstepid, \PDO::PARAM_INT);
 					$callback = $pdo->execute();
 
@@ -2946,7 +2909,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 					where fpsi.flowprocessingscreeningid = fps.id
 				) a
 			where fps.areasid = @areasid
-			  and fps.screeningflag = '001'";
+			  and fps.screeningflag = '001'
+			order by fps.screeningdate desc;";
 
 		try {
 			$pdo = $this->prepare($sql);

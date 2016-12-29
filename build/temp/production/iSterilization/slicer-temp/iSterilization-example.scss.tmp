@@ -1313,6 +1313,7 @@ $include-isterilization-view-flowprocessing-protocol-call_sator_lancamento_manua
 $include-isterilization-view-flowprocessing-protocol-call_sator_lote_carga: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_lote_ciclo: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_lote_ciclo_final: dynamic(true);;
+$include-isterilization-view-flowprocessing-protocol-call_sator_lote_triagem: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_movimento_in: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_movimento_of: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_movimento_to: dynamic(true);;
@@ -1321,7 +1322,6 @@ $include-isterilization-view-flowprocessing-protocol-call_sator_prepara_lote_cic
 $include-isterilization-view-flowprocessing-protocol-call_sator_relatar_cycle_status: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_relatar_exception: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_reverte_fase: dynamic(true);;
-$include-isterilization-view-flowprocessing-protocol-call_sator_triagem: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_unconformities: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_valida_carga: dynamic(true);;
 $include-isterilization-view-login-login: dynamic(true);;

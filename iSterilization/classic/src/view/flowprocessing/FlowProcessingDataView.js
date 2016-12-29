@@ -84,7 +84,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingDataView', {
 
     tpl: [
         '<tpl for=".">',
-            '<div style="margin-bottom: 10px;" class="step step-{flowstepaction}-{steptype}">',
+            '<div style="margin-bottom: 10px;" class="step animated rollIn step-{flowstepaction}-{steptype}">',
                 '<div class="step-left">',
                     '<div class="steptype-{steptype}"></div>',
                     '<div class="steptype-tools step-hide" id="tools-{id}">',

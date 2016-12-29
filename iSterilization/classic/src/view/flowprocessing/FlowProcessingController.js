@@ -19,6 +19,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 load: 'onLoadArea',
                 beforeload: 'onBeforeLoadArea'
             },
+            '#armorymovementitem': {
+                datachanged: 'onChangedCharge'
+            },
             '#flowprocessingsteparea': {
                 load: 'onLoadStepArea',
                 beforeload: 'onBeforeLoadStepArea'
@@ -27,14 +30,14 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 load: 'onLoadHoldArea',
                 beforeload: 'onBeforeLoadHoldArea'
             },
-            '#armorymovementitem': {
-                datachanged: 'onChangedCharge'
-            },
             '#flowprocessingchargeitem': {
                 datachanged: 'onChangedCharge'
             },
             '#flowprocessingstepmaterial': {
                 datachanged: 'onChangedMaterial'
+            },
+            '#flowprocessingscreeningitem': {
+                datachanged: 'onChangedCharge'
             }
         }
     },
@@ -334,8 +337,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         var me = this;
 
         switch(value) {
-            case 'SATOR_TRIAGEM':
-                me.callSATOR_TRIAGEM();
+            case 'SATOR_LOTE_TRIAGEM':
+                me.callSATOR_LOTE_TRIAGEM();
                 break;
             case 'SATOR_CONSULTAR_MATERIAL':
                 me.callSATOR_CONSULTAR_MATERIAL();
@@ -408,21 +411,12 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         var me = this;
 
         switch(value) {
-            //case 'SATOR_PREPARA_LEITURA':
-            //    me.callSATOR_PREPARA_LEITURA();
-            //    break;
             case 'SATOR_PROCESSAR_ITENS':
                 me.callSATOR_PROCESSAR_ITENS();
                 break;
             case 'SATOR_REVERTE_FASE':
                 me.callSATOR_REVERTE_FASE();
                 break;
-            //case 'SATOR_VALIDA_CARGA':
-            //    me.callSATOR_VALIDA_CARGA();
-            //    break;
-            //case 'SATOR_PREPARA_LOTE_AVULSO':
-            //    me.callSATOR_PREPARA_LOTE_AVULSO();
-            //    break;
             case 'SATOR_PREPARA_LOTE_CICLO':
                 me.callSATOR_PREPARA_LOTE_CICLO();
                 break;
@@ -558,7 +552,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         });
     },
 
-    callSATOR_TRIAGEM: function () {
+    callSATOR_LOTE_TRIAGEM: function () {
         var me = this,
             view = me.getView(),
             store = Ext.getStore('flowprocessingscreening') || Ext.create('iSterilization.store.flowprocessing.FlowProcessingScreening'),
@@ -583,7 +577,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
                             Ext.getCmp('flowprocessingload').updateType();
                             Smart.ion.sound.play("button_tiny");
-                            // me.onFlowStepSelectCharge(view,rec);
+                            me.onLoadSelectElement(rec);
                         }
                     },
                     failure: function (batch, options) {
@@ -598,60 +592,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                     }
                 });
 
-                // Ext.widget('call_SATOR_TRIAGEM', {
-                //     scope: me
-                //     // doCallBack: function () {
-                //     //     var value = this.down('form').getValues(),
-                //     //         store = Ext.create('iSterilization.store.armory.ArmoryMovement');
-                //     //
-                //     //     store.removeAll();
-                //     //
-                //     //     store.load({
-                //     //         scope: this,
-                //     //         params: {
-                //     //             method: 'selectCode',
-                //     //             rows: Ext.encode({id: data.get('id')})
-                //     //         },
-                //     //         callback: function(records, operation, success) {
-                //     //
-                //     //             if(!success || records.length == 0) {
-                //     //                 view.close();
-                //     //                 return false;
-                //     //             }
-                //     //
-                //     //             var record = records[0];
-                //     //             record.set('boxsealone', value.boxsealone);
-                //     //             record.set('boxsealtwo', value.boxsealtwo);
-                //     //             record.set('transportedby', value.transportedby);
-                //     //             record.set('releasestype', 'E');
-                //     //             record.set('closedby', rows.username);
-                //     //             store.sync({
-                //     //                 scope: this,
-                //     //                 callback: function (batch, options) {
-                //     //                     var resultSet = batch.getOperations().length != 0 ? batch.operations[0].getResultSet() : null;
-                //     //
-                //     //                     if ((resultSet == null) || (!resultSet.success)) {
-                //     //                         Smart.Msg.showToast(resultSet.getMessage(), 'error');
-                //     //                         return false;
-                //     //                     }
-                //     //
-                //     //                     var url = 'business/Calls/Quick/DispensingReport.php?id={0}';
-                //     //                     window.open(Ext.String.format(url,data.get('id')));
-                //     //
-                //     //                     this.close();
-                //     //                     Ext.getCmp('flowprocessinghold').updateType();
-                //     //                     view.close();
-                //     //                 }
-                //     //             });
-                //     //         }
-                //     //     });
-                //     // }
-                // }).show(null, function () {
-                //     this.master = view;
-                //     // this.down('textfield[name=closedby]').setValue(rows.username);
-                //     this.down('textfield[name=materialboxname]').focus(false, 200);
-                // });
-
                 return true;
             };
 
@@ -660,6 +600,33 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         }).show(null,function () {
             this.down('form').reset();
             this.down('textfield[name=usercode]').focus(false,200);
+        });
+    },
+
+    onLoadSelectElement: function (record) {
+        var me = this,
+            view = me.getView(),
+            store = Ext.getStore('flowprocessingscreening') || Ext.create('iSterilization.store.flowprocessing.FlowProcessingScreening');
+
+        view.setLoading('Carregando Triagem...');
+
+        store.setParams({
+            method: 'selectCode',
+            rows: Ext.encode({ id: record.get('id') })
+        }).load({
+            scope: me,
+            callback: function (records) {
+                var rec = records[0];
+
+                view.setLoading(false);
+
+                Ext.widget('call_SATOR_LOTE_TRIAGEM').show(null,function () {
+                    this.master = view;
+                    this.down('form').loadRecord(rec);
+                    this.down('textfield[name=materialboxname]').focus(false,200);
+                    Ext.getStore('flowprocessingscreeningitem').setParams({query: rec.get('id')}).load();
+                });
+            }
         });
     },
 
@@ -1073,33 +1040,32 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         var me = this,
             record = viewView.getSelectionModel().getSelection()[0];
 
-        console.info(record.data);
-
-        //me.getMovementType(record);
+        me.onLoadSelectElement(record);
     },
 
     onFlowLoadDelete: function (viewView,store) {
         var me = this,
             record = viewView.getSelectionModel().getSelection()[0];
 
-        Ext.Msg.confirm('Cancelar movimento', 'Confirma o cancelamento do movimento selecionado?',
+        Ext.Msg.confirm('Cancelar triagem', 'Confirma o cancelamento da triagem selecionada?',
             function (choice) {
                 if (choice === 'yes') {
-                    console.info(record.data);
-                    // var store = Ext.getStore('armorymovement') || Ext.create('iSterilization.store.armory.ArmoryMovement');
-                    // store.setParams({
-                    //     method: 'selectCode',
-                    //     rows: Ext.encode({ id: record.get('id') })
-                    // }).load({
-                    //     scope: me,
-                    //     callback: function () {
-                    //         var model = store.getAt(0);
-                    //
-                    //         model.set('releasestype','C');
-                    //         store.sync();
-                    //         viewView.getStore().remove(record);
-                    //     }
-                    // });
+
+                    var store = Ext.getStore('flowprocessingscreening') || Ext.create('iSterilization.store.flowprocessing.FlowProcessingScreening');
+
+                    store.setParams({
+                        method: 'selectCode',
+                        rows: Ext.encode({ id: record.get('id') })
+                    }).load({
+                        scope: me,
+                        callback: function () {
+                            var model = store.getAt(0);
+
+                            model.set('screeningflag','003');
+                            store.sync();
+                            viewView.getStore().remove(record);
+                        }
+                    });
                 }
             }
         );

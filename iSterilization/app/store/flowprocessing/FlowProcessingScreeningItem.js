@@ -12,6 +12,13 @@ Ext.define( 'iSterilization.store.flowprocessing.FlowProcessingScreeningItem', {
 
     url: '../iSterilization/business/Calls/flowprocessingscreeningitem.php',
 
-    model: 'iSterilization.model.flowprocessing.FlowProcessingScreeningItem'
+    model: 'iSterilization.model.flowprocessing.FlowProcessingScreeningItem',
+
+    config: {
+        extraParams: {
+            action: 'select',
+            method: 'selectItem'
+        }
+    }
 
 });
