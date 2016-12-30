@@ -102,7 +102,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                         height: 20,
                         xtype: 'container'
                     }, {
-                        height: 550,
+                        height: 650,
                         xtype: 'container',
                         layout: {
                             type: 'hbox',

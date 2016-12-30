@@ -1670,7 +1670,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 			
 			create table #tblTemp ( areavailable int, message varchar(250) );
 		
-			insert into #tblTemp ( areavailable, message ) exec dbo.getAvailableForProcessing @barcode;
+			insert into #tblTemp ( areavailable, message ) exec dbo.getAvailableForProcessing @barcode, 'T';
 		
 			select
 				@message = message,
@@ -1680,7 +1680,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 			select
 				@materialid = ib.id,
 				@materialboxid = a.materialboxid,
-				@materialname = coalesce(a.name,ib.name)
+				@materialname = coalesce(ib.name,a.name)
 			from
 				itembase ib
 				outer apply (
