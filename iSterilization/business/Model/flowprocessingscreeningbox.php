@@ -4,9 +4,9 @@ namespace iSterilization\Model;
 
 /**
  * 
- * @Entity {"name":"flowprocessingscreeningitem", "logbook":true, "cache":"\\iSterilization\\Cache\\flowprocessingscreeningitem", "event":"\\iSterilization\\Event\\flowprocessingscreeningitem"}
+ * @Entity {"name":"flowprocessingscreeningbox", "logbook":true, "cache":"\\iSterilization\\Cache\\flowprocessingscreeningbox", "event":"\\iSterilization\\Event\\flowprocessingscreeningbox"}
  */
-class flowprocessingscreeningitem extends \Smart\Data\Model {
+class flowprocessingscreeningbox extends \Smart\Data\Model {
 
     /**
      * @Policy {"nullable":false}
@@ -24,19 +24,13 @@ class flowprocessingscreeningitem extends \Smart\Data\Model {
      * @Policy {"nullable":false}
      * @Column {"description":"", "type":"integer", "policy":true, "logallow":true, "default":""}
      */
-    private $materialid;
-
-    /**
-     * @Policy {"nullable":true}
-     * @Column {"description":"", "type":"integer", "policy":true, "logallow":true, "default":""}
-     */
     private $materialboxid;
 
     /**
-     * @Policy {"nullable":true}
+     * @Policy {"nullable":false}
      * @Column {"description":"", "type":"integer", "policy":true, "logallow":true, "default":""}
      */
-    private $armorymovementoutputid;
+    private $items;
 
     /**
      * @return type integer
@@ -47,7 +41,7 @@ class flowprocessingscreeningitem extends \Smart\Data\Model {
 
     /**
      * @param type $id
-     * @return \iSterilization\Model\flowprocessingscreeningitem
+     * @return \iSterilization\Model\flowprocessingscreeningbox
      */
     public function setId($id) {
         $this->id = $id;
@@ -63,26 +57,10 @@ class flowprocessingscreeningitem extends \Smart\Data\Model {
 
     /**
      * @param type $flowprocessingscreeningid
-     * @return \iSterilization\Model\flowprocessingscreeningitem
+     * @return \iSterilization\Model\flowprocessingscreeningbox
      */
     public function setFlowprocessingscreeningid($flowprocessingscreeningid) {
         $this->flowprocessingscreeningid = $flowprocessingscreeningid;
-        return $this;
-    }
-
-    /**
-     * @return type integer
-     */
-    public function getMaterialid() {
-        return $this->materialid;
-    }
-
-    /**
-     * @param type $materialid
-     * @return \iSterilization\Model\flowprocessingscreeningitem
-     */
-    public function setMaterialid($materialid) {
-        $this->materialid = $materialid;
         return $this;
     }
 
@@ -95,7 +73,7 @@ class flowprocessingscreeningitem extends \Smart\Data\Model {
 
     /**
      * @param type $materialboxid
-     * @return \iSterilization\Model\flowprocessingscreeningitem
+     * @return \iSterilization\Model\flowprocessingscreeningbox
      */
     public function setMaterialboxid($materialboxid) {
         $this->materialboxid = $materialboxid;
@@ -105,16 +83,16 @@ class flowprocessingscreeningitem extends \Smart\Data\Model {
     /**
      * @return type integer
      */
-    public function getArmorymovementoutputid() {
-        return $this->armorymovementoutputid;
+    public function getItems() {
+        return $this->items;
     }
 
     /**
-     * @param type $armorymovementoutputid
-     * @return \iSterilization\Model\flowprocessingscreeningitem
+     * @param type $items
+     * @return \iSterilization\Model\flowprocessingscreeningbox
      */
-    public function setArmorymovementoutputid($armorymovementoutputid) {
-        $this->armorymovementoutputid = $armorymovementoutputid;
+    public function setItems($items) {
+        $this->items = $items;
         return $this;
     }
 

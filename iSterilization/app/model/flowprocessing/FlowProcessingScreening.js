@@ -21,11 +21,7 @@ Ext.define( 'iSterilization.model.flowprocessing.FlowProcessingScreening', {
             type: 'auto'
         }, {
             name: 'screeningdate',
-            type: 'auto',
-            serializeType: 'date',
-            convert: function (value, record) {
-                return ( !value || value.length == 0) ? null : Ext.util.Format.date(value,'d/m/Y');
-            }
+            type: 'auto'
         }, {
             name: 'closedby',
             type: 'auto'

@@ -1244,6 +1244,7 @@ $include-isterilization-model-flowprocessing-flowprocessing: dynamic(true);;
 $include-isterilization-model-flowprocessing-flowprocessingcharge: dynamic(true);;
 $include-isterilization-model-flowprocessing-flowprocessingchargeitem: dynamic(true);;
 $include-isterilization-model-flowprocessing-flowprocessingscreening: dynamic(true);;
+$include-isterilization-model-flowprocessing-flowprocessingscreeningbox: dynamic(true);;
 $include-isterilization-model-flowprocessing-flowprocessingscreeningitem: dynamic(true);;
 $include-isterilization-model-flowprocessing-flowprocessingstep: dynamic(true);;
 $include-isterilization-model-flowprocessing-flowprocessingstepaction: dynamic(true);;
@@ -1263,6 +1264,7 @@ $include-isterilization-store-flowprocessing-flowprocessingchargeitem: dynamic(t
 $include-isterilization-store-flowprocessing-flowprocessingholdarea: dynamic(true);;
 $include-isterilization-store-flowprocessing-flowprocessingloadarea: dynamic(true);;
 $include-isterilization-store-flowprocessing-flowprocessingscreening: dynamic(true);;
+$include-isterilization-store-flowprocessing-flowprocessingscreeningbox: dynamic(true);;
 $include-isterilization-store-flowprocessing-flowprocessingscreeningitem: dynamic(true);;
 $include-isterilization-store-flowprocessing-flowprocessingstep: dynamic(true);;
 $include-isterilization-store-flowprocessing-flowprocessingstepaction: dynamic(true);;

@@ -624,6 +624,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                     this.master = view;
                     this.down('form').loadRecord(rec);
                     this.down('textfield[name=materialboxname]').focus(false,200);
+                    Ext.getStore('flowprocessingscreeningbox').setParams({query: rec.get('id')}).load();
                     Ext.getStore('flowprocessingscreeningitem').setParams({query: rec.get('id')}).load();
                 });
             }
@@ -2298,6 +2299,102 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         view.down('textfield[name=materialboxname]').setReadColor(true);
     },
 
+    onReaderMaterialTriagem: function (field, e, eOpts) {
+        var me = this,
+            view = me.getView(),
+            form = view.down('form'),
+            value = field.getValue(),
+            record = form.getRecord(),
+            id = view.down('hiddenfield[name=id]'),
+            store = Ext.getStore('flowprocessingscreeningitem');
+
+        if(!form.isValid()){
+            return false;
+        }
+
+        if ([e.ENTER].indexOf(e.getKey()) != -1) {
+            e.stopEvent();
+
+            field.reset();
+
+            if (!value || value.length == 0) {
+                return false;
+            }
+
+            if(value.indexOf('SATOR_ENCERRAR_LEITURA') != -1) {
+                if(store.getCount() == 0) {
+                    Smart.ion.sound.play("computer_error");
+                    Smart.Msg.showToast('Não existem materiais lançados para encerrar a triagem!','error');
+                    return false;
+                }
+
+                view.close();
+
+                // me.callSATOR_RELATAR_CYCLE_STATUS('PRINT',record);
+                return false;
+            }
+
+            Ext.Ajax.request({
+                url: me.url,
+                params: {
+                    action: 'select',
+                    method: 'selectItemTriagem',
+                    barcode: value
+                },
+                callback: function (options, success, response) {
+                    var result = Ext.decode(response.responseText);
+
+                    if(!success || !result.success) {
+                        Smart.ion.sound.play("computer_error");
+                        Smart.Msg.showToast(result.text,'error');
+                        return false;
+                    }
+
+                    if (success && result.success) {
+                        var find = store.findRecord('barcode',result.rows.barcode);
+
+                        if(find) {
+                            Smart.ion.sound.play("computer_error");
+                            Smart.Msg.showToast('O material/kit <b>já encontra-se lançado</b> no lote atual!');
+                            return false;
+                        }
+
+                        store.insert(0,{
+                            barcode: result.rows.barcode,
+                            clientname: result.rows.clientname,
+                            materialid: result.rows.materialid,
+                            colorschema: result.rows.colorschema,
+                            materialname: result.rows.materialname,
+                            flowprocessingscreeningid: id.getValue(),
+                            materialboxid: result.rows.materialboxid,
+                            armorymovementoutputid: result.rows.armorymovementoutputid
+                        });
+
+                        store.sync({
+                            async: false,
+                            callback: function (batch, options) {
+                                var resultSet = batch.getOperations().length != 0 ? batch.operations[0].getResultSet() : null;
+
+                                if ((resultSet == null) || (!resultSet.success)) {
+                                    Smart.Msg.showToast(resultSet.getMessage(), 'error');
+                                    return false;
+                                }
+
+                                Ext.getStore('flowprocessingscreeningbox').setParams({query: id.getValue()}).load();
+                            }
+                        });
+
+                        Smart.ion.sound.play("button_tiny");
+                        return false;
+                    }
+
+                    Smart.ion.sound.play("computer_error");
+                    Smart.Msg.showToast('O material/kit <b>não foi encontrado</b> entre os processos atuais!');
+                }
+            });
+        }
+    },
+    
     onReaderMaterialBoxCarga: function (field, e, eOpts) {
         var me = this,
             view = me.getView(),
@@ -4136,6 +4233,30 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 window.open('business/Calls/Quick/FlowProtocol.php?id=1');
                 break;
         }
+    },
+
+    setDeleteScreening: function(grid, rowIndex, colIndex) {
+        var me = this,
+            store = grid.getStore(),
+            record = store.getAt(rowIndex),
+            view = me.getView();
+
+        Ext.Msg.confirm('Excluir registro', 'Confirma a exclusão do registro selecionado?',
+            function (choice) {
+                if (choice === 'yes') {
+                    store.remove(record);
+                    store.sync({
+                        callback: function () {
+                            var materialboxid = record.get('materialboxid');
+                            if(materialboxid && materialboxid.length != 1) {
+                                Ext.getStore('flowprocessingscreeningbox').load();
+                            }
+                        }
+                    });
+                    view.down('textfield[name=materialboxname]').focus(false,200);
+                }
+            }
+        );
     },
 
     setDeleteChargeItem: function(grid, rowIndex, colIndex) {

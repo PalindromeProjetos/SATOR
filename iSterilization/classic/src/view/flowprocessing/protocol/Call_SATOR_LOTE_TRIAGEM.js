@@ -12,7 +12,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
         'iSterilization.view.flowprocessing.FlowProcessingController'
     ],
 
-    width: 600,
+    width: 1200,
     modal: true,
     layout: 'fit',
     header: false,
@@ -41,6 +41,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
         var me = this;
 
         Ext.create('iSterilization.store.flowprocessing.FlowProcessingScreening');
+        Ext.create('iSterilization.store.flowprocessing.FlowProcessingScreeningBox');
         Ext.create('iSterilization.store.flowprocessing.FlowProcessingScreeningItem');
 
         me.items = [
@@ -98,53 +99,113 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                         xtype: 'hiddenfield',
                         name: 'id'
                     }, {
-                        margin: '20 0 0 0',
-                        fieldLabel: 'Consulta',
-                        xtype: 'textfield',
-                        useUpperCase: true,
-                        name: 'materialboxname'
-                        // listeners: {
-                        //     specialkey: 'onReaderMaterialBoxCarga'
-                        // }
+                        height: 20,
+                        xtype: 'container'
                     }, {
-                        height: 650,
-                        xtype: 'gridpanel',
-                        cls: 'update-grid',
-
-                        store: 'flowprocessingscreeningitem',
-
-                        columns: [
+                        height: 550,
+                        xtype: 'container',
+                        layout: {
+                            type: 'hbox',
+                            align: 'stretch'
+                        },
+                        items: [
                             {
-                                dataIndex: 'materialname',
-                                flex: 1
+                                flex: 2,
+                                xtype: 'gridpanel',
+                                cls: 'update-grid',
+                                store: 'flowprocessingscreeningbox',
+                                columns: [
+                                    {
+                                        width: 40,
+                                        sortable: false,
+                                        renderer: function (value,metaData,record) {
+                                            var items = record.get('items'),
+                                                loads = record.get('loads'),
+                                                chargestatus = (items == loads) ? '001' : '002',
+                                                flag = '<div class="unconformities chargestatus{0}"></div>';
+
+                                            return Ext.String.format(flag,chargestatus);
+                                        }
+                                    }, {
+                                        flex: 1,
+                                        sortable: false,
+                                        dataIndex: 'materialboxname',
+                                        text: 'Kits'
+                                    }, {
+                                        width: 150,
+                                        sortable: false,
+                                        dataIndex: 'colorpallet'
+                                    }, {
+                                        align: 'right',
+                                        sortable: false,
+                                        dataIndex: 'score',
+                                        width: 80
+                                    }
+                                ],
+                                dockedItems: [
+                                    {
+                                        fieldCls: 'smart-field-style-action',
+                                        labelCls: 'smart-field-style-action',
+                                        fieldLabel: 'Consulta',
+                                        xtype: 'textfield',
+                                        useUpperCase: true,
+                                        name: 'materialboxname',
+                                        listeners: {
+                                            specialkey: 'onReaderMaterialTriagem'
+                                        }
+                                    }
+                                ]
                             }, {
-                                dataIndex: 'countitems',
-                                width: 40
+                                xtype: 'splitter'
                             }, {
-                                dataIndex: 'barcode',
-                                width: 160
-                            }, {
-                                width: 40,
-                                align: 'center',
-                                sortable: false,
-                                dataIndex: 'haspending',
-                                xtype: 'actioncolumn',
-                                handler: 'setDeleteChargeItem',
-                                getTip: function(v, meta, rec) {
-                                    return 'Remover processo da lista!';
-                                },
-                                getClass: function(v, meta, rec) {
-                                    return "fa fa-minus-circle action-delete-color-font";
+                                flex: 3,
+                                xtype: 'gridpanel',
+                                cls: 'update-grid',
+                                hideHeaders: false,
+                                headerBorders: false,
+
+                                store: 'flowprocessingscreeningitem',
+
+                                columns: [
+                                    {
+                                        flex: 1,
+                                        sortable: false,
+                                        dataIndex: 'materialname',
+                                        text: 'Material / kit'
+                                    }, {
+                                        sortable: false,
+                                        text: 'Origem',
+                                        dataIndex: 'clientname',
+                                        width: 160
+                                    }, {
+                                        width: 150,
+                                        text: 'Schema',
+                                        sortable: false,
+                                        dataIndex: 'colorpallet'
+                                    }, {
+                                        width: 40,
+                                        align: 'center',
+                                        sortable: false,
+                                        dataIndex: 'haspending',
+                                        xtype: 'actioncolumn',
+                                        handler: 'setDeleteScreening',
+                                        getTip: function(v, meta, rec) {
+                                            return 'Remover material da triagem!';
+                                        },
+                                        getClass: function(v, meta, rec) {
+                                            return "fa fa-minus-circle action-delete-color-font";
+                                        }
+                                    }
+                                ],
+                                listeners: {
+                                    rowkeydown: function ( viewTable , record , tr , rowIndex , e , eOpts) {
+                                        if ([e.ESC].indexOf(e.getKey()) != -1) {
+                                            viewTable.up('window').close();
+                                        }
+                                    }
                                 }
                             }
-                        ],
-                        listeners: {
-                            rowkeydown: function ( viewTable , record , tr , rowIndex , e , eOpts) {
-                                if ([e.ESC].indexOf(e.getKey()) != -1) {
-                                    viewTable.up('window').close();
-                                }
-                            }
-                        }
+                        ]
                     }
                 ]
             }

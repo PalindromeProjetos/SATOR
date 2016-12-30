@@ -1,5 +1,5 @@
 //@charset UTF-8
-Ext.define( 'iSterilization.model.flowprocessing.FlowProcessingScreeningItem', {
+Ext.define( 'iSterilization.model.flowprocessing.FlowProcessingScreeningBox', {
     extend: 'Ext.data.Model',
 
     requires: [
@@ -17,16 +17,10 @@ Ext.define( 'iSterilization.model.flowprocessing.FlowProcessingScreeningItem', {
             name: 'flowprocessingscreeningid',
             type: 'int'
         }, {
-            name: 'barcode',
-            type: 'auto'
-        }, {
-            name: 'materialid',
-            type: 'int'
-        }, {
             name: 'materialboxid',
             type: 'int'
         }, {
-            name: 'materialname',
+            name: 'materialboxname',
             type: 'auto'
         }, {
             name: 'colorschema',
@@ -35,14 +29,20 @@ Ext.define( 'iSterilization.model.flowprocessing.FlowProcessingScreeningItem', {
             name: 'colorpallet',
             type: 'colorpallet'
         }, {
-            name: 'armorymovementoutputid',
+            name: 'items',
             type: 'int'
         }, {
-            name: 'clientid',
+            name: 'loads',
             type: 'int'
         }, {
-            name: 'clientname',
-            type: 'auto'
+            name: 'score',
+            type: 'auto',
+            convert: function (value,record) {
+                var items = record.get('items'),
+                    loads = record.get('loads');
+
+                return Ext.String.format('{0}/{1}',loads,items);
+            }
         }
     ]
 

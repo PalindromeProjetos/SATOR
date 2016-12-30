@@ -28,7 +28,7 @@ class flowprocessingscreening extends \Smart\Data\Model {
 
     /**
      * @Policy {"nullable":false}
-     * @Column {"description":"", "type":"date", "policy":true, "logallow":true, "default":""}
+     * @Column {"description":"", "type":"string", "policy":true, "logallow":true, "default":""}
      */
     private $screeningdate;
 
@@ -99,7 +99,7 @@ class flowprocessingscreening extends \Smart\Data\Model {
     }
 
     /**
-     * @return type date
+     * @return type string
      */
     public function getScreeningdate() {
         return $this->screeningdate;

@@ -7,20 +7,18 @@ use iSterilization\Model\flowprocessingscreeningitem as Model;
 class flowprocessingscreeningitem extends \Smart\Data\Cache {
 
     public function selectItem(array $data) {
-        $query = $data['query'];
-        $proxy = $this->getStore()->getProxy();
+    $query = $data['query'];
+    $proxy = $this->getStore()->getProxy();
 
-        $sql = "
+    $sql = "
             declare
-                @id int = :id;
-                    
+                @flowprocessingscreeningid int = :flowprocessingscreeningid;
+            
             select
-                ami.*,
-                fp.barcode,
-                t.materialname,
-                dbo.getEnum('regresstype','001') as regresstypedescription,
-                dbo.getEnum('outputtype',ami.outputtype) as outputtypedescription,
-                dbo.getEnum('armorylocal',ami.armorylocal) as armorylocaldescription,
+                fpsi.*,
+                ib.barcode,
+                ib.name as materialname,
+                c.name as clientname,
                 colorschema = (
                     select stuff
                         (
@@ -30,53 +28,33 @@ class flowprocessingscreeningitem extends \Smart\Data\Cache {
                                 from
                                     materialboxtarge mbt
                                     inner join targecolor tc on ( tc.id = mbt.targecolorid )
-                                where mbt.materialboxid = fp.materialboxid
-                                order by mbt.targeorderby asc
+                                where mbt.materialboxid = fpsi.materialboxid
+                                order by mbt.targeorderby desc
                                 for xml path ('')
                             ) ,1,1,''
                         )                
                 )
             from
-                armorymovementitem ami
-                inner join flowprocessingstep fps on ( fps.id = ami.flowprocessingstepid )
-                inner join flowprocessing fp on ( fp.id = fps.flowprocessingid )
-				cross apply (
-					select 
-						coalesce(ta.name,tb.name) as materialname
-					from 
-						flowprocessing a
-						outer apply (
-							select
-								mb.name
-							from
-								materialbox mb
-							where mb.id = a.materialboxid
-						) ta
-						outer apply (
-							select
-								ib.name
-							from
-								itembase ib
-							where ib.id = fp.materialid
-						) tb
-					where a.id = fp.id
-				) t
-            where ami.armorymovementid = @id";
+                flowprocessingscreeningitem fpsi
+                inner join itembase ib on ( ib.id = fpsi.materialid )
+                inner join armorymovementoutput amo on ( amo.id = fpsi.armorymovementoutputid )
+                inner join client c on ( c.id = amo.clientid )
+            where fpsi.flowprocessingscreeningid = @flowprocessingscreeningid;";
 
-        try {
-//            $pdo = $proxy->prepare($sql);
-//            $pdo->bindValue(":id", $query, \PDO::PARAM_INT);
-//            $pdo->execute();
-//            $rows = $pdo->fetchAll();
-//
-//            self::_setRows($rows);
+    try {
+        $pdo = $proxy->prepare($sql);
+        $pdo->bindValue(":flowprocessingscreeningid", $query, \PDO::PARAM_INT);
+        $pdo->execute();
+        $rows = $pdo->fetchAll();
 
-        } catch ( \PDOException $e ) {
-            self::_setSuccess(false);
-            self::_setText($e->getMessage());
-        }
+        self::_setRows($rows);
 
-        return self::getResultToJson();
+    } catch ( \PDOException $e ) {
+        self::_setSuccess(false);
+        self::_setText($e->getMessage());
     }
+
+    return self::getResultToJson();
+}
 
 }

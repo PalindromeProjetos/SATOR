@@ -817,8 +817,6 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
 			self::_setSuccess(true);
 
-			//self::selectArray($data);
-
 			if((($cyclestatus == 'FINAL') || ($cyclestatus == 'PRINT'))&&(strlen($printlocate) != 0)) {
 				$this->imprimeEtiqueta($data);
 			}
@@ -835,9 +833,9 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 	}
 
     public function setEncerrarLeitura (array $data) {
+		$flowprocessingid = $data['flowprocessingid'];
 		$rank = isset($data['rank']) ? $data['rank'] : 1;
-        $flowprocessingid = $data['flowprocessingid'];
-        $flowprocessingstepid = $data['flowprocessingstepid'];
+		$flowprocessingstepid = $data['flowprocessingstepid'];
         $flowprocessingstepactionid = $data['flowprocessingstepactionid'];
 		$hasTran = isset($data['hasTran']) ? intval($data['hasTran']) : 1;
 
@@ -1650,6 +1648,140 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         return self::getResultToJson();
     }
 
+	public function selectItemTriagem(array $data) {
+		$barcode = $data['barcode'];
+
+		$sql = "
+			SET XACT_ABORT ON
+			SET NOCOUNT ON
+			SET ANSI_NULLS ON
+			SET ANSI_WARNINGS ON		
+		
+			declare
+				@materialid int,
+				@materialboxid int,
+				@areavailable int = 0,
+				@message varchar(250) = '',
+				@colorschema varchar(250) = '',
+				@materialname varchar(80) = '',
+				@barcode varchar(20) = :barcode;
+		
+			if object_id('tempdb.dbo.#tblTemp') is not null drop table #tblTemp;
+			
+			create table #tblTemp ( areavailable int, message varchar(250) );
+		
+			insert into #tblTemp ( areavailable, message ) exec dbo.getAvailableForProcessing @barcode;
+		
+			select
+				@message = message,
+				@areavailable = areavailable
+			from #tblTemp;
+		
+			select
+				@materialid = ib.id,
+				@materialboxid = a.materialboxid,
+				@materialname = coalesce(a.name,ib.name)
+			from
+				itembase ib
+				outer apply (
+					select
+						mb.name,
+						mbi.materialboxid
+					from
+						materialboxitem mbi
+						inner join materialbox mb on ( mb.id = mbi.materialboxid and mbi.materialid = ib.id )
+				) a
+			where ib.barcode = @barcode;
+
+			if(@areavailable = 1)
+			begin
+				set @colorschema = (
+						select stuff
+							(
+								(
+									select
+										',#' + tc.colorschema + '|#' + tc.colorstripe
+									from
+										materialboxtarge mbt
+										inner join targecolor tc on ( tc.id = mbt.targecolorid )
+									where mbt.materialboxid = @materialboxid
+									order by mbt.targeorderby desc
+									for xml path ('')
+								) ,1,1,''
+							)                
+					)			
+			
+				select top 1
+					@areavailable as areavailable,
+					@message as message,
+					@barcode as barcode,
+					sm.materialid,
+					fp.materialboxid,
+					@colorschema as colorschema,
+					@materialname as materialname,
+					amo.clientid,
+					c.name as clientname,
+					sm.items,
+					amo.id as armorymovementoutputid
+				from
+					flowprocessing fp
+					inner join flowprocessingstep fps on ( fps.flowprocessingid = fp.id )
+					inner join armorystock st on ( st.flowprocessingstepid = fps.id and st.armorystatus = 'E' )
+					inner join armorymovementitem ami on ( ami.flowprocessingstepid = fps.id )
+					inner join armorymovement am on ( am.id = ami.armorymovementid and am.movementtype = '002' and am.releasestype = 'E' )
+					inner join armorymovementoutput amo on ( amo.id = am.id )
+					left join client c on ( c.id = amo.clientid )
+					cross apply (
+						select
+							a.materialid,
+							count(a.id) as items
+						from
+							flowprocessingstepmaterial a
+							inner join flowprocessingstep b on ( b.id = a.flowprocessingstepid and b.flowprocessingid = fp.id )
+						where a.materialid = @materialid
+						group by a.materialid
+					) sm
+				order by am.closeddate desc
+			end
+			else
+			begin
+				select
+					areavailable,
+					message 
+				from #tblTemp;
+			end
+		
+			if object_id('tempdb.dbo.#tblTemp') is not null drop table #tblTemp;";
+
+		try {
+			$pdo = $this->prepare($sql);
+			$pdo->bindValue(":barcode", $barcode, \PDO::PARAM_STR);
+			$callback = $pdo->execute();
+
+			if(!$callback) {
+				throw new \PDOException(self::$FAILURE_STATEMENT);
+			}
+
+			$rows = $pdo->fetchAll();
+
+			if(count($rows) == 0) {
+				throw new \PDOException('Não foi possível localizar o material!');
+			}
+
+			if($rows[0]['areavailable'] == 0) {
+				throw new \PDOException($rows[0]['message']);
+			}
+
+			self::_setRows($rows[0]);
+
+		} catch ( \PDOException $e ) {
+			self::_setSuccess(false);
+			self::_setText($e->getMessage());
+		}
+
+		return self::getResultToJson();		
+	}
+	
     public function selectCycleLote(array $data) {
         $areasid = $data['areasid'];
         $barcode = $data['barcode'];
