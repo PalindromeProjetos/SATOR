@@ -266,20 +266,17 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				throw new \PDOException(self::$FAILURE_STATEMENT);
 			}
 
-			if($result->success) {
-				$model = $coach->getStore()->getModel();
-				$this->posInsert($model);
-			}
+			$model = $coach->getStore()->getModel();
+			$this->posInsert($model);
 
 			$step = array();
 
 			$step['flowprocessingid'] = $result->rows->id;
 
-			if($result->success) {
-				$resultStep = self::jsonToObject($this->newFlowStep($step));
-				if(!$resultStep->success) {
-					throw new \PDOException(self::$FAILURE_STATEMENT);
-				}
+			$resultStep = self::jsonToObject($this->newFlowStep($step));
+
+			if(!$resultStep->success) {
+				throw new \PDOException(self::$FAILURE_STATEMENT);
 			}
 
 			$this->commit();
@@ -1781,7 +1778,42 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
 		return self::getResultToJson();		
 	}
-	
+
+	public function setEncerraTriagem(array $data) {
+		$query = $data['query'];
+
+		$sql = "
+			declare
+				@id int = :id;
+			
+			select
+				fps.*
+			from
+				flowprocessingscreening fps
+			where id = @id
+			  and fps.screeningflag = '001';";
+
+		try {
+			$pdo = $this->prepare($sql);
+			$pdo->bindValue(":id", $query, \PDO::PARAM_STR);
+			$callback = $pdo->execute();
+
+			if(!$callback) {
+				throw new \PDOException(self::$FAILURE_STATEMENT);
+			}
+
+			$rows = $pdo->fetchAll();
+
+			self::_setRows($rows);
+
+		} catch ( \PDOException $e ) {
+			self::_setSuccess(false);
+			self::_setText($e->getMessage());
+		}
+
+		return self::getResultToJson();
+	}
+
     public function selectCycleLote(array $data) {
         $areasid = $data['areasid'];
         $barcode = $data['barcode'];

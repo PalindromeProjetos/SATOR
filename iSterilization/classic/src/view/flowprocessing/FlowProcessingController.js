@@ -2328,9 +2328,12 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                     return false;
                 }
 
+                me.setView(view.master);
+
+                me.setEncerraTriagem(record);
+
                 view.close();
 
-                // me.callSATOR_RELATAR_CYCLE_STATUS('PRINT',record);
                 return false;
             }
 
@@ -2350,51 +2353,84 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                         return false;
                     }
 
-                    if (success && result.success) {
-                        var find = store.findRecord('barcode',result.rows.barcode);
+                    var find = store.findRecord('barcode',result.rows.barcode);
 
-                        if(find) {
-                            Smart.ion.sound.play("computer_error");
-                            Smart.Msg.showToast('O material/kit <b>já encontra-se lançado</b> no lote atual!');
-                            return false;
-                        }
-
-                        store.insert(0,{
-                            barcode: result.rows.barcode,
-                            clientname: result.rows.clientname,
-                            materialid: result.rows.materialid,
-                            colorschema: result.rows.colorschema,
-                            materialname: result.rows.materialname,
-                            flowprocessingscreeningid: id.getValue(),
-                            materialboxid: result.rows.materialboxid,
-                            armorymovementoutputid: result.rows.armorymovementoutputid
-                        });
-
-                        store.sync({
-                            async: false,
-                            callback: function (batch, options) {
-                                var resultSet = batch.getOperations().length != 0 ? batch.operations[0].getResultSet() : null;
-
-                                if ((resultSet == null) || (!resultSet.success)) {
-                                    Smart.Msg.showToast(resultSet.getMessage(), 'error');
-                                    return false;
-                                }
-
-                                Ext.getStore('flowprocessingscreeningbox').setParams({query: id.getValue()}).load();
-                            }
-                        });
-
-                        Smart.ion.sound.play("button_tiny");
+                    if(find) {
+                        Smart.ion.sound.play("computer_error");
+                        Smart.Msg.showToast('O material <b>já encontra-se lançado</b> na triagem atual!');
                         return false;
                     }
 
-                    Smart.ion.sound.play("computer_error");
-                    Smart.Msg.showToast('O material/kit <b>não foi encontrado</b> entre os processos atuais!');
+                    store.insert(0,{
+                        barcode: result.rows.barcode,
+                        clientname: result.rows.clientname,
+                        materialid: result.rows.materialid,
+                        colorschema: result.rows.colorschema,
+                        materialname: result.rows.materialname,
+                        flowprocessingscreeningid: id.getValue(),
+                        materialboxid: result.rows.materialboxid,
+                        armorymovementoutputid: result.rows.armorymovementoutputid
+                    });
+
+                    store.sync({
+                        async: false,
+                        callback: function (batch, options) {
+                            var resultSet = batch.getOperations().length != 0 ? batch.operations[0].getResultSet() : null;
+
+                            if ((resultSet == null) || (!resultSet.success)) {
+                                Smart.Msg.showToast(resultSet.getMessage(), 'error');
+                                return false;
+                            }
+                            Ext.getStore('flowprocessingscreeningbox').setParams({query: id.getValue()}).load();
+                        }
+                    });
+
+                    Smart.ion.sound.play("button_tiny");
                 }
             });
         }
     },
-    
+
+    setEncerraTriagem: function (record) {
+        var me = this,
+            view = me.getView(),
+            doCallBack = function (rows) {
+
+                Ext.Ajax.request({
+                    url: me.url,
+                    async: false,
+                    params: {
+                        action: 'select',
+                        method: 'setEncerraTriagem',
+                        username: rows.username,
+                        query: record.get('id')
+                    },
+                    callback: function (options, success, response) {
+                        var result = Ext.decode(response.responseText);
+
+                        if (!success || !result.success) {
+                            Smart.ion.sound.play("computer_error");
+                            Smart.Msg.showToast(result.text, 'error');
+                            return false;
+                        }
+                    }
+                });
+
+                view.updateType();
+
+                return true;
+            };
+
+        Ext.widget('flowprocessinguser', {
+            scope: me,
+            doCallBack: doCallBack
+        }).show(null,function () {
+            this.down('form').reset();
+            this.down('textfield[name=usercode]').focus(false,200);
+        });
+
+    },
+
     onReaderMaterialBoxCarga: function (field, e, eOpts) {
         var me = this,
             view = me.getView(),

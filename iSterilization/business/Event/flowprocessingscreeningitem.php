@@ -8,6 +8,7 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
 
     /**
      * @param \iSterilization\Model\flowprocessingscreeningitem $model
+     * @return bool
      */
     public function preInsert( \iSterilization\Model\flowprocessingscreeningitem &$model ) {
         Session::hasProfile('','');
@@ -61,6 +62,7 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
 
     /**
      * @param \iSterilization\Model\flowprocessingscreeningitem $model
+     * @return bool
      */
     public function preDelete( \iSterilization\Model\flowprocessingscreeningitem &$model ) {
         Session::hasProfile('','');

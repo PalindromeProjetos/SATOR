@@ -113,6 +113,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                                 flex: 2,
                                 xtype: 'gridpanel',
                                 cls: 'update-grid',
+                                name: 'screeningbox',
                                 store: 'flowprocessingscreeningbox',
                                 columns: [
                                     {
@@ -142,6 +143,13 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                                         width: 80
                                     }
                                 ],
+                                listeners: {
+                                    rowkeydown: function ( viewTable , record , tr , rowIndex , e , eOpts) {
+                                        if ([e.ESC].indexOf(e.getKey()) != -1) {
+                                            viewTable.up('window').close();
+                                        }
+                                    }
+                                },
                                 dockedItems: [
                                     {
                                         fieldCls: 'smart-field-style-action',
@@ -161,9 +169,9 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                                 flex: 3,
                                 xtype: 'gridpanel',
                                 cls: 'update-grid',
+
                                 hideHeaders: false,
                                 headerBorders: false,
-
                                 store: 'flowprocessingscreeningitem',
 
                                 columns: [
@@ -171,7 +179,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                                         flex: 1,
                                         sortable: false,
                                         dataIndex: 'materialname',
-                                        text: 'Material / kit'
+                                        text: 'Material lido'
                                     }, {
                                         sortable: false,
                                         text: 'Origem',
