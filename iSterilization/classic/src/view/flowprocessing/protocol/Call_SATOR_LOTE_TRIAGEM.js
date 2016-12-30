@@ -112,7 +112,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                             {
                                 flex: 2,
                                 xtype: 'gridpanel',
-                                cls: 'update-grid',
+                                cls: 'search-grid',
                                 name: 'screeningbox',
                                 store: 'flowprocessingscreeningbox',
                                 columns: [
@@ -133,7 +133,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                                         dataIndex: 'materialboxname',
                                         text: 'Kits'
                                     }, {
-                                        width: 150,
+                                        width: 130,
                                         sortable: false,
                                         dataIndex: 'colorpallet'
                                     }, {
@@ -168,7 +168,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                             }, {
                                 flex: 3,
                                 xtype: 'gridpanel',
-                                cls: 'update-grid',
+                                cls: 'search-grid',
 
                                 hideHeaders: false,
                                 headerBorders: false,
@@ -179,30 +179,54 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                                         flex: 1,
                                         sortable: false,
                                         dataIndex: 'materialname',
-                                        text: 'Material lido'
+                                        text: 'Material / origem',
+                                        renderer: function (value,metaData,record) {
+                                            var clientname = record.get('clientname'),
+                                                materialname = record.get('materialname'),
+                                                tpl =   '<div style="float: left; line-height: 20px; font-size: 14px; font-weight: 600;">' +
+                                                        '<div>{0}</div>' +
+                                                        '<div>{1}</div>' +
+                                                        '</div>';
+
+                                            return Ext.String.format(tpl,materialname,clientname);
+                                        }
                                     }, {
-                                        sortable: false,
-                                        text: 'Origem',
-                                        dataIndex: 'clientname',
-                                        width: 160
-                                    }, {
-                                        width: 150,
+                                        width: 130,
                                         text: 'Schema',
                                         sortable: false,
                                         dataIndex: 'colorpallet'
                                     }, {
-                                        width: 40,
-                                        align: 'center',
+                                        width: 210,
                                         sortable: false,
-                                        dataIndex: 'haspending',
-                                        xtype: 'actioncolumn',
-                                        handler: 'setDeleteScreening',
-                                        getTip: function(v, meta, rec) {
-                                            return 'Remover material da triagem!';
-                                        },
-                                        getClass: function(v, meta, rec) {
-                                            return "fa fa-minus-circle action-delete-color-font";
+                                        text: 'Fluxo / exceções',
+                                        renderer: function (value,metaData,record) {
+                                            var sterilizationtypename = record.get('sterilizationtypename'),
+                                                tpl =   '<div style="float: left; line-height: 20px; font-size: 14px; font-weight: 600;">' +
+                                                    '<div style="color: blue;">{0}</div>' +
+                                                    '<div>Não implementado</div>' +
+                                                    '</div>';
+
+                                            return Ext.String.format(tpl,sterilizationtypename);
                                         }
+                                    }, {
+                                        width: 70,
+                                        text: 'Ações',
+                                        align: 'center',
+                                        xtype: 'actioncolumn',
+                                        items: [
+                                            {
+                                                handler: 'onViewEdit',
+                                                iconCls: "fa fa-info-circle action-select-color-font",
+                                                tooltip: 'Editar excessões do fluxo!'
+                                            }, {
+                                                width: 5,
+                                                xtype: 'splitter'
+                                            }, {
+                                                handler: 'setDeleteScreening',
+                                                iconCls: "fa fa-minus-circle action-delete-color-font",
+                                                tooltip: 'Remover material da triagem!'
+                                            }
+                                        ]
                                     }
                                 ],
                                 listeners: {
