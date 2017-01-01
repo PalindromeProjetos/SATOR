@@ -38,7 +38,33 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
     },
 
     buildItems: function () {
-        var me = this;
+        var me = this,
+            isDisabledBox = function (view, rowIdx, colIdx, item, rec) {
+                var find = null,
+                    dataflowstep = rec.data.dataflowstep;
+
+                if(dataflowstep && dataflowstep.length != 0) {
+                    dataflowstep = Ext.decode(dataflowstep);
+                    find = Ext.Array.findBy(dataflowstep,function (item) {
+                        if(Smart.workstation.areasid == item.areasid) { return item; }
+                    });
+                }
+
+                return !( find && find.exceptionby );
+            },
+            isDisabledMat = function (view, rowIdx, colIdx, item, rec) {
+                var find = null,
+                    dataflowstep = rec.data.dataflowstep;
+
+                if(dataflowstep && dataflowstep.length != 0) {
+                    dataflowstep = Ext.decode(dataflowstep);
+                    find = Ext.Array.findBy(dataflowstep,function (item) {
+                        if(Smart.workstation.areasid == item.areasid) { return item; }
+                    });
+                }
+
+                return !(( rec.data.materialboxid == null )&&( find && find.exceptionby ));
+            };
 
         Ext.create('iSterilization.store.flowprocessing.FlowProcessingScreening');
         Ext.create('iSterilization.store.flowprocessing.FlowProcessingScreeningBox');
@@ -102,7 +128,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                         height: 20,
                         xtype: 'container'
                     }, {
-                        height: 650,
+                        height: 564,
                         xtype: 'container',
                         layout: {
                             type: 'hbox',
@@ -110,7 +136,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                         },
                         items: [
                             {
-                                flex: 2,
+                                flex: 1,
                                 xtype: 'gridpanel',
                                 cls: 'search-grid',
                                 name: 'screeningbox',
@@ -130,17 +156,33 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                                     }, {
                                         flex: 1,
                                         sortable: false,
-                                        dataIndex: 'materialboxname',
+                                        dataIndex: 'materialname',
                                         text: 'Kits'
-                                    }, {
-                                        width: 130,
-                                        sortable: false,
-                                        dataIndex: 'colorpallet'
                                     }, {
                                         align: 'right',
                                         sortable: false,
                                         dataIndex: 'score',
                                         width: 80
+                                    }, {
+                                        width: 180,
+                                        sortable: false,
+                                        dataIndex: 'colorpallet'
+                                    }, {
+                                        width: 60,
+                                        align: 'center',
+                                        xtype: 'actioncolumn',
+                                        items: [
+                                            {
+                                                handler: 'setSelectScreening',
+                                                getTip: function(v, meta, rec) {
+                                                    return rec.data.materialboxid != null ? 'Editar excessões do fluxo!' : '';
+                                                },
+                                                getClass: function(v, meta, rec) {
+                                                    return rec.data.materialboxid != null ? "fa fa-info-circle action-select-color-font" : '';
+                                                },
+                                                isDisabled: isDisabledBox
+                                            }
+                                        ]
                                     }
                                 ],
                                 listeners: {
@@ -166,7 +208,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                             }, {
                                 xtype: 'splitter'
                             }, {
-                                flex: 3,
+                                flex: 1,
                                 xtype: 'gridpanel',
                                 cls: 'search-grid',
 
@@ -183,43 +225,34 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                                         renderer: function (value,metaData,record) {
                                             var clientname = record.get('clientname'),
                                                 materialname = record.get('materialname'),
-                                                tpl =   '<div style="float: left; line-height: 20px; font-size: 14px; font-weight: 600;">' +
-                                                        '<div>{0}</div>' +
-                                                        '<div>{1}</div>' +
+                                                tpl =   '<div style="float: left; line-height: 17px;">' +
+                                                            '<div>{0}</div>' +
+                                                            '<div>{1}</div>' +
                                                         '</div>';
 
                                             return Ext.String.format(tpl,materialname,clientname);
                                         }
                                     }, {
-                                        width: 130,
+                                        width: 180,
                                         text: 'Schema',
                                         sortable: false,
                                         dataIndex: 'colorpallet'
                                     }, {
-                                        width: 210,
-                                        sortable: false,
-                                        text: 'Fluxo / exceções',
-                                        renderer: function (value,metaData,record) {
-                                            var sterilizationtypename = record.get('sterilizationtypename'),
-                                                tpl =   '<div style="float: left; line-height: 20px; font-size: 14px; font-weight: 600;">' +
-                                                    '<div style="color: blue;">{0}</div>' +
-                                                    '<div>Não implementado</div>' +
-                                                    '</div>';
-
-                                            return Ext.String.format(tpl,sterilizationtypename);
-                                        }
-                                    }, {
-                                        width: 70,
+                                        width: 100,
                                         text: 'Ações',
                                         align: 'center',
                                         xtype: 'actioncolumn',
                                         items: [
                                             {
-                                                handler: 'onViewEdit',
-                                                iconCls: "fa fa-info-circle action-select-color-font",
-                                                tooltip: 'Editar excessões do fluxo!'
+                                                handler: 'setSelectScreening',
+                                                getTip: function(v, meta, rec) {
+                                                    return rec.data.materialboxid == null ? 'Editar excessões do fluxo!' : '';
+                                                },
+                                                getClass: function(v, meta, rec) {
+                                                    return rec.data.materialboxid == null ? "fa fa-info-circle action-select-color-font" : '';
+                                                },
+                                                isDisabled: isDisabledMat
                                             }, {
-                                                width: 5,
                                                 xtype: 'splitter'
                                             }, {
                                                 handler: 'setDeleteScreening',

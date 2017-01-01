@@ -13,12 +13,17 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
     public function preInsert( \iSterilization\Model\flowprocessingscreeningitem &$model ) {
         Session::hasProfile('','');
 
+        $dataflowstep = $model->getDataflowstep();
         $materialboxid = $model->getMaterialboxid();
+        $sterilizationtypeid = $model->getSterilizationtypeid();
         $flowprocessingscreeningid = $model->getFlowprocessingscreeningid();
 
         if($materialboxid == null || strlen($materialboxid) == 0) {
             return false;
         }
+
+        $model->set('dataflowstep', null);
+        $model->set('sterilizationtypeid', null);
 
         $proxy = $this->getProxy();
 
@@ -29,9 +34,12 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
         $data = self::jsonToObject($box->getStore()->getCache()->getBoxCount(array("query"=>$materialboxid)));
 
         if($data->rows->loads == 0) {
-            $box->getStore()->getModel()->set('flowprocessingscreeningid', $flowprocessingscreeningid);
-            $box->getStore()->getModel()->set('materialboxid', $materialboxid);
             $box->getStore()->getModel()->set('items', $data->rows->items);
+            $box->getStore()->getModel()->set('dataflowstep', $dataflowstep);
+            $box->getStore()->getModel()->set('materialboxid', $materialboxid);
+            $box->getStore()->getModel()->set('sterilizationtypeid', $sterilizationtypeid);
+            $box->getStore()->getModel()->set('flowprocessingscreeningid', $flowprocessingscreeningid);
+
             $result = self::jsonToObject($box->getStore()->insert());
 
             if(!$result->success) {
@@ -70,8 +78,9 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
         $proxy = $this->getProxy();
 
         $item = new \iSterilization\Coach\flowprocessingscreeningitem();
+        $item->getStore()->setProxy($proxy);
 
-        $data = self::jsonToObject($item->getStore()->setProxy($proxy)->select());
+        $data = self::jsonToObject($item->getStore()->select());
 
         $materialboxid = $data->rows[0]->materialboxid;
 
@@ -83,10 +92,10 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
 
         $box->getStore()->setProxy($proxy);
 
-        $data = self::jsonToObject($box->getStore()->getCache()->getBoxItems(array("query"=>$materialboxid)));
+        $item = self::jsonToObject($box->getStore()->getCache()->getBoxItems(array("query"=>$materialboxid)));
 
-        if($data->rows->items == 1) {
-            $box->getStore()->getModel()->set('id', $data->rows->id);
+        if($item->rows->items == 1) {
+            $box->getStore()->getModel()->set('id', $item->rows->id);
             $result = self::jsonToObject($box->getStore()->delete());
 
             if(!$result->success) {

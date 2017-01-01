@@ -962,7 +962,7 @@ $include-smart-app-viewcontrollerbase: dynamic(true);;
 $include-smart-data-storebase: dynamic(true);;
 $include-smart-data-treestorebase: dynamic(true);;
 $include-smart-data-field-colorpallet: dynamic(true);;
-$include-smart-data-field-phone: dynamic(true);;
+$include-smart-data-field-phone: dynamic(false);;
 $include-smart-data-identifier-auto: dynamic(true);;
 $include-smart-data-proxy-ajaxbase: dynamic(true);;
 $include-smart-data-proxy-ajaxbasetree: dynamic(true);;
@@ -1316,6 +1316,7 @@ $include-isterilization-view-flowprocessing-protocol-call_sator_lote_carga: dyna
 $include-isterilization-view-flowprocessing-protocol-call_sator_lote_ciclo: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_lote_ciclo_final: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_lote_triagem: dynamic(true);;
+$include-isterilization-view-flowprocessing-protocol-call_sator_lote_triagem_exception: dynamic(false);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_movimento_in: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_movimento_of: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_movimento_to: dynamic(true);;

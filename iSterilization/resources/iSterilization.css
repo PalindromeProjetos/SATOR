@@ -484,6 +484,108 @@
 
 .chargestatus002 { background: rgb(251, 228, 0); }
 
+.flowexception {
+    width: 35px;
+    height: 35px;
+    color: white;
+    padding: 7px;
+    cursor: pointer;
+    font-weight: 600;
+    line-height: 18px;
+    border-radius: 50%;
+    text-align: center;
+}
+
+.flowexception:hover {
+    top: -7px;
+    left: -7px;
+    opacity: 1;
+    -webkit-transition: -webkit-transform 0.5s, opacity 0.5s;
+    -moz-transition: -moz-transform 0.5s, opacity 0.5s;
+    transition: transform 0.5s, opacity 0.5s;
+    -webkit-transform: scale(1.2);
+    -moz-transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    transform: scale(1.2);
+}
+
+.flowexception1 {
+    background: rgb(99, 98, 248);
+}
+
+.flowexception2 {
+    background: rgb(194, 52, 92);
+}
+
+.flowexception-field-style-action {
+    font-size: 22px !important;
+    line-height: 33px !important;
+    border-style: none !important;
+    background-color: transparent !important;
+}
+
+.flowexception .x-form-text-default {
+    background-color: transparent !important;
+}
+
+/*
+    flowexception-grid
+*/
+.flowexception-grid .x-form-trigger-wrap-default {
+    border-style: none !important;
+}
+
+.flowexception-grid .x-form-trigger-default {
+    background-color: transparent !important;
+}
+
+.flowexception-grid .x-form-trigger-default {
+    width: 35px;
+    height: 35px;
+    color: rgb(99, 98, 248);
+    font-size: 23px;
+    line-height: 34px;
+    padding: 5px 7px 0 7px;
+}
+
+.flowexception-grid {
+    z-index: 0 !important;
+}
+
+.flowexception-grid .x-tree-icon {
+    height: 10px;
+}
+
+.flowexception-grid .fa {
+    margin-top: 2px;
+}
+
+.flowexception-grid .x-tree-node-text {
+    padding-left: 22px;
+}
+
+.flowexception-grid .x-grid-td {
+    vertical-align: middle;
+}
+
+.flowexception-grid .x-grid-cell-inner {
+    color: black;
+    font-size: 23px !important;
+    line-height: 25px !important;
+}
+
+.flowexception-grid .x-grid-body {
+    border-width: 1px 1px 1px;
+}
+
+.flowexception-grid .x-grid-cell-inner-action-col {
+    text-align: center !important;
+}
+
+.flowexception-grid .x-tree-icon {
+    width: 0px !important;
+}
+
 .flowprocessingstep .x-grid-item {
     font-size: 16px;
     color: rgb(255, 255, 255);
@@ -752,6 +854,7 @@
 }
 
 .hold-btn .action-select-color-font {
+    /*font-size: 35px !important;*/
     color: rgb(100, 221, 23) !important;
 }
 
@@ -760,7 +863,16 @@
 }
 
 .hold-btn .action-delete-color-font {
+    /*font-size: 35px !important;*/
     color: rgb(255, 23, 68) !important;
+}
+
+.search-grid .action-select-color-font:before {
+    font-size: 35px !important;
+}
+
+.search-grid .action-delete-color-font:before {
+    font-size: 35px !important;
 }
 
 .movement-title {

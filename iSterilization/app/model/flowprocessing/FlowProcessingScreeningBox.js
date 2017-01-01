@@ -20,14 +20,12 @@ Ext.define( 'iSterilization.model.flowprocessing.FlowProcessingScreeningBox', {
             name: 'materialboxid',
             type: 'int'
         }, {
-            name: 'materialboxname',
+            name: 'materialname',
             type: 'auto'
         }, {
             name: 'colorschema',
             type: 'auto'
         }, {
-            valueH: 25,
-            valueW: 25,
             name: 'colorpallet',
             type: 'colorpallet'
         }, {
@@ -45,6 +43,15 @@ Ext.define( 'iSterilization.model.flowprocessing.FlowProcessingScreeningBox', {
 
                 return Ext.String.format('{0}/{1}',loads,items);
             }
+        }, {
+            name: 'sterilizationtypeid',
+            type: 'int'
+        }, {
+            name: 'sterilizationtypename',
+            type: 'auto'
+        }, {
+            name: 'dataflowstep',
+            type: 'auto'
         }
     ]
 

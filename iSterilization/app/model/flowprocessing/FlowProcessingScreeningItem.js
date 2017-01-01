@@ -32,8 +32,6 @@ Ext.define( 'iSterilization.model.flowprocessing.FlowProcessingScreeningItem', {
             name: 'colorschema',
             type: 'auto'
         }, {
-            valueH: 21,
-            valueW: 21,
             name: 'colorpallet',
             type: 'colorpallet'
         }, {

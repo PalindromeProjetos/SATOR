@@ -33,6 +33,18 @@ class flowprocessingscreeningbox extends \Smart\Data\Model {
     private $items;
 
     /**
+     * @Policy {"nullable":false}
+     * @Column {"description":"", "type":"integer", "policy":true, "logallow":true, "default":""}
+     */
+    private $sterilizationtypeid;
+
+    /**
+     * @Policy {"nullable":false, "length":0}
+     * @Column {"description":"", "type":"string", "policy":true, "logallow":true, "default":""}
+     */
+    private $dataflowstep;
+
+    /**
      * @return type integer
      */
     public function getId() {
@@ -93,6 +105,38 @@ class flowprocessingscreeningbox extends \Smart\Data\Model {
      */
     public function setItems($items) {
         $this->items = $items;
+        return $this;
+    }
+
+    /**
+     * @return type integer
+     */
+    public function getSterilizationtypeid() {
+        return $this->sterilizationtypeid;
+    }
+
+    /**
+     * @param type $sterilizationtypeid
+     * @return \iSterilization\Model\flowprocessingscreeningbox
+     */
+    public function setSterilizationtypeid($sterilizationtypeid) {
+        $this->sterilizationtypeid = $sterilizationtypeid;
+        return $this;
+    }
+
+    /**
+     * @return type integer
+     */
+    public function getDataflowstep() {
+        return $this->dataflowstep;
+    }
+
+    /**
+     * @param type $dataflowstep
+     * @return \iSterilization\Model\flowprocessingscreeningbox
+     */
+    public function setDataflowstep($dataflowstep) {
+        $this->dataflowstep = $dataflowstep;
         return $this;
     }
 

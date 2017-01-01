@@ -57,7 +57,7 @@ class flowprocessingscreeningbox extends \Smart\Data\Cache {
 				a.id,
                 count(*) as items
             from
-                flowprocessingscreeningitem
+                flowprocessingscreeningitem fpsi
 				outer apply (
 					select
 						id
@@ -95,7 +95,9 @@ class flowprocessingscreeningbox extends \Smart\Data\Cache {
             select
                 fpsb.*,
                 mb.barcode,
-                mb.name as materialboxname,
+                mb.name as materialname,
+                fpsb.sterilizationtypeid,
+                st.name as sterilizationtypename,
                 colorschema = (
                     select stuff
                         (
@@ -115,6 +117,7 @@ class flowprocessingscreeningbox extends \Smart\Data\Cache {
             from
                 flowprocessingscreeningbox fpsb
                 inner join materialbox mb on ( mb.id = fpsb.materialboxid )
+                inner join sterilizationtype st on ( st.id = fpsb.sterilizationtypeid )
             where fpsb.flowprocessingscreeningid = @flowprocessingscreeningid;";
 
         try {

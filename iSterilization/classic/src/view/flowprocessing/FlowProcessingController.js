@@ -2369,6 +2369,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                         materialname: result.rows.materialname,
                         flowprocessingscreeningid: id.getValue(),
                         materialboxid: result.rows.materialboxid,
+                        dataflowstep: result.rows.dataflowstep,
+                        sterilizationtypeid: result.rows.sterilizationtypeid,
+                        sterilizationtypename: result.rows.sterilizationtypename,
                         armorymovementoutputid: result.rows.armorymovementoutputid
                     });
 
@@ -4269,6 +4272,45 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 window.open('business/Calls/Quick/FlowProtocol.php?id=1');
                 break;
         }
+    },
+
+    setSelectScreening: function(grid, rowIndex, colIndex) {
+        var store = grid.getStore(),
+            record = store.getAt(rowIndex),
+            dataflowstep = Ext.decode(record.get('dataflowstep'));
+
+        Ext.each(dataflowstep, function (item) {
+            if(item.exceptionby) {
+                var list = [],
+                    exceptionby = Ext.decode(item.exceptionby);
+
+                Ext.each(exceptionby,function (data) {
+                    var find = Ext.Array.findBy(dataflowstep,function (item) {
+                            if(data.typeid == item.areasid) { return item; }
+                        });
+
+                    if(find) {
+                        var exceptiondo = Ext.decode(find.exceptiondo)[0];
+
+                        find.id = data.id;
+                        find.flowexception = 1;
+                        find.sourceid = data.id;
+                        find.sourcename = find.elementname;
+                        find.targetid = exceptiondo.id;
+                        find.targetname = exceptiondo.elementname;
+                        list.push(find);
+                    }
+                });
+
+                Ext.widget('call_SATOR_LOTE_TRIAGEM_EXCEPTION').show(null, function () {
+                    this.down('form').loadRecord(record);
+                    this.down('gridpanel').getStore().add(list);
+                    // this.down('gridpanel').getSelectionModel().select(0);
+                });
+
+                return false;
+            }
+        });
     },
 
     setDeleteScreening: function(grid, rowIndex, colIndex) {

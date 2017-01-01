@@ -1719,15 +1719,20 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 					amo.clientid,
 					c.name as clientname,
 					sm.items,
-					amo.id as armorymovementoutputid
+					amo.id as armorymovementoutputid,
+					mtf.sterilizationtypeid,
+					st.name as sterilizationtypename,
+					st.dataflowstep
 				from
 					flowprocessing fp
 					inner join flowprocessingstep fps on ( fps.flowprocessingid = fp.id )
-					inner join armorystock st on ( st.flowprocessingstepid = fps.id and st.armorystatus = 'E' )
+					inner join armorystock sk on ( sk.flowprocessingstepid = fps.id and sk.armorystatus = 'E' )
 					inner join armorymovementitem ami on ( ami.flowprocessingstepid = fps.id )
 					inner join armorymovement am on ( am.id = ami.armorymovementid and am.movementtype = '002' and am.releasestype = 'E' )
 					inner join armorymovementoutput amo on ( amo.id = am.id )
-					left join client c on ( c.id = amo.clientid )
+					inner join client c on ( c.id = amo.clientid )
+					inner join materialtypeflow mtf on ( mtf.materialid = @materialid and mtf.prioritylevel = 'N' )
+					inner join sterilizationtype st on ( st.id = mtf.sterilizationtypeid )
 					cross apply (
 						select
 							a.materialid,
@@ -1742,10 +1747,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 			end
 			else
 			begin
-				select
-					areavailable,
-					message 
-				from #tblTemp;
+				select areavailable, message from #tblTemp;
 			end
 		
 			if object_id('tempdb.dbo.#tblTemp') is not null drop table #tblTemp;";
