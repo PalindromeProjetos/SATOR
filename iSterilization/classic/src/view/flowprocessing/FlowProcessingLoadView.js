@@ -81,7 +81,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingLoadView', {
         '</tpl>'
     ],
 
-    emptyText: '<h4 style="text-align: center; line-height: 40px;" class="insert-record">Nenhum processo na etapa...</h4>',
+    emptyText: '<h4 style="text-align: center; line-height: 40px;" class="insert-record">Nenhuma triagem aguardando...</h4>',
 
     initComponent: function () {
         var me = this;

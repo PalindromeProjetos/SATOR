@@ -3,7 +3,6 @@
 namespace iSterilization\Model;
 
 /**
- * 
  * @Entity {"name":"flowprocessingscreeningbox", "logbook":true, "cache":"\\iSterilization\\Cache\\flowprocessingscreeningbox", "event":"\\iSterilization\\Event\\flowprocessingscreeningbox"}
  */
 class flowprocessingscreeningbox extends \Smart\Data\Model {
@@ -19,6 +18,12 @@ class flowprocessingscreeningbox extends \Smart\Data\Model {
      * @Column {"description":"", "type":"integer", "policy":true, "logallow":true, "default":""}
      */
     private $flowprocessingscreeningid;
+
+	/**
+	 * @Policy {"nullable":false}
+	 * @Column {"description":"", "type":"integer", "policy":true, "logallow":true, "default":""}
+	 */
+	private $materialid;
 
     /**
      * @Policy {"nullable":false}
@@ -43,6 +48,12 @@ class flowprocessingscreeningbox extends \Smart\Data\Model {
      * @Column {"description":"", "type":"string", "policy":true, "logallow":true, "default":""}
      */
     private $dataflowstep;
+	
+	/**
+	 * @Policy {"nullable":true, "length":0}
+	 * @Column {"description":"", "type":"string", "policy":true, "logallow":true, "default":""}
+	 */
+	private $hasexception;
 
     /**
      * @return type integer
@@ -75,6 +86,22 @@ class flowprocessingscreeningbox extends \Smart\Data\Model {
         $this->flowprocessingscreeningid = $flowprocessingscreeningid;
         return $this;
     }
+
+	/**
+	 * @return type integer
+	 */
+	public function getMaterialid() {
+		return $this->materialid;
+	}
+
+	/**
+	 * @param type $materialid
+	 * @return \iSterilization\Model\flowprocessingscreeningbox
+	 */
+	public function setMaterialid($materialid) {
+		$this->materialid = $materialid;
+		return $this;
+	}
 
     /**
      * @return type integer
@@ -125,7 +152,7 @@ class flowprocessingscreeningbox extends \Smart\Data\Model {
     }
 
     /**
-     * @return type integer
+     * @return type string
      */
     public function getDataflowstep() {
         return $this->dataflowstep;
@@ -140,4 +167,20 @@ class flowprocessingscreeningbox extends \Smart\Data\Model {
         return $this;
     }
 
+	/**
+	 * @return type string
+	 */
+	public function getHasexception() {
+		return $this->hasexception;
+	}
+
+	/**
+	 * @param type $hasexception
+	 * @return \iSterilization\Model\flowprocessingscreeningbox
+	 */
+	public function setHasexception($hasexception) {
+		$this->hasexception = $hasexception;
+		return $this;
+	}
+	
 }

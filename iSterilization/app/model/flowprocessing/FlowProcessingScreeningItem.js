@@ -52,6 +52,9 @@ Ext.define( 'iSterilization.model.flowprocessing.FlowProcessingScreeningItem', {
         }, {
             name: 'dataflowstep',
             type: 'auto'
+        }, {
+            name: 'hasexception',
+            type: 'auto'
         }
     ]
 

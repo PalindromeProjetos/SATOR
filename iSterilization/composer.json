@@ -5,10 +5,10 @@
   ],
 
   "require": {
-    "endroid/qrcode": "^1.7",
     "itbz/fpdf": "dev-master",
-    "phpoffice/phpexcel": "dev-master",
-    "phpmailer/phpmailer": "dev-master"
+    "endroid/qrcode": "^1.7",
+    "phpmailer/phpmailer": "~5.2",
+	"phpoffice/phpexcel": "dev-master"
   },
 
   "autoload": {
@@ -22,7 +22,7 @@
     ],
 
     "psr-4": {
-      "Smart\\": "./smart",
+      "Smart\\": "../smart",
       "iSterilization\\": "./business"
     }
 

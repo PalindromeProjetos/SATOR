@@ -13,8 +13,10 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
     public function preInsert( \iSterilization\Model\flowprocessingscreeningitem &$model ) {
         Session::hasProfile('','');
 
+		$materialid = $model->getMaterialid();
         $dataflowstep = $model->getDataflowstep();
-        $materialboxid = $model->getMaterialboxid();
+		$hasexception = $model->getHasexception();
+		$materialboxid = $model->getMaterialboxid();
         $sterilizationtypeid = $model->getSterilizationtypeid();
         $flowprocessingscreeningid = $model->getFlowprocessingscreeningid();
 
@@ -23,6 +25,7 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
         }
 
         $model->set('dataflowstep', null);
+		$model->set('hasexception', null);
         $model->set('sterilizationtypeid', null);
 
         $proxy = $this->getProxy();
@@ -36,6 +39,8 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
         if($data->rows->loads == 0) {
             $box->getStore()->getModel()->set('items', $data->rows->items);
             $box->getStore()->getModel()->set('dataflowstep', $dataflowstep);
+			$box->getStore()->getModel()->set('hasexception', $hasexception);
+			$box->getStore()->getModel()->set('materialid', $materialid);
             $box->getStore()->getModel()->set('materialboxid', $materialboxid);
             $box->getStore()->getModel()->set('sterilizationtypeid', $sterilizationtypeid);
             $box->getStore()->getModel()->set('flowprocessingscreeningid', $flowprocessingscreeningid);

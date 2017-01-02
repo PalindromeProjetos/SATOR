@@ -100,7 +100,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             }
 
             if(rec) {
-                rec.set('item',record.get('item'));
+                rec.set('items', record.get('items'));
             }
         });
 
@@ -2353,14 +2353,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                         return false;
                     }
 
-                    var find = store.findRecord('barcode',result.rows.barcode);
-
-                    if(find) {
-                        Smart.ion.sound.play("computer_error");
-                        Smart.Msg.showToast('O material <b>já encontra-se lançado</b> na triagem atual!');
-                        return false;
-                    }
-
                     store.insert(0,{
                         barcode: result.rows.barcode,
                         clientname: result.rows.clientname,
@@ -2370,6 +2362,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                         flowprocessingscreeningid: id.getValue(),
                         materialboxid: result.rows.materialboxid,
                         dataflowstep: result.rows.dataflowstep,
+                        hasexception: me.setHasException(result.rows.dataflowstep),
                         sterilizationtypeid: result.rows.sterilizationtypeid,
                         sterilizationtypename: result.rows.sterilizationtypename,
                         armorymovementoutputid: result.rows.armorymovementoutputid
@@ -2381,10 +2374,14 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                             var resultSet = batch.getOperations().length != 0 ? batch.operations[0].getResultSet() : null;
 
                             if ((resultSet == null) || (!resultSet.success)) {
+                                Smart.ion.sound.play("computer_error");
                                 Smart.Msg.showToast(resultSet.getMessage(), 'error');
                                 return false;
                             }
-                            Ext.getStore('flowprocessingscreeningbox').setParams({query: id.getValue()}).load();
+
+                            if (result.rows.materialid) {
+                                Ext.getStore('flowprocessingscreeningbox').setParams({ query: id.getValue() }).load();
+                            }
                         }
                     });
 
@@ -2392,6 +2389,49 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 }
             });
         }
+    },
+
+    setHasException: function (dataflowstep) {
+        var me = this,
+            list = [],
+            view = me.getView();
+
+        if (dataflowstep && dataflowstep.length != 0) {
+            dataflowstep = Ext.decode(dataflowstep);
+            find = Ext.Array.findBy(dataflowstep, function (item) {
+                if (Smart.workstation.areasid == item.areasid) { return item; }
+            });
+        }
+        
+        if ((find && find.exceptionby)) {
+            Ext.each(dataflowstep, function (item) {
+                if (item.exceptionby) {
+                    var exceptionby = Ext.decode(item.exceptionby);
+
+                    Ext.each(exceptionby, function (data) {
+                        var find = Ext.Array.findBy(dataflowstep, function (item) {
+                            if (data.typeid == item.areasid) { return item; }
+                        });
+
+                        if (find) {
+                            var exceptiondo = Ext.decode(find.exceptiondo)[0];
+
+                            find.id = data.id;
+                            find.flowexception = 1;
+                            find.sourceid = data.id;
+                            find.sourcename = find.elementname;
+                            find.targetid = exceptiondo.id;
+                            find.targetname = exceptiondo.elementname;
+                            list.push(find);
+                        }
+                    });
+
+                    return false;
+                }
+            });
+        }
+
+        return list.length != 0 ? Ext.encode(list) : '';
     },
 
     setEncerraTriagem: function (record) {
@@ -2431,7 +2471,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             this.down('form').reset();
             this.down('textfield[name=usercode]').focus(false,200);
         });
-
     },
 
     onReaderMaterialBoxCarga: function (field, e, eOpts) {
@@ -4277,40 +4316,45 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
     setSelectScreening: function(grid, rowIndex, colIndex) {
         var store = grid.getStore(),
             record = store.getAt(rowIndex),
-            dataflowstep = Ext.decode(record.get('dataflowstep'));
-
-        Ext.each(dataflowstep, function (item) {
-            if(item.exceptionby) {
-                var list = [],
-                    exceptionby = Ext.decode(item.exceptionby);
-
-                Ext.each(exceptionby,function (data) {
-                    var find = Ext.Array.findBy(dataflowstep,function (item) {
-                            if(data.typeid == item.areasid) { return item; }
-                        });
-
-                    if(find) {
-                        var exceptiondo = Ext.decode(find.exceptiondo)[0];
-
-                        find.id = data.id;
-                        find.flowexception = 1;
-                        find.sourceid = data.id;
-                        find.sourcename = find.elementname;
-                        find.targetid = exceptiondo.id;
-                        find.targetname = exceptiondo.elementname;
-                        list.push(find);
-                    }
-                });
-
-                Ext.widget('call_SATOR_LOTE_TRIAGEM_EXCEPTION').show(null, function () {
-                    this.down('form').loadRecord(record);
-                    this.down('gridpanel').getStore().add(list);
-                    // this.down('gridpanel').getSelectionModel().select(0);
-                });
-
-                return false;
-            }
+            hasexception = Ext.decode(record.get('hasexception'));
+        
+        Ext.widget('call_SATOR_LOTE_TRIAGEM_EXCEPTION').show(null, function () {
+            this.down('form').loadRecord(record);
+            this.down('gridpanel').getStore().add(hasexception);
         });
+
+        //Ext.each(dataflowstep, function (item) {
+        //    if(item.exceptionby) {
+        //        var list = [],
+        //            exceptionby = Ext.decode(item.exceptionby);
+
+        //        Ext.each(exceptionby,function (data) {
+        //            var find = Ext.Array.findBy(dataflowstep,function (item) {
+        //                    if(data.typeid == item.areasid) { return item; }
+        //                });
+
+        //            if(find) {
+        //                var exceptiondo = Ext.decode(find.exceptiondo)[0];
+
+        //                find.id = data.id;
+        //                find.flowexception = 1;
+        //                find.sourceid = data.id;
+        //                find.sourcename = find.elementname;
+        //                find.targetid = exceptiondo.id;
+        //                find.targetname = exceptiondo.elementname;
+        //                list.push(find);
+        //            }
+        //        });
+
+        //        Ext.widget('call_SATOR_LOTE_TRIAGEM_EXCEPTION').show(null, function () {
+        //            this.down('form').loadRecord(record);
+        //            this.down('gridpanel').getStore().add(list);
+        //            // this.down('gridpanel').getSelectionModel().select(0);
+        //        });
+
+        //        return false;
+        //    }
+        //});
     },
 
     setDeleteScreening: function(grid, rowIndex, colIndex) {

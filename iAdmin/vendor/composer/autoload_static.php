@@ -60,6 +60,11 @@ class ComposerStaticInitddcc74d606c03af19c5ce1504c1f2b6d
 
     public static $classMap = array (
         'EasyPeasyICS' => __DIR__ . '/..' . '/phpmailer/phpmailer/extras/EasyPeasyICS.php',
+        'Endroid\\QrCode\\Bundle\\Controller\\QrCodeController' => __DIR__ . '/..' . '/endroid/qrcode/src/Bundle/Controller/QrCodeController.php',
+        'Endroid\\QrCode\\Bundle\\DependencyInjection\\Configuration' => __DIR__ . '/..' . '/endroid/qrcode/src/Bundle/DependencyInjection/Configuration.php',
+        'Endroid\\QrCode\\Bundle\\DependencyInjection\\EndroidQrCodeExtension' => __DIR__ . '/..' . '/endroid/qrcode/src/Bundle/DependencyInjection/EndroidQrCodeExtension.php',
+        'Endroid\\QrCode\\Bundle\\EndroidQrCodeBundle' => __DIR__ . '/..' . '/endroid/qrcode/src/Bundle/EndroidQrCodeBundle.php',
+        'Endroid\\QrCode\\Bundle\\Twig\\Extension\\QrCodeExtension' => __DIR__ . '/..' . '/endroid/qrcode/src/Bundle/Twig/Extension/QrCodeExtension.php',
         'Endroid\\QrCode\\Exceptions\\DataDoesntExistsException' => __DIR__ . '/..' . '/endroid/qrcode/src/Exceptions/DataDoesntExistsException.php',
         'Endroid\\QrCode\\Exceptions\\FreeTypeLibraryMissingException' => __DIR__ . '/..' . '/endroid/qrcode/src/Exceptions/FreeTypeLibraryMissingException.php',
         'Endroid\\QrCode\\Exceptions\\ImageFunctionFailedException' => __DIR__ . '/..' . '/endroid/qrcode/src/Exceptions/ImageFunctionFailedException.php',
@@ -282,7 +287,6 @@ class ComposerStaticInitddcc74d606c03af19c5ce1504c1f2b6d
         'Smart\\Data\\Black' => __DIR__ . '/../..' . '/../smart/Data/Black.php',
         'Smart\\Data\\Cache' => __DIR__ . '/../..' . '/../smart/Data/Cache.php',
         'Smart\\Data\\Event' => __DIR__ . '/../..' . '/../smart/Data/Event.php',
-        'Smart\\Data\\Merge' => __DIR__ . '/../..' . '/../smart/Data/Merge.php',
         'Smart\\Data\\Model' => __DIR__ . '/../..' . '/../smart/Data/Model.php',
         'Smart\\Data\\Proxy' => __DIR__ . '/../..' . '/../smart/Data/Proxy.php',
         'Smart\\Data\\Store' => __DIR__ . '/../..' . '/../smart/Data/Store.php',
@@ -515,7 +519,7 @@ class ComposerStaticInitddcc74d606c03af19c5ce1504c1f2b6d
         'iAdmin\\Model\\usersprofile' => __DIR__ . '/../..' . '/business/Model/usersprofile.php',
         'iAdmin\\Quick\\MovimentEnter' => __DIR__ . '/../..' . '/business/Quick/MovimentEnter.php',
         'iAdmin\\Quick\\MovimentLeave' => __DIR__ . '/../..' . '/business/Quick/MovimentLeave.php',
-        'iAdmin\\Quick\\exceptionbyflow' => __DIR__ . '/../..' . '/business/Quick/exceptionbyflow.php',
+        'iAdmin\\Quick\\exceptionbyflow' => __DIR__ . '/../..' . '/business/Quick/ExceptionByFlow.php',
         'ntlm_sasl_client_class' => __DIR__ . '/..' . '/phpmailer/phpmailer/extras/ntlm_sasl_client.php',
         'phpmailerException' => __DIR__ . '/..' . '/phpmailer/phpmailer/class.phpmailer.php',
     );

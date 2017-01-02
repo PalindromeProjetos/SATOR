@@ -17,6 +17,9 @@ Ext.define( 'iSterilization.model.flowprocessing.FlowProcessingScreeningBox', {
             name: 'flowprocessingscreeningid',
             type: 'int'
         }, {
+            name: 'materialid',
+            type: 'int'
+        }, {
             name: 'materialboxid',
             type: 'int'
         }, {
@@ -51,6 +54,9 @@ Ext.define( 'iSterilization.model.flowprocessing.FlowProcessingScreeningBox', {
             type: 'auto'
         }, {
             name: 'dataflowstep',
+            type: 'auto'
+        }, {
+            name: 'hasexception',
             type: 'auto'
         }
     ]

@@ -96,7 +96,6 @@ class flowprocessingscreeningbox extends \Smart\Data\Cache {
                 fpsb.*,
                 mb.barcode,
                 mb.name as materialname,
-                fpsb.sterilizationtypeid,
                 st.name as sterilizationtypename,
                 colorschema = (
                     select stuff
@@ -113,7 +112,7 @@ class flowprocessingscreeningbox extends \Smart\Data\Cache {
                             ) ,1,1,''
                         )                
                 ),
-                loads = ( select count(*) from flowprocessingscreeningitem where materialboxid = fpsb.materialboxid )
+                loads = ( select count(*) from flowprocessingscreeningitem where materialboxid = fpsb.materialboxid and flowprocessingscreeningid = fpsb.flowprocessingscreeningid )
             from
                 flowprocessingscreeningbox fpsb
                 inner join materialbox mb on ( mb.id = fpsb.materialboxid )
@@ -135,5 +134,47 @@ class flowprocessingscreeningbox extends \Smart\Data\Cache {
 
         return self::getResultToJson();
     }
+	
+	public function selectForProcessing(array $data) {
+		$query = $data['query'];
+		$proxy = $this->getStore()->getProxy();
+
+		$sql = "
+            declare
+                @flowprocessingscreeningid int = :flowprocessingscreeningid;
+            
+            select
+                fpsb.*,
+				c.clienttype,
+				amo.clientid,
+				amo.patientname,
+				amo.surgicalwarning,
+                loads = ( select count(*) from flowprocessingscreeningitem where materialboxid = fpsb.materialboxid and flowprocessingscreeningid = fpsb.flowprocessingscreeningid )
+            from
+                flowprocessingscreeningbox fpsb
+                inner join flowprocessingscreeningitem fpsi on ( 
+							fpsb.materialid = fpsi.materialid 
+						and fpsb.materialboxid = fpsi.materialboxid
+						and fpsb.flowprocessingscreeningid = fpsi.flowprocessingscreeningid )
+                inner join armorymovementoutput amo on ( amo.id = fpsi.armorymovementoutputid )
+                inner join client c on ( c.id = amo.clientid )
+            where fpsb.flowprocessingscreeningid = @flowprocessingscreeningid
+			order by fpsb.id;";
+
+		try {
+			$pdo = $proxy->prepare($sql);
+			$pdo->bindValue(":flowprocessingscreeningid", $query, \PDO::PARAM_INT);
+			$pdo->execute();
+			$rows = $pdo->fetchAll();
+
+			self::_setRows($rows);
+
+		} catch ( \PDOException $e ) {
+			self::_setSuccess(false);
+			self::_setText($e->getMessage());
+		}
+
+		return self::getResultToJson();
+	}	
 
 }

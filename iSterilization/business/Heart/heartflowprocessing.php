@@ -27,7 +27,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
     /**
      * @param \iSterilization\Model\flowprocessing $model
      */
-    public function preInsert( $model ) {
+	public function preInsert( \iSterilization\Model\flowprocessing &$model ) {
         $sterilizationtypeid = $model->getSterilizationtypeid();
 
         $pdo = $this->prepare("select authenticate from sterilizationtype where id = :sterilizationtypeid");
@@ -45,7 +45,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
     /**
      * @param \iSterilization\Model\flowprocessing $model
      */
-    public function posInsert( $model ) {
+	public function posInsert( \iSterilization\Model\flowprocessing &$model ) {
         $result = (object) $this->setFlowStep($model);
 
         if(!$result->success) {
@@ -92,7 +92,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             ];
 
             foreach ($flow as $step) {
-                $data = "insert into flowprocessingstep ("  . trim(implode(', ', $fields)) . ") values ( %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %s, %s );";
+                $data = "insert into flowprocessingstep (" . trim(implode(', ', $fields)) . ") values ( %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %s, %s );";
 
                 $list[] =   sprintf(
                     $data,

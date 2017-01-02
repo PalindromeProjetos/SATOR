@@ -40,30 +40,36 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
     buildItems: function () {
         var me = this,
             isDisabledBox = function (view, rowIdx, colIdx, item, rec) {
-                var find = null,
-                    dataflowstep = rec.data.dataflowstep;
+                //var find = null,
+                //    dataflowstep = rec.data.dataflowstep,
+                var hasexception = rec.data.dataflowstep;
 
-                if(dataflowstep && dataflowstep.length != 0) {
-                    dataflowstep = Ext.decode(dataflowstep);
-                    find = Ext.Array.findBy(dataflowstep,function (item) {
-                        if(Smart.workstation.areasid == item.areasid) { return item; }
-                    });
-                }
+                //if(dataflowstep && dataflowstep.length != 0) {
+                //    dataflowstep = Ext.decode(dataflowstep);
+                //    find = Ext.Array.findBy(dataflowstep,function (item) {
+                //        if(Smart.workstation.areasid == item.areasid) { return item; }
+                //    });
+                //}
 
-                return !( find && find.exceptionby );
+                //return !( find && find.exceptionby );
+
+                return !(hasexception && hasexception.length != 0);
             },
             isDisabledMat = function (view, rowIdx, colIdx, item, rec) {
-                var find = null,
-                    dataflowstep = rec.data.dataflowstep;
+                //var find = null,
+                //    dataflowstep = rec.data.dataflowstep,
+                var hasexception = rec.data.dataflowstep;
 
-                if(dataflowstep && dataflowstep.length != 0) {
-                    dataflowstep = Ext.decode(dataflowstep);
-                    find = Ext.Array.findBy(dataflowstep,function (item) {
-                        if(Smart.workstation.areasid == item.areasid) { return item; }
-                    });
-                }
+                //if(dataflowstep && dataflowstep.length != 0) {
+                //    dataflowstep = Ext.decode(dataflowstep);
+                //    find = Ext.Array.findBy(dataflowstep,function (item) {
+                //        if(Smart.workstation.areasid == item.areasid) { return item; }
+                //    });
+                //}
 
-                return !(( rec.data.materialboxid == null )&&( find && find.exceptionby ));
+                //return !(( rec.data.materialboxid == null )&&( find && find.exceptionby ));
+
+                return !((hasexception && hasexception.length != 0)&&( rec.data.materialboxid == null ));
             };
 
         Ext.create('iSterilization.store.flowprocessing.FlowProcessingScreening');
@@ -112,11 +118,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                                 },
                                 listeners: {
                                     render: function(c){
-                                        c.getEl().on({
-                                            click: function() {
-                                                me.close();
-                                            }
-                                        });
+                                        c.getEl().on({ click: function() { me.close(); } });
                                     }
                                 }
                             }
@@ -175,7 +177,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                                             {
                                                 handler: 'setSelectScreening',
                                                 getTip: function(v, meta, rec) {
-                                                    return rec.data.materialboxid != null ? 'Editar excessões do fluxo!' : '';
+                                                    return rec.data.materialboxid != null ? 'Editar exceções do fluxo!' : '';
                                                 },
                                                 getClass: function(v, meta, rec) {
                                                     return rec.data.materialboxid != null ? "fa fa-info-circle action-select-color-font" : '';
@@ -246,7 +248,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                                             {
                                                 handler: 'setSelectScreening',
                                                 getTip: function(v, meta, rec) {
-                                                    return rec.data.materialboxid == null ? 'Editar excessões do fluxo!' : '';
+                                                    return rec.data.materialboxid == null ? 'Editar exceções do fluxo!' : '';
                                                 },
                                                 getClass: function(v, meta, rec) {
                                                     return rec.data.materialboxid == null ? "fa fa-info-circle action-select-color-font" : '';

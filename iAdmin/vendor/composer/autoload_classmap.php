@@ -7,6 +7,11 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'EasyPeasyICS' => $vendorDir . '/phpmailer/phpmailer/extras/EasyPeasyICS.php',
+    'Endroid\\QrCode\\Bundle\\Controller\\QrCodeController' => $vendorDir . '/endroid/qrcode/src/Bundle/Controller/QrCodeController.php',
+    'Endroid\\QrCode\\Bundle\\DependencyInjection\\Configuration' => $vendorDir . '/endroid/qrcode/src/Bundle/DependencyInjection/Configuration.php',
+    'Endroid\\QrCode\\Bundle\\DependencyInjection\\EndroidQrCodeExtension' => $vendorDir . '/endroid/qrcode/src/Bundle/DependencyInjection/EndroidQrCodeExtension.php',
+    'Endroid\\QrCode\\Bundle\\EndroidQrCodeBundle' => $vendorDir . '/endroid/qrcode/src/Bundle/EndroidQrCodeBundle.php',
+    'Endroid\\QrCode\\Bundle\\Twig\\Extension\\QrCodeExtension' => $vendorDir . '/endroid/qrcode/src/Bundle/Twig/Extension/QrCodeExtension.php',
     'Endroid\\QrCode\\Exceptions\\DataDoesntExistsException' => $vendorDir . '/endroid/qrcode/src/Exceptions/DataDoesntExistsException.php',
     'Endroid\\QrCode\\Exceptions\\FreeTypeLibraryMissingException' => $vendorDir . '/endroid/qrcode/src/Exceptions/FreeTypeLibraryMissingException.php',
     'Endroid\\QrCode\\Exceptions\\ImageFunctionFailedException' => $vendorDir . '/endroid/qrcode/src/Exceptions/ImageFunctionFailedException.php',
@@ -229,7 +234,6 @@ return array(
     'Smart\\Data\\Black' => $baseDir . '/../smart/Data/Black.php',
     'Smart\\Data\\Cache' => $baseDir . '/../smart/Data/Cache.php',
     'Smart\\Data\\Event' => $baseDir . '/../smart/Data/Event.php',
-    'Smart\\Data\\Merge' => $baseDir . '/../smart/Data/Merge.php',
     'Smart\\Data\\Model' => $baseDir . '/../smart/Data/Model.php',
     'Smart\\Data\\Proxy' => $baseDir . '/../smart/Data/Proxy.php',
     'Smart\\Data\\Store' => $baseDir . '/../smart/Data/Store.php',
@@ -462,7 +466,7 @@ return array(
     'iAdmin\\Model\\usersprofile' => $baseDir . '/business/Model/usersprofile.php',
     'iAdmin\\Quick\\MovimentEnter' => $baseDir . '/business/Quick/MovimentEnter.php',
     'iAdmin\\Quick\\MovimentLeave' => $baseDir . '/business/Quick/MovimentLeave.php',
-    'iAdmin\\Quick\\exceptionbyflow' => $baseDir . '/business/Quick/exceptionbyflow.php',
+    'iAdmin\\Quick\\exceptionbyflow' => $baseDir . '/business/Quick/ExceptionByFlow.php',
     'ntlm_sasl_client_class' => $vendorDir . '/phpmailer/phpmailer/extras/ntlm_sasl_client.php',
     'phpmailerException' => $vendorDir . '/phpmailer/phpmailer/class.phpmailer.php',
 );

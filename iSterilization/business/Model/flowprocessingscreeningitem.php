@@ -3,7 +3,6 @@
 namespace iSterilization\Model;
 
 /**
- * 
  * @Entity {"name":"flowprocessingscreeningitem", "logbook":true, "cache":"\\iSterilization\\Cache\\flowprocessingscreeningitem", "event":"\\iSterilization\\Event\\flowprocessingscreeningitem"}
  */
 class flowprocessingscreeningitem extends \Smart\Data\Model {
@@ -49,6 +48,12 @@ class flowprocessingscreeningitem extends \Smart\Data\Model {
      * @Column {"description":"", "type":"string", "policy":true, "logallow":true, "default":""}
      */
     private $dataflowstep;
+
+	/**
+	 * @Policy {"nullable":true, "length":0}
+	 * @Column {"description":"", "type":"string", "policy":true, "logallow":true, "default":""}
+	 */
+	private $hasexception;
 
     /**
      * @return type integer
@@ -147,7 +152,7 @@ class flowprocessingscreeningitem extends \Smart\Data\Model {
     }
 
     /**
-     * @return type integer
+     * @return type string
      */
     public function getDataflowstep() {
         return $this->dataflowstep;
@@ -161,5 +166,21 @@ class flowprocessingscreeningitem extends \Smart\Data\Model {
         $this->dataflowstep = $dataflowstep;
         return $this;
     }
+
+	/**
+	 * @return type string
+	 */
+	public function getHasexception() {
+		return $this->hasexception;
+	}
+
+	/**
+	 * @param type $hasexception
+	 * @return \iSterilization\Model\flowprocessingscreeningitem
+	 */
+	public function setHasexception($hasexception) {
+		$this->hasexception = $hasexception;
+		return $this;
+	}
 
 }
