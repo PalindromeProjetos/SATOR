@@ -518,9 +518,10 @@
 }
 
 .flowexception-field-style-action {
-    font-size: 22px !important;
+    font-size: 23px !important;
     line-height: 33px !important;
     border-style: none !important;
+    color: rgb(194, 52, 92) !important;
     background-color: transparent !important;
 }
 

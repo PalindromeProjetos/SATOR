@@ -2412,10 +2412,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                         });
 
                         if (find) {
-                            var stepchoice = 1;
                             var exceptiondo = Ext.decode(find.exceptiondo)[0];
 
-                            exceptiondo.stepchoice = exceptiondo.typelesscode == "A" ? stepchoice : 2;
+                            exceptiondo.stepchoice = exceptiondo.typelesscode == "A" ? 1 : 2;
 
                             find.id = data.id;
                             find.sourceid = data.id;
@@ -4328,8 +4327,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         store.each(function(record) {
             var element = record.get('element');
             if(element && element.length) {
-                var item = Ext.decode(element);
-                list.push(item);
+                list.push(record.data);
             }
         });
 
@@ -4339,18 +4337,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             return false;
         }
 
-        Ext.each(hasexception, function(item, index) {
-            item.element = list[index];
-            item.targetid = list[index].id;
-            item.targetname = list[index].elementname;
-            item.flowexception = list[index].stepchoice;
-
-            hasexception[index] = item;
-        });
-
-        console.info(hasexception);
-
-        model.set('hasexception',Ext.encode(hasexception));
+        model.set('hasexception',Ext.encode(list));
 
         model.store.sync({
             async: false,
@@ -4362,6 +4349,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                     Smart.Msg.showToast(resultSet.getMessage(), 'error');
                     return false;
                 }
+
+                Smart.ion.sound.play("button_tiny");
                 model.commit();
                 view.close();
             }
