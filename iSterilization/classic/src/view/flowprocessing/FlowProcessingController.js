@@ -4343,11 +4343,14 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
     },
 
     getSelectScreening: function(grid, rowIndex, colIndex) {
-        var store = grid.getStore(),
+        var me = this,
+            view = me.getView(),
+            store = grid.getStore(),
             record = store.getAt(rowIndex),
             hasexception = Ext.decode(record.get('hasexception'));
         
         Ext.widget('call_SATOR_LOTE_TRIAGEM_EXCEPTION').show(null, function () {
+            this.master = view;
             this.down('form').loadRecord(record);
             this.down('gridpanel').getStore().add(hasexception);
         });
