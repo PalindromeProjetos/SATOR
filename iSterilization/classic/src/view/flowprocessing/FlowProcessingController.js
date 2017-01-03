@@ -2392,9 +2392,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
     },
 
     setHasException: function (dataflowstep) {
-        var me = this,
-            list = [],
-            view = me.getView();
+        var find = null, list = [];
 
         if (dataflowstep && dataflowstep.length != 0) {
             dataflowstep = Ext.decode(dataflowstep);
@@ -2414,14 +2412,19 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                         });
 
                         if (find) {
+                            var stepchoice = 1;
                             var exceptiondo = Ext.decode(find.exceptiondo)[0];
 
+                            exceptiondo.stepchoice = exceptiondo.typelesscode == "A" ? stepchoice : 2;
+
                             find.id = data.id;
-                            find.flowexception = 1;
                             find.sourceid = data.id;
-                            find.sourcename = find.elementname;
                             find.targetid = exceptiondo.id;
+                            find.sourcename = find.elementname;
+                            find.element = Ext.encode(exceptiondo);
                             find.targetname = exceptiondo.elementname;
+                            find.flowexception = exceptiondo.stepchoice;
+
                             list.push(find);
                         }
                     });
@@ -4313,7 +4316,33 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         }
     },
 
-    setSelectScreening: function(grid, rowIndex, colIndex) {
+    setSelectScreening: function () {
+        var me = this,
+            list = [],
+            view = me.getView(),
+            store = view.down('gridpanel').getStore();
+
+        store.each(function(record) {
+            var element = record.get('element');
+            if(element && element.length) {
+                var item = Ext.decode(element);
+
+                delete item.id;
+
+                list.push(item);
+            }
+        });
+
+        console.info(list);
+
+        if(list.length != store.getCount()) {
+            Smart.ion.sound.play("computer_error");
+            Smart.Msg.showToast('Favor configurar todas a exceções antes de prosseguir!');
+            return false;
+        }
+    },
+
+    getSelectScreening: function(grid, rowIndex, colIndex) {
         var store = grid.getStore(),
             record = store.getAt(rowIndex),
             hasexception = Ext.decode(record.get('hasexception'));
@@ -4322,39 +4351,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             this.down('form').loadRecord(record);
             this.down('gridpanel').getStore().add(hasexception);
         });
-
-        //Ext.each(dataflowstep, function (item) {
-        //    if(item.exceptionby) {
-        //        var list = [],
-        //            exceptionby = Ext.decode(item.exceptionby);
-
-        //        Ext.each(exceptionby,function (data) {
-        //            var find = Ext.Array.findBy(dataflowstep,function (item) {
-        //                    if(data.typeid == item.areasid) { return item; }
-        //                });
-
-        //            if(find) {
-        //                var exceptiondo = Ext.decode(find.exceptiondo)[0];
-
-        //                find.id = data.id;
-        //                find.flowexception = 1;
-        //                find.sourceid = data.id;
-        //                find.sourcename = find.elementname;
-        //                find.targetid = exceptiondo.id;
-        //                find.targetname = exceptiondo.elementname;
-        //                list.push(find);
-        //            }
-        //        });
-
-        //        Ext.widget('call_SATOR_LOTE_TRIAGEM_EXCEPTION').show(null, function () {
-        //            this.down('form').loadRecord(record);
-        //            this.down('gridpanel').getStore().add(list);
-        //            // this.down('gridpanel').getSelectionModel().select(0);
-        //        });
-
-        //        return false;
-        //    }
-        //});
     },
 
     setDeleteScreening: function(grid, rowIndex, colIndex) {

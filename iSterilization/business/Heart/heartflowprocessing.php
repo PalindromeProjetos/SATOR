@@ -623,7 +623,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                         @target int,
                         @steplevel int = :steplevel,
                         @stepchoice int = :stepchoice,
-                        @levelsource int = :levelsource,
+                        --@levelsource int = :levelsource,
                         @flowprocessingid int = :flowprocessingid;
 
                     select
@@ -652,7 +652,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 $pdo = $this->prepare($sql);
                 $pdo->bindValue(":steplevel", $steplevel, \PDO::PARAM_INT);
                 $pdo->bindValue(":stepchoice", $stepchoice, \PDO::PARAM_INT);
-                $pdo->bindValue(":levelsource", $levelsource, \PDO::PARAM_INT);
+                //$pdo->bindValue(":levelsource", $levelsource, \PDO::PARAM_INT);
                 $pdo->bindValue(":flowprocessingid", $flowprocessingid, \PDO::PARAM_INT);
 				$callback = $pdo->execute();
 
