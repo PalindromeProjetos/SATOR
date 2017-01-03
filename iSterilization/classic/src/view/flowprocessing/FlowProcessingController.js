@@ -4320,26 +4320,52 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         var me = this,
             list = [],
             view = me.getView(),
-            store = view.down('gridpanel').getStore();
+            form = view.down('form'),
+            model = form.getRecord(),
+            store = view.down('gridpanel').getStore(),
+            hasexception = Ext.decode(model.get('hasexception'));
 
         store.each(function(record) {
             var element = record.get('element');
             if(element && element.length) {
                 var item = Ext.decode(element);
-
-                delete item.id;
-
                 list.push(item);
             }
         });
-
-        console.info(list);
 
         if(list.length != store.getCount()) {
             Smart.ion.sound.play("computer_error");
             Smart.Msg.showToast('Favor configurar todas a exceções antes de prosseguir!');
             return false;
         }
+
+        Ext.each(hasexception, function(item, index) {
+            item.element = list[index];
+            item.targetid = list[index].id;
+            item.targetname = list[index].elementname;
+            item.flowexception = list[index].stepchoice;
+
+            hasexception[index] = item;
+        });
+
+        console.info(hasexception);
+
+        model.set('hasexception',Ext.encode(hasexception));
+
+        model.store.sync({
+            async: false,
+            callback: function (batch, options) {
+                var resultSet = batch.getOperations().length != 0 ? batch.operations[0].getResultSet() : null;
+
+                if ((resultSet == null) || (!resultSet.success)) {
+                    Smart.ion.sound.play("computer_error");
+                    Smart.Msg.showToast(resultSet.getMessage(), 'error');
+                    return false;
+                }
+                model.commit();
+                view.close();
+            }
+        });
     },
 
     getSelectScreening: function(grid, rowIndex, colIndex) {
