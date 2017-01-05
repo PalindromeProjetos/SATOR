@@ -45,9 +45,10 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                 return !(hasexception && hasexception.length != 0);
             },
             isDisabledMat = function (view, rowIdx, colIdx, item, rec) {
-                var hasexception = rec.data.hasexception;
+                var hasexception = rec.data.hasexception,
+                    materialboxid = rec.data.materialboxid;
 
-                return !((hasexception && hasexception.length != 0)&&( rec.data.materialboxid == null ));
+                return !(( hasexception && hasexception.length != 0 )&&( materialboxid == null ));
             };
 
         Ext.create('iSterilization.store.flowprocessing.FlowProcessingScreening');

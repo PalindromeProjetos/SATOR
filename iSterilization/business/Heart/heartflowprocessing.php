@@ -25,98 +25,151 @@ class heartflowprocessing extends \Smart\Data\Proxy {
     }
 
     /**
-     * @param \iSterilization\Model\flowprocessing $model
+     * @param array $data
+     * @return object|Traits\json|string
      */
-	public function preInsert( \iSterilization\Model\flowprocessing &$model ) {
-        $sterilizationtypeid = $model->getSterilizationtypeid();
+    public function newFlowView(array $data) {
+		$query = self::jsonToObject($data['query']);
+		$hasTran = isset($data['hasTran']) ? intval($data['hasTran']) : 1;
 
-        $pdo = $this->prepare("select authenticate from sterilizationtype where id = :sterilizationtypeid");
-        $pdo->bindValue(":sterilizationtypeid", $sterilizationtypeid, \PDO::PARAM_INT);
+		try {
 
-        $pdo->execute();
-        $rows = $pdo->fetchAll();
-        $authenticate = $rows[0]['authenticate'];
+			$coach = new \iSterilization\Coach\flowprocessing();
 
-        if(intval($authenticate) == 0) {
-            throw new \PDOException('<b>O Fluxo</b> selecionado para esta leitura <b>Não Está Autenticado!</b>');
-        }
-    }
+			if($hasTran == 1) {
+				$this->beginTransaction();
+			}
 
-    /**
-     * @param \iSterilization\Model\flowprocessing $model
-     */
-	public function posInsert( \iSterilization\Model\flowprocessing &$model ) {
-        $result = (object) $this->setFlowStep($model);
+			$coach->getStore()->setProxy($this);
+			$coach->getStore()->getModel()->set('version',$query->version);
+			$coach->getStore()->getModel()->set('areasid',$query->areasid);
+			$coach->getStore()->getModel()->set('clientid',$query->clientid);
+			$coach->getStore()->getModel()->set('username',$query->username);
+			$coach->getStore()->getModel()->set('materialid',$query->materialid);
+			$coach->getStore()->getModel()->set('prioritylevel',$query->prioritylevel);
+			$coach->getStore()->getModel()->set('sterilizationtypeid',$query->sterilizationtypeid);
 
-        if(!$result->success) {
-            throw new \PDOException($result->text);
-        }
-    }
+			if(isset($query->materialboxid) && strlen($query->materialboxid) != 0) {
+				$coach->getStore()->getModel()->set('materialboxid',$query->materialboxid);
+			}
 
-    public function setFlowStep($model) {
-        $id = $model->getId();
-        $sterilizationtypeid = $model->getSterilizationtypeid();
-        function nullIf ($value) {
+			if($query->clienttype == '004') {
+				$coach->getStore()->getModel()->set('patientname',$query->patientname);
+				$coach->getStore()->getModel()->set('surgicalwarning',$query->surgicalwarning);
+			}
 
-            if(!isset($value)) {
-                return 'null';
-            }
+			$result = self::jsonToObject($coach->getStore()->insert());
 
-            if (is_numeric($value)) {
-            } else {
-                $value = utf8_decode((strlen($value) == 0) ? 'null' : "'$value'");
-            }
-
-            return $value;
-        }
-
-        try {
-
-            $pdo = $this->prepare("select dataflowstep from sterilizationtype where id = :sterilizationtypeid");
-            $pdo->bindValue(":sterilizationtypeid", $sterilizationtypeid, \PDO::PARAM_INT);
-
-			$callback = $pdo->execute();
-
-			if(!$callback) {
+			if(!$result->success) {
 				throw new \PDOException(self::$FAILURE_STATEMENT);
-			}			
-			
-            $rows = self::encodeUTF8($pdo->fetchAll());
-            $flow = self::jsonToObject($rows[0]['dataflowstep']);
+			}
 
-            $fields = [
-                'flowprocessingid','steplevel','elementtype',
-                'elementname','stepflaglist','stepsettings',
-                'steppriority','source','target','areasid','equipmentid',
-                'flowchoice', 'flowbreach', 'exceptionby','exceptiondo'
-            ];
+			$flow = self::objectToArray($result->rows);
 
-            foreach ($flow as $step) {
-                $data = "insert into flowprocessingstep (" . trim(implode(', ', $fields)) . ") values ( %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %s, %s );";
+			if($query->dataflowstep) {
+				$flow['dataflowstep'] = $query->dataflowstep;
+			}
 
-                $list[] =   sprintf(
-                    $data,
-                    $id,
-                    $step->steplevel,
-                    nullIf(isset($step->elementtype) ? $step->elementtype : ''),
-                    nullIf(isset($step->elementname) ? $step->elementname : ''),
-                    nullIf(isset($step->stepflaglist) ? $step->stepflaglist : ''),
-                    nullIf(isset($step->stepsettings) ? $step->stepsettings : ''),
-                    nullIf(isset($step->steppriority) ? $step->steppriority : ''),
-                    nullIf(isset($step->source) ? $step->source : null),
-                    nullIf(isset($step->target) ? $step->target : null),
-                    nullIf($step->areasid),
-                    nullIf($step->equipmentid),
-                    nullIf(isset($step->flowchoice) ? $step->flowchoice : 0),
-                    nullIf(isset($step->flowbreach) ? $step->flowbreach : 0),
-                    nullIf(isset($step->exceptionby) ? $step->exceptionby : ''),
-                    nullIf(isset($step->exceptiondo) ? $step->exceptiondo : '')
-                );
-            }
+			$resultStep = self::jsonToObject($this->setFlowStep($flow));
 
-            $insert = join ("\r\n", $list);
+			if(!$resultStep->success) {
+				throw new \PDOException(self::$FAILURE_STATEMENT . '<br/>' . $resultStep->text);
+			}
 
-            $sql = "
+			$step = array();
+
+			$step['flowprocessingid'] = $result->rows->id;
+
+			$resultStep = self::jsonToObject($this->newFlowStep($step));
+
+			if(!$resultStep->success) {
+				throw new \PDOException(self::$FAILURE_STATEMENT);
+			}
+
+			if($hasTran == 1) {
+				$this->commit();
+			}
+
+			$result = self::objectToJson($result);
+
+		} catch ( \PDOException $e ) {
+			if ($hasTran == 1 && $this->inTransaction()) {
+				$this->rollBack();
+			}
+			self::_setSuccess(false);
+			self::_setText($e->getMessage());
+			$result = self::getResultToJson();
+		}
+
+		return $result;
+	}
+
+	public function setFlowStep(array $flow) {
+		$id = $flow['id'];
+		$dataflowstep = $flow['dataflowstep'];
+		$sterilizationtypeid = $flow['sterilizationtypeid'];
+
+		try {
+
+			if(strlen($dataflowstep) == 0) {
+				$sql = "
+					declare
+						@sterilizationtypeid int = :sterilizationtypeid;
+
+					select
+						dataflowstep
+					from
+						sterilizationtype
+					where id = @sterilizationtypeid";
+
+				$pdo = $this->prepare($sql);
+				$pdo->bindValue(":sterilizationtypeid", $sterilizationtypeid, \PDO::PARAM_INT);
+
+				$callback = $pdo->execute();
+
+				if(!$callback) {
+					throw new \PDOException(self::$FAILURE_STATEMENT);
+				}
+
+				$rows = self::encodeUTF8($pdo->fetchAll());
+				$dataflowstep = $rows[0]['dataflowstep'];
+			}
+
+			$dataflowstep = self::jsonToObject($dataflowstep);
+
+			$fields = [
+				'flowprocessingid','steplevel','elementtype',
+				'elementname','stepflaglist','stepsettings',
+				'steppriority','source','target','areasid','equipmentid',
+				'flowchoice', 'flowbreach', 'exceptionby','exceptiondo'
+			];
+
+			foreach ($dataflowstep as $step) {
+				$data = "insert into flowprocessingstep (" . trim(implode(', ', $fields)) . ") values ( %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %s, %s );";
+
+				$list[] =   sprintf(
+					$data,
+					$id,
+					$step->steplevel,
+					$this->setNull(isset($step->elementtype) ? $step->elementtype : ''),
+					$this->setNull(isset($step->elementname) ? $step->elementname : ''),
+					$this->setNull(isset($step->stepflaglist) ? $step->stepflaglist : ''),
+					$this->setNull(isset($step->stepsettings) ? $step->stepsettings : ''),
+					$this->setNull(isset($step->steppriority) ? $step->steppriority : ''),
+					$this->setNull(isset($step->source) ? $step->source : null),
+					$this->setNull(isset($step->target) ? $step->target : null),
+					$this->setNull($step->areasid),
+					$this->setNull($step->equipmentid),
+					$this->setNull(isset($step->flowchoice) ? $step->flowchoice : 0),
+					$this->setNull(isset($step->flowbreach) ? $step->flowbreach : 0),
+					$this->setNull(isset($step->exceptionby) ? $step->exceptionby : ''),
+					$this->setNull(isset($step->exceptiondo) ? $step->exceptiondo : '')
+				);
+			}
+
+			$insert = join ("\r\n", $list);
+
+			$sql = "
                 SET XACT_ABORT ON
                 SET NOCOUNT ON
                 SET ANSI_NULLS ON
@@ -144,16 +197,16 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
 			$rows = $this->query($sql)->fetchAll();
 
-			$error_text = $rows[0]['error_text'];
-			$error_code = intval($rows[0]['error_code']);
+			$message = $rows[0]['error_text'];
+			$success = intval($rows[0]['error_code']) == 0;
 
-			if($error_code != 0) {
+			if(!$success) {
 				throw new \PDOException(self::$FAILURE_STATEMENT);
 			}
 
 			$sql = "
                 declare
-                    @id int = {$id};
+                    @id int = :id;
                     
                 update
                     flowprocessingstep
@@ -176,123 +229,24 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                         )
                 where flowprocessingid = @id";
 
-			$affected = $this->exec($sql);
-
-			if ($affected === false) {
-				throw new \PDOException(self::$FAILURE_STATEMENT);
-			}
-
-			$message = $error_text;
-			$success = $error_code == 0;
-
-			self::_setRows($rows);
-			self::_setText($message);
-			self::_setSuccess($success);
-
-        } catch ( \PDOException $e ) {
-            self::_setSuccess(false);
-            self::_setText($e->getMessage());
-        }
-
-        return self::getResult();
-    }
-
-    /**
-     * @param array $data
-     * @return object|Traits\json|string
-     */
-    public function newFlowView(array $data) {
-		$query = self::jsonToObject($data['query']);
-
-		try {
-
-			$sql = "
-                --Gerando BarCode
-                declare
-                    @dateof varchar(20) = :dateof;
-                     
-                select 
-                    dbo.getLeftPad(6,'0',count(*)+1) as newcode
-                from
-                    flowprocessing
-                where convert(varchar(6),dateof,112) = @dateof";
-
-
-			$dateof = date("Ym");
 			$pdo = $this->prepare($sql);
-			$pdo->bindValue(":dateof", $dateof, \PDO::PARAM_STR);
-
+			$pdo->bindValue(":id", $id, \PDO::PARAM_INT);
 			$callback = $pdo->execute();
 
 			if(!$callback) {
 				throw new \PDOException(self::$FAILURE_STATEMENT);
 			}
 
-			$rows = $pdo->fetchAll();
-
-			$barcode = "P". $dateof . $rows[0]['newcode'];
-			unset($pdo);
-			unset($rows);
-
-			$coach = new \iSterilization\Coach\flowprocessing();
-
-			$this->beginTransaction();
-
-			$coach->getStore()->setProxy($this);
-			$coach->getStore()->getModel()->set('barcode',$barcode);
-			$coach->getStore()->getModel()->set('version',$query->version);
-			$coach->getStore()->getModel()->set('areasid',$query->areasid);
-			$coach->getStore()->getModel()->set('clientid',$query->clientid);
-			$coach->getStore()->getModel()->set('username',$query->username);
-			$coach->getStore()->getModel()->set('materialid',$query->materialid);
-			$coach->getStore()->getModel()->set('prioritylevel',$query->prioritylevel);
-			$coach->getStore()->getModel()->set('sterilizationtypeid',$query->sterilizationtypeid);
-
-			if(isset($query->materialboxid) && strlen($query->materialboxid) != 0) {
-				$coach->getStore()->getModel()->set('materialboxid',$query->materialboxid);
-			}
-
-			if($query->clienttype == '004') {
-				$coach->getStore()->getModel()->set('patientname',$query->patientname);
-				$coach->getStore()->getModel()->set('surgicalwarning',$query->surgicalwarning);
-			}
-
-			$model = $coach->getStore()->getModel();
-			$this->preInsert($model);
-
-			$result = self::jsonToObject($coach->getStore()->insert());
-
-			if(!$result->success) {
-				throw new \PDOException(self::$FAILURE_STATEMENT);
-			}
-
-			$model = $coach->getStore()->getModel();
-			$this->posInsert($model);
-
-			$step = array();
-
-			$step['flowprocessingid'] = $result->rows->id;
-
-			$resultStep = self::jsonToObject($this->newFlowStep($step));
-
-			if(!$resultStep->success) {
-				throw new \PDOException(self::$FAILURE_STATEMENT);
-			}
-
-			$this->commit();
-
-			$result = self::objectToJson($result);
+			self::_setRows($rows);
+			self::_setText($message);
+			self::_setSuccess($success);
 
 		} catch ( \PDOException $e ) {
-			if ($this->inTransaction()) {
-				$this->rollBack();
-			}
 			self::_setSuccess(false);
 			self::_setText($e->getMessage());
-			$result = self::getResultToJson();
 		}
 
-		return $result;
+		return self::getResultToJson();
 	}
 
 	public function newFlowStep(array $step) {
@@ -603,13 +557,17 @@ class heartflowprocessing extends \Smart\Data\Proxy {
         $flowprocessingid = $data['flowprocessingid'];
         $flowprocessingstepid = $data['flowprocessingstepid'];
         $flowprocessingstepactionid = $data['flowprocessingstepactionid'];
+		$hasTran = isset($data['hasTran']) ? intval($data['hasTran']) : 1;
 
         $params = self::jsonToArray($data['params']);
 
         $data['params'] = $params;
 
         try {
-			$this->beginTransaction();
+
+			if($hasTran == 1) {
+				$this->beginTransaction();
+			}
 
             while (list(, $item) = each($params)) {
                 extract($item);
@@ -623,7 +581,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                         @target int,
                         @steplevel int = :steplevel,
                         @stepchoice int = :stepchoice,
-                        --@levelsource int = :levelsource,
+                        @levelsource int = :levelsource,
                         @flowprocessingid int = :flowprocessingid;
 
                     select
@@ -643,7 +601,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                     
                     if (@stepchoice = 2)
                     begin
-                        insert into 
+                        insert into
                             flowprocessingstepaction ( flowprocessingstepid, flowstepaction, isactive )
                         values
                             (@source,'002',1);
@@ -652,7 +610,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 $pdo = $this->prepare($sql);
                 $pdo->bindValue(":steplevel", $steplevel, \PDO::PARAM_INT);
                 $pdo->bindValue(":stepchoice", $stepchoice, \PDO::PARAM_INT);
-                //$pdo->bindValue(":levelsource", $levelsource, \PDO::PARAM_INT);
+                $pdo->bindValue(":levelsource", $levelsource, \PDO::PARAM_INT);
                 $pdo->bindValue(":flowprocessingid", $flowprocessingid, \PDO::PARAM_INT);
 				$callback = $pdo->execute();
 
@@ -673,10 +631,12 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				throw new \PDOException(self::$FAILURE_STATEMENT);
 			}
 
-			$this->commit();
+			if($hasTran == 1) {
+				$this->commit();
+			}
 
         } catch ( \PDOException $e ) {
-			if ($this->inTransaction()) {
+			if ($hasTran == 1 && $this->inTransaction()) {
 				$this->rollBack();
 			}
             self::_setSuccess(false);
@@ -1783,21 +1743,76 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
 	public function setEncerraTriagem(array $data) {
 		$query = $data['query'];
+		$date = date("Ymd H:i:s");
+		$username = $data['username'];
 
 		$sql = "
 			declare
 				@id int = :id;
 			
 			select
-				fps.*
+				fps.areasid,
+				fpsi.flowprocessingscreeningid, 
+				fpsi.sterilizationtypeid,
+				fpsi.materialid, 
+				fpsi.materialboxid,
+				1 as items, 
+				fpsi.dataflowstep, 
+				fpsi.hasexception,
+				st.version,
+				mtf.prioritylevel,
+				amo.clientid,
+				c.clienttype,
+				amo.patientname,
+				amo.surgicalwarning,
+				1 as loads
 			from
 				flowprocessingscreening fps
-			where id = @id
-			  and fps.screeningflag = '001';";
+				inner join flowprocessingscreeningitem fpsi on ( fpsi.flowprocessingscreeningid = fps.id )
+				inner join sterilizationtype st on ( st.id = fpsi.sterilizationtypeid )
+				inner join materialtypeflow mtf on ( mtf.materialid = fpsi.materialid and mtf.prioritylevel = 'N')
+				inner join armorymovementoutput amo on ( amo.id = fpsi.armorymovementoutputid )
+				inner join client c on ( c.id = amo.clientid )
+			where fps.id = @id
+			  and fpsi.materialboxid is null
+			  and fps.screeningflag = '001'
+			
+			union all
+			
+			select
+				fps.areasid,
+				fpsb.flowprocessingscreeningid, 
+				fpsb.sterilizationtypeid, 
+				fpsb.materialid, 
+				fpsb.materialboxid, 
+				fpsb.items, 
+				fpsb.dataflowstep, 
+				fpsb.hasexception,
+				st.version,
+				mtf.prioritylevel,
+				amo.clientid,
+				c.clienttype,
+				amo.patientname,
+				amo.surgicalwarning,
+				loads = ( select count(*) from flowprocessingscreeningitem where materialboxid = fpsb.materialboxid and flowprocessingscreeningid = fpsb.flowprocessingscreeningid )
+			from
+				flowprocessingscreening fps
+				inner join flowprocessingscreeningbox fpsb on ( fpsb.flowprocessingscreeningid = fps.id )
+				inner join sterilizationtype st on ( st.id = fpsb.sterilizationtypeid )
+				inner join materialtypeflow mtf on ( mtf.materialid = fpsb.materialid and mtf.prioritylevel = 'N')
+				inner join flowprocessingscreeningitem fpsi on ( 
+								fpsi.materialid = fpsb.materialid
+							and fpsi.materialboxid = fpsb.materialboxid
+							and fpsi.flowprocessingscreeningid = fpsb.flowprocessingscreeningid
+							)
+				inner join armorymovementoutput amo on ( amo.id = fpsi.armorymovementoutputid )
+				inner join client c on ( c.id = amo.clientid )
+			where fps.id = @id
+			  and fps.screeningflag = '001'";
 
 		try {
 			$pdo = $this->prepare($sql);
-			$pdo->bindValue(":id", $query, \PDO::PARAM_STR);
+			$pdo->bindValue(":id", $query, \PDO::PARAM_INT);
 			$callback = $pdo->execute();
 
 			if(!$callback) {
@@ -1808,12 +1823,129 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
 			self::_setRows($rows);
 
+			if(count($rows) == 0) {
+				throw new \PDOException("Não há triagens a serem processadas!");
+			}
+
+			$this->beginTransaction();
+
+			foreach ($rows as $item) {
+				$item = self::encodeUTF8($item);
+				$item['username'] = $username;
+				$hasexception = $item['hasexception'];
+				$data = array("query"=>self::arrayToJson($item),"hasTran"=>0);
+
+				$result = self::jsonToObject($this->newFlowView($data));
+
+				if(!$result->success) {
+					throw new \PDOException($result->text);
+					break;
+				}
+
+				if($hasexception && strlen($hasexception) != 0) {
+
+					$temp = array("id"=>$result->rows->id,"areasid"=>$item['areasid']);
+
+					$step = $this->selectException($temp);
+
+					$flow = self::objectToArray($result->rows);
+
+					$hasexception = self::jsonToArray($hasexception);
+
+					$temp = array();
+					foreach ($hasexception as $key) {
+						$temp[] = self::jsonToArray($key['element']);
+					}
+
+					if(count($temp) == 0) {
+						throw new \PDOException("Não foram configuradas corretamente as exceções!");
+						break;
+					}
+
+					$flow['hasTran'] = 0;
+					$flow['flowprocessingid'] = $step->rows->id;
+					$flow['params'] = self::arrayToJson($temp);
+					$flow['flowprocessingstepid'] = $step->rows->flowprocessingstepid;
+					$flow['flowprocessingstepactionid'] = $step->rows->flowprocessingstepactionid;
+
+					$flow = self::encodeUTF8($flow);
+
+					$result = self::jsonToObject($this->setExceptionDo($flow));
+
+					if(!$result->success) {
+						throw new \PDOException($result->text);
+						break;
+					}
+				}
+			}
+
+			$screening = new \iSterilization\Coach\flowprocessingscreening();
+
+			$screening->getStore()->setProxy($this);
+			$screening->getStore()->getModel()->set('id',$query);
+			$screening->getStore()->getModel()->set('closeddate',$date);
+			$screening->getStore()->getModel()->set('closedby',$username);
+			$screening->getStore()->getModel()->set('screeningflag','002');
+			$result = self::jsonToObject($screening->getStore()->update());
+
+			if(!$result->success) {
+				throw new \PDOException(self::$FAILURE_STATEMENT);
+			}
+
+			$this->commit();
+
 		} catch ( \PDOException $e ) {
+			if ($this->inTransaction()) {
+				$this->rollBack();
+			}
 			self::_setSuccess(false);
 			self::_setText($e->getMessage());
 		}
 
 		return self::getResultToJson();
+	}
+
+	public function selectException(array $data) {
+		$id = $data['id'];
+		$areasid = $data['areasid'];
+
+		$sqlFlow = "
+			declare
+				@id int = :id,
+				@areasid int = :areasid;
+
+			select
+				fp.id,
+				fps.exceptionby,
+				fpsa.flowprocessingstepid,
+				fpsa.id as flowprocessingstepactionid
+			from
+				flowprocessing fp
+				inner join flowprocessingstep fps on ( fps.flowprocessingid = fp.id )
+				inner join flowprocessingstepaction fpsa on ( fpsa.flowprocessingstepid = fps.id )
+			where fps.flowprocessingid = @id
+			  and fps.areasid = @areasid;";
+
+		try {
+			$pdo = $this->prepare($sqlFlow);
+			$pdo->bindValue(":id", $id, \PDO::PARAM_INT);
+			$pdo->bindValue(":areasid", $areasid, \PDO::PARAM_INT);
+			$callback = $pdo->execute();
+
+			if(!$callback) {
+				throw new \PDOException(self::$FAILURE_STATEMENT);
+			}
+
+			$rows = self::encodeUTF8($pdo->fetchAll()[0]);
+
+			self::_setRows($rows);
+
+		} catch ( \PDOException $e ) {
+			self::_setSuccess(false);
+			self::_setText($e->getMessage());
+		}
+
+		return self::arrayToObject(self::getResult());
 	}
 
     public function selectCycleLote(array $data) {

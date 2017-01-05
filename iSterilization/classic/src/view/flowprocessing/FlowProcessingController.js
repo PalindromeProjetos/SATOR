@@ -615,10 +615,15 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             rows: Ext.encode({ id: record.get('id') })
         }).load({
             scope: me,
-            callback: function (records) {
-                var rec = records[0];
+            callback: function(records, operation, success) {
 
                 view.setLoading(false);
+
+                if(!success || records.length == 0) {
+                    return false;
+                }
+
+                var rec = records[0];
 
                 Ext.widget('call_SATOR_LOTE_TRIAGEM').show(null,function () {
                     this.master = view;
@@ -2010,7 +2015,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
     insertFlow: function () {
         var me = this,
-            date = new Date(),
             view = me.getView(),
             form = view.down('form'),
             data = form.getValues(),
@@ -2328,11 +2332,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                     return false;
                 }
 
-                me.setView(view.master);
-
                 me.setEncerraTriagem(record);
-
-                view.close();
 
                 return false;
             }
@@ -2420,7 +2420,15 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                             find.sourceid = data.id;
                             find.targetid = exceptiondo.id;
                             find.sourcename = find.elementname;
-                            find.element = Ext.encode(exceptiondo);
+                            find.element = Ext.encode({
+                                stepchoice: exceptiondo.stepchoice,
+                                steplevel: exceptiondo.steplevel,
+                                elementtype: exceptiondo.elementtype,
+                                elementcode: exceptiondo.elementcode,
+                                elementname: exceptiondo.elementname,
+                                levelsource: 0
+                            });
+
                             find.targetname = exceptiondo.elementname;
                             find.flowexception = exceptiondo.stepchoice;
 
@@ -2458,10 +2466,13 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                             Smart.Msg.showToast(result.text, 'error');
                             return false;
                         }
+
+                        Smart.ion.sound.play("button_tiny");
+                        view.master.updateType();
+
+                        view.close();
                     }
                 });
-
-                view.updateType();
 
                 return true;
             };
@@ -3245,6 +3256,11 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             Smart.Msg.showToast('Favor configurar todas a exceções antes de prosseguir!');
             return false;
         }
+
+        console.info(list);
+        console.info(Ext.encode(list));
+
+        return false;
 
         Ext.Ajax.request({
             scope: me,
@@ -4333,7 +4349,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
         if(list.length != store.getCount()) {
             Smart.ion.sound.play("computer_error");
-            Smart.Msg.showToast('Favor configurar todas a exceções antes de prosseguir!');
+            Smart.Msg.showToast('Favor configurar todas a exceções antes de prosseguir!','info');
             return false;
         }
 

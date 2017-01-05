@@ -240,7 +240,7 @@ trait TresultSet {
      */
     public static function jsonToObject($param) {
         $json = isset($param) ? $param : '{"records":0}';
-        return json_decode($json);
+		return json_decode($json);
     }
 
     /**

@@ -198,6 +198,26 @@ trait TvalidField
     }
 
     /**
+     * Retorna string null se vazia ou nula
+     *
+     * @param $value
+     * @return string
+     */
+    public function setNull ($value) {
+
+        if(!isset($value)) {
+            return 'null';
+        }
+
+        if (is_numeric($value)) {
+        } else {
+            $value = utf8_decode((strlen($value) == 0) ? 'null' : "'$value'");
+        }
+
+        return $value;
+    }
+
+    /**
      * Valida se tipo de dado é uma data válida
      *
      * @param string $date
