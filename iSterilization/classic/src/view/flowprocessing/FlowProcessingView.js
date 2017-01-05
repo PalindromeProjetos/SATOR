@@ -29,6 +29,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingView', {
 
     header: false,
 
+    html: '<div id="colorschema-view" class="colorpallet float-r"></div>',
+
     listeners: {
         afterrender: 'onAfterRenderView',
         startreader: 'onStartReaderView'
@@ -216,7 +218,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingView', {
                                     {
                                         flex: 1,
                                         fieldLabel: 'Local',
-                                        name: 'areasname'
+                                        name: 'areasname',
                                     }, {
                                         xtype: 'splitter'
                                     }, {
@@ -271,6 +273,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingView', {
                                                         flex: 1,
                                                         height: 26,
                                                         xtype: 'container',
+                                                        // html: '<div id="colorschema-view" class="colorpallet float-l" style="position: fixed; margin-top: 60px;"></div>',
                                                         name: 'colorschema'
                                                     }, {
                                                         width: 120,

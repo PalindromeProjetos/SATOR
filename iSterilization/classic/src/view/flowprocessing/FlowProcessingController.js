@@ -23,12 +23,12 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 datachanged: 'onChangedCharge'
             },
             '#flowprocessingsteparea': {
-                load: 'onLoadStepArea',
-                beforeload: 'onBeforeLoadStepArea'
+                load: 'onStepArea',
+                beforeload: 'onBeforeStepArea'
             },
             '#flowprocessingholdarea': {
-                load: 'onLoadHoldArea',
-                beforeload: 'onBeforeLoadHoldArea'
+                load: 'onHoldArea',
+                beforeload: 'onBeforeHoldArea'
             },
             '#flowprocessingchargeitem': {
                 datachanged: 'onChangedCharge'
@@ -51,6 +51,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
     },
 
     //routes ===================================>>
+
     getFlowProcessingId: function (id, barcode) {
         var me = this,
             app = Smart.app.getController('App'),
@@ -74,7 +75,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
     onLoadArea: function (store, records, successful, operation, eOpts) {
         var me = this,
-            data = [],
             view = me.getView(),
             dataView = view.down('flowprocessingloadview'),
             storeView = dataView.getStore(),
@@ -93,8 +93,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         Ext.each(records, function (record) {
             var rec = storeView.findRecord('id',record.get('id'));
 
-            data.push(record.data);
-
             if(!rec) {
                 storeView.add(record.data);
             }
@@ -105,11 +103,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         });
 
         storeView.each(function (record) {
-            var obj = Ext.Array.findBy(data, function(item) {
-                return ((record) && (record.get('id') == item.id));
-            });
+            var rec = store.findRecord('id',record.get('id'));
 
-            if(!obj) {
+            if(!rec) {
                 storeView.remove(record);
             }
         });
@@ -131,9 +127,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         store.setParams(dataView.getParams());
     },
 
-    onLoadStepArea: function (store, records, successful, operation, eOpts) {
+    onStepArea: function (store, records, successful, operation, eOpts) {
         var me = this,
-            data = [],
             view = me.getView(),
             dataView = view.down('flowprocessingdataview'),
             storeView = dataView.getStore(),
@@ -143,7 +138,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             return false;
         }
 
-        storeView.removeAll();
+        // storeView.removeAll();
         var totalrecords = view.down('textfield[name=totalrecords]');
 
         if (!records || records.length == 0) {
@@ -151,10 +146,25 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         }
 
         Ext.each(records, function (record) {
-            data.push(record.data);
+            var rec = storeView.findRecord('id',record.get('id'));
+
+            if(!rec) {
+                storeView.add(record.data);
+            }
+
+            if(rec) {
+                rec.set('items', record.get('items'));
+            }
         });
 
-        storeView.loadData(data);
+        storeView.each(function (record) {
+            var rec = store.findRecord('id',record.get('id'));
+
+            if(!rec) {
+                storeView.remove(record);
+            }
+        });
+
         view.setCycleStart(storeView);
 
         if (totalrecords) {
@@ -162,7 +172,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         }
     },
 
-    onBeforeLoadStepArea: function (store, operation, eOpts) {
+    onBeforeStepArea: function (store, operation, eOpts) {
         var me = this,
             view = me.getView(),
             dataView = view.down('flowprocessingdataview');
@@ -179,7 +189,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         }
     },
 
-    onLoadHoldArea: function (store, records, successful, operation, eOpts) {
+    onHoldArea: function (store, records, successful, operation, eOpts) {
         var me = this,
             view = me.getView(),
             resultSet = operation.getResultSet(),
@@ -216,7 +226,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         });
     },
 
-    onBeforeLoadHoldArea: function (store, operation, eOpts) {
+    onBeforeHoldArea: function (store, operation, eOpts) {
         var me = this,
             view = me.getView(),
             dataView = view.down('flowprocessingholdview');
@@ -1715,11 +1725,12 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
     onAfterRenderView: function () {
         var me = this,
-            list = '',
             view = me.getView(),
             data = view.xdata,
             barcode = view.barcode,
-            text = 'Material ({0})';
+            text = 'Material ({0})',
+            colorpallet = data.get('colorpallet'),
+            colorschema = Ext.getBody().getById('colorschema-view');
 
         Ext.getStore('flowprocessingstepinputtree').setParams({
             flowprocessingid: data.get('flowprocessingid'),
@@ -1734,8 +1745,14 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         view.down('hiddenfield[name=id]').setValue(data.get('id'));
         view.down('hiddenfield[name=materialboxid]').setValue(data.get('materialboxid'));
 
+        colorpallet = colorpallet.replace(/width: 25px;/g, "width: 50px;");
+        colorpallet = colorpallet.replace(/float: left;/g, "float: right;");
+        colorpallet = colorpallet.replace(/height: 25px;/g, "height: 100%;");
+
+        colorschema.update(colorpallet);
+
         view.down('textfield[name=search]').focus(false,200);
-        view.down('container[name=colorschema]').update(data.get('colorpallet'));
+        // view.down('container[name=colorschema]').update(colorpallet);
         view.down('textfield[name=username]').setValue(data.get('username'));
         view.down('textfield[name=areasname]').setValue(data.get('areasname'));
         view.down('textfield[name=clientname]').setValue(data.get('clientname'));

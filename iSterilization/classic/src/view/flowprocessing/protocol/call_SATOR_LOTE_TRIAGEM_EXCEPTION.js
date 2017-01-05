@@ -169,16 +169,20 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                                             field.setStore(store);
                                         },
                                         select: function (combo,record,eOpts) {
-                                            var item = combo.getWidgetRecord(),
-                                                data = record.data;
+                                            var rec = combo.getWidgetRecord();
 
-                                            data.stepchoice = item.get('flowexception');
+                                            rec.set('targetid',record.get('id'));
+                                            rec.set('targetname',record.get('elementname'));
+                                            rec.set('element',Ext.encode({
+                                                stepchoice: rec.get('flowexception'),
+                                                steplevel: record.get('steplevel'),
+                                                elementtype: record.get('elementtype'),
+                                                elementcode: record.get('elementcode'),
+                                                elementname: record.get('elementname'),
+                                                levelsource: 0
+                                            }));
 
-                                            item.set('element',Ext.encode(data));
-                                            item.set('targetid',data.id);
-                                            item.set('targetname',data.elementname);
-
-                                            item.commit();
+                                            rec.commit();
                                         }
                                     }
                                 }
@@ -195,33 +199,40 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                             }
                         ],
                         listeners: {
-                            rowkeydown: function ( viewTable , record , tr , rowIndex , e , eOpts) {
+                            rowkeydown: function ( viewTable , rec , tr , rowIndex , e , eOpts) {
                                 if ([e.ESC].indexOf(e.getKey()) != -1) {
                                     viewTable.up('window').close();
                                 }
                             },
-                            cellclick: function ( viewTable, td , cellIndex , record , tr , rowIndex , e , eOpts ) {
+                            cellclick: function ( viewTable, td , cellIndex , rec , tr , rowIndex , e , eOpts ) {
                                 if(cellIndex == 2) {
-                                    var flowexception = record.get('flowexception'),
+                                    var flowexception = rec.get('flowexception'),
                                         typelesscode = (flowexception == 1 ? "Q" : "A"),
-                                        exceptiondo = Ext.decode(record.get('exceptiondo'));
+                                        exceptiondo = Ext.decode(rec.get('exceptiondo'));
 
-                                    record.set('element','');
-                                    record.set('targetid','');
-                                    record.set('targetname','');
-                                    record.set('flowexception',(flowexception == 1 ? 2 : 1));
-                                    record.commit();
+                                    rec.set('element','');
+                                    rec.set('targetid','');
+                                    rec.set('targetname','');
+                                    rec.set('flowexception',(flowexception == 1 ? 2 : 1));
+                                    rec.commit();
 
                                     var find = Ext.Array.findBy(exceptiondo,function (item) {
                                         if(typelesscode == item.typelesscode) { return item; }
                                     });
 
                                     if(find) {
-                                        find.stepchoice = record.get('flowexception');
-                                        record.set('targetid',find.id);
-                                        record.set('targetname',find.elementname);
-                                        record.set('element',Ext.encode(find));
-                                        record.commit();
+                                        rec.set('targetid',find.id);
+                                        rec.set('targetname',find.elementname);
+                                        rec.set('element',Ext.encode({
+                                            stepchoice: rec.get('flowexception'),
+                                            steplevel: find.steplevel,
+                                            elementtype: find.elementtype,
+                                            elementcode: find.elementcode,
+                                            elementname: find.elementname,
+                                            levelsource: 0
+                                        }));
+
+                                        rec.commit();
                                     }
                                 }
                             }
