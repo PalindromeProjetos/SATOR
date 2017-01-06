@@ -86,10 +86,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
         var totalrecords = view.down('textfield[name=totalrecords]');
 
-        if (!records || records.length == 0) {
-            return false;
-        }
-
         Ext.each(records, function (record) {
             var rec = storeView.findRecord('id',record.get('id'));
 
@@ -138,12 +134,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             return false;
         }
 
-        // storeView.removeAll();
         var totalrecords = view.down('textfield[name=totalrecords]');
-
-        if (!records || records.length == 0) {
-            return false;
-        }
 
         Ext.each(records, function (record) {
             var rec = storeView.findRecord('id',record.get('id'));
@@ -198,11 +189,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
         if (totalrecords) {
             totalrecords.setValue(resultSet.total);
-        }
-
-        if (!records || records.length == 0) {
-            storeView.removeAll();
-            return false;
         }
 
         store.each(function (record) {
@@ -3273,11 +3259,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             Smart.Msg.showToast('Favor configurar todas a exceções antes de prosseguir!');
             return false;
         }
-
-        console.info(list);
-        console.info(Ext.encode(list));
-
-        return false;
 
         Ext.Ajax.request({
             scope: me,

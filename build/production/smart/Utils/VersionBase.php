@@ -34,7 +34,6 @@ foreach ($argv as $name) {
 		$pdo->bindValue(":name", $name, \PDO::PARAM_STR);
 		$pdo->bindValue(":version", $version, \PDO::PARAM_STR);
 		$pdo->execute();
-
 	}
 
 	$idx++;
