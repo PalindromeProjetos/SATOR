@@ -107,7 +107,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingLoad', {
                                 items: [
                                     {
                                         flex: 1,
-                                        text: 'Triagem Pré-Leitura'
+                                        text: 'Triagem Pre-Leitura'
                                     }
                                 ]
                             }, {

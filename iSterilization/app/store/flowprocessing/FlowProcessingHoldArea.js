@@ -17,16 +17,7 @@ Ext.define( 'iSterilization.store.flowprocessing.FlowProcessingHoldArea', {
             name: 'id',
             type: 'int'
         }, {
-            name: 'item',
-            type: 'int'
-        }, {
-            name: 'barcode',
-            type: 'auto'
-        }, {
-            name: 'lineone',
-            type: 'auto'
-        }, {
-            name: 'linetwo',
+            name: 'items',
             type: 'auto'
         }, {
             name: 'movementdate',
@@ -47,14 +38,31 @@ Ext.define( 'iSterilization.store.flowprocessing.FlowProcessingHoldArea', {
             name: 'movementuser',
             type: 'auto'
         }, {
-            name: 'patientname',
-            type: 'auto'
+            name: 'movementuser',
+            type: 'auto',
+            convert: function (value, record) {
+                var movementuser = '',
+                    username = value.split('.');
+
+                Ext.each(username,function (name) {
+                    movementuser += name.charAt(0).toUpperCase() + name.slice(1) + ' ';
+                });
+
+                return movementuser;
+            }
         }, {
-            name: 'dateof',
-            type: 'auto'
-        }, {
-            name: 'timeof',
-            type: 'auto'
+            name: 'movementname',
+            type: 'auto',
+            convert: function (value, record) {
+                var movementname = '',
+                    username = record.get('movementuser').split(' ');
+
+                Ext.each(username,function (name) {
+                    movementname += name.charAt(0);
+                });
+
+                return movementname;
+            }
         }
     ],
 

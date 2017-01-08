@@ -3472,20 +3472,15 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 @releasestype char(1) = :releasestype;
 
             select
-                am.id,
-                am.areasid,
-                coalesce(o.lineone,(convert(varchar, dbo.getLeftPad(8,'0',am.id)))) as lineone,
-                a.name as areasname,
-                am.movementuser,
-                coalesce(o.patientname, convert(char(10), am.movementdate, 103)) as linetwo,
-                am.movementtype,
-                dbo.getEnum('movementtype',am.movementtype) as movementtypedescription,
-                am.releasestype,
-                dbo.getEnum('releasestype',am.releasestype) as releasestypedescription,
-                o.patientname,
-                o.dateof,
-                o.timeof,
-                item = ( 
+				am.id, 
+				am.areasid, 
+				am.movementuser, 
+				convert(char(10), am.movementdate, 103) as movementdate, 
+				am.movementtype, 
+				am.releasestype, 
+				am.closedby, 
+				am.closeddate,
+                items = ( 
                 	select
 						case am.movementtype
 							when '001' then 'E-' + dbo.getLeftPad(3,'0',count(id))
@@ -3500,21 +3495,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 )
             from
                 armorymovement am
-                inner join areas a on ( a.id = am.areasid )
-                outer apply (
-                    select
-                        c.name as lineone,
-                        amo.patientname,
-                        amo.dateof,
-                        amo.timeof,
-                        amo.barcode
-                    from
-                        armorymovementoutput amo
-                        inner join client c on ( c.id = amo.clientid )
-                    where amo.id = am.id
-                ) o
             where am.areasid = @areasid
-                and am.releasestype = @releasestype;";
+              and am.releasestype = @releasestype;";
 
 		try {
 			$pdo = $this->prepare($sql);

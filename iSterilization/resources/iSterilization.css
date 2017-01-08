@@ -388,15 +388,45 @@
     position: absolute;
 }
 
+.float-l {
+    float: left;
+    margin: 0 0 0 10px;
+}
+
 .float-r {
     float: right;
     margin: 0 0 0 0;
 }
 
-.float-l {
-    float: left;
-    margin: 0 0 0 10px;
+.hold-close-btn {
+    width: 30px;
+    height: 30px;
+    float: right;
+    /*margin: 0 0 0 0;*/
+    z-index: 100000;
+    line-height: 30px;
+    position: relative;
+    text-align: center;
+    border-radius: 50% !important;
+    background-color: rgb(246, 246, 246) !important;
 }
+
+/*.smart-btn-header:hover {*/
+    /*background-color: rgb(255, 255, 0)!important;*/
+    /*border-color: rgb(255, 255, 0) !important;*/
+
+    /*top: -7px;*/
+    /*left: -7px;*/
+    /*box-shadow: 0 0 0 4px rgba(119,136,153,.4);*/
+    /*-webkit-transition: -webkit-transform 0.5s, opacity 0.5s;*/
+    /*-webkit-transform: scale(.8);*/
+    /*-moz-transition: -moz-transform 0.5s, opacity 0.5s;*/
+    /*-moz-transform: scale(.8);*/
+    /*-ms-transform: scale(.8);*/
+    /*transition: transform 0.5s, opacity 0.5s;*/
+    /*transform: scale(.8);*/
+    /*opacity: 1;*/
+/*}*/
 
 .thumb-wrap {
     float: left;
@@ -700,11 +730,11 @@
 }
 
 .load-processing {
-    background: rgba(130, 119, 23, .4) !important;
+    background: rgba(130, 119, 23, .3) !important;
 }
 
 .step-processing {
-    background: rgba(91, 105, 108, .6) !important;
+    background: rgba(96, 125, 139, .5) !important;
 }
 
 .hold-processing {
@@ -790,116 +820,88 @@
 /*
     HoldView
 */
+
 .hold {
     float: left;
-    height: 100px;
-    width: 300px;
+    width: 250px;
+    height: 70px;
     cursor: pointer;
-    margin: 10px 0 0 10px;
-    border: solid 1px rgba(19, 20, 50, 1);
-}
-.hold .hold-l {
-    width: 25%;
-    float: left;
-    height: 100%;
-    padding: 10px 0 0 10px;
-    background: rgba(19, 20, 50, 1);
+    margin: 10px 0 10px 10px;
+    border-top-left-radius: 35px;
+    border-bottom-left-radius: 35px;
 }
 
-.hold .items {
-    color: black;
-    width: 56px;
-    font-size: 16px;
-    font-weight: 700;
-    text-align: center;
-    line-height: 22px;
-    background: rgba(255, 237, 79, .8);
-    border-radius: 3px;
-}
-
-.hold .hold-btn {
-    line-height: 48px;
-    text-align: center;
-    width: 15%;
-    float: right;
-    height: 100%;
-    font-size: 42px;
-}
-.hold .hold-r {
-    width: 60%;
-    float: right;
-    height: 100%;
-}
-
-.line-one {
-    white-space: nowrap;
-    overflow: hidden;
-    text-align: center;
-    text-overflow: ellipsis;
-    font-weight: 700;
-    font-size: 32px;
-    line-height: 38px;
-    padding: 5px 10px 3px 10px;
-}
-.line-two {
-    white-space: nowrap;
-    overflow: hidden;
-    text-align: center;
-    text-overflow: ellipsis;
-    font-size: 22px;
-    line-height: 24px;
-    font-weight: 700;
-    padding: 0 10px 0 10px;
-}
 .hold-001 {
-    color: black;
-    border: solid 1px rgba(41, 98, 255, .3);
     background: rgba(0, 145, 234, .3);
 }
+
 .hold-001:hover {
-    background: rgba(0, 145, 234, .5);
-}
-.hold-001 .hold-l {
-    background: rgba(41, 98, 255, .3);
+    background: rgba(0, 145, 234, .4);
 }
 
 .hold-002 {
-    color: black;
-    border: solid 1px rgba(121, 85, 72, .3);
-    background: rgba(141, 110, 99, .3);
-}
-.hold-002:hover {
     background: rgba(141, 110, 99, .5);
 }
-.hold-002 .hold-l {
-    background: rgba(121, 85, 72, .3);
+
+.hold-002:hover {
+    background: rgba(141, 110, 99, .6);
 }
 
 .hold-003 {
-    color: black;
-    border: solid 1px rgba(255, 109, 0, .3);
-    background: rgba(255, 171, 64, .3);
-}
-.hold-003:hover {
     background: rgba(255, 171, 64, .5);
 }
-.hold-003 .hold-l {
-    background: rgba(255, 109, 0, .3);
+
+.hold-003:hover {
+    background: rgba(255, 171, 64, .6);
 }
 
-.hold-btn .action-select-color-font {
-    /*font-size: 35px !important;*/
-    color: rgb(100, 221, 23) !important;
+.hold .buble {
+    float: left;
+    width: 70px;
+    height: 100%;
+    color: white;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 70px;
+    border-radius: 50%;
+    text-align: center;
 }
 
-.hold-btn .action-select-color-font:hover {
-    color: rgb(100, 221, 23) !important;
+.hold-buble-001 {
+    background: rgba(0, 145, 234, 1);
 }
 
-.hold-btn .action-delete-color-font {
-    /*font-size: 35px !important;*/
-    color: rgb(255, 23, 68) !important;
+.hold-buble-002 {
+    background: rgba(141, 110, 99, 1);
 }
+
+.hold-buble-003 {
+    background: rgba(239, 108, 0, 1);
+}
+
+.hold .lines {
+    float: right;
+    width: 170px;
+    height: 100%;
+    margin-left: 10px;
+}
+
+.hold .hold-btn {
+    float: right;
+    height: 40px;
+    font-size: 34px;
+    margin-top: -21px;
+    line-height: 40px;
+    text-align: center;
+}
+
+.hold .hold-btn .select {
+    padding-left: 10px;
+}
+
+/*
+    HoldView end
+*/
 
 .search-grid .action-select-color-font:before {
     font-size: 35px !important;

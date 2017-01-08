@@ -197,7 +197,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
         var totalrecords = view.down('textfield[name=totalrecords]');
 
-        store.each(function (record) {
+        Ext.each(records, function (record) {
             var rec = storeView.findRecord('id',record.get('id'));
 
             if(!rec) {
@@ -205,14 +205,14 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             }
 
             if(rec) {
-                rec.set('item',record.get('item'));
+                rec.set('items', record.get('items'));
             }
         });
 
         storeView.each(function (record) {
-            var rec = store.findRecord('id', record.get('id'));
+            var rec = store.findRecord('id',record.get('id'));
 
-            if (!rec) {
+            if(!rec) {
                 storeView.remove(record);
             }
         });

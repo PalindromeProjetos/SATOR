@@ -22,16 +22,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHoldView', {
             name: 'id',
             type: 'int'
         }, {
-            name: 'item',
-            type: 'int'
-        }, {
-            name: 'barcode',
-            type: 'auto'
-        }, {
-            name: 'lineone',
-            type: 'auto'
-        }, {
-            name: 'linetwo',
+            name: 'items',
             type: 'auto'
         }, {
             name: 'movementdate',
@@ -52,32 +43,46 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHoldView', {
             name: 'movementuser',
             type: 'auto'
         }, {
-            name: 'patientname',
-            type: 'auto'
+            name: 'movementuser',
+            type: 'auto',
+            convert: function (value, record) {
+                var movementuser = '',
+                    username = value.split('.');
+
+                Ext.each(username,function (name) {
+                    movementuser += name.charAt(0).toUpperCase() + name.slice(1) + ' ';
+                });
+
+                return movementuser;
+            }
         }, {
-            name: 'dateof',
-            type: 'auto'
-        }, {
-            name: 'timeof',
-            type: 'auto'
+            name: 'movementname',
+            type: 'auto',
+            convert: function (value, record) {
+                var movementname = '',
+                    username = record.get('movementuser').split(' ');
+
+                Ext.each(username,function (name) {
+                    movementname += name.charAt(0);
+                });
+
+                return movementname;
+            }
         }
     ],
 
     tpl: [
         '<tpl for=".">',
-            '<div class="hold hold-{movementtype}">',
-                '<div class="hold-l">',
-                    '<div><img src="../iSterilization/business/Calls/armorymovement.php?action=select&method=renderCode&barCode={id}"/></div>',
-                    '<div class="items">{item}</div>',
-                '</div>',
-                '<div class="hold-btn">',
-                    '<i class="select fa fa-info-circle action-select-color-font"></i>',
-                    '<i class="delete fa fa-minus-circle action-delete-color-font"></i>',
-                '</div>',
-                '<div class="hold-r">',
-                    '<div class="line-one">{lineone}</div>',
-                    '<div class="line-two">{linetwo}</div>',
-                    '<div class="line-two">{movementuser}</div>',
+            '<div class="hold hold-{movementtype} animated rollIn">',
+                '<div class="buble hold-buble-{movementtype}">{movementname}</div>',
+                '<div class="lines">',
+                    '<div class="line-01">{movementuser}</div>',
+                    '<div class="line-02">{movementdate}</div>',
+                    '<div class="line-03">Itens: {items}</div>',
+                    '<div class="hold-btn">',
+                        '<i class="delete fa fa-minus-circle action-delete-color-font"></i>',
+                        '<i class="select fa fa-info-circle action-select-color-font"></i>',
+                    '</div>',
                 '</div>',
             '</div>',
         '</tpl>'
