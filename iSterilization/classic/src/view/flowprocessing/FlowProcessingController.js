@@ -1725,8 +1725,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             data = view.xdata,
             barcode = view.barcode,
             text = 'Material ({0})',
+            portrait = view.down('portrait'),
             colorpallet = data.get('colorpallet'),
-            colorschema = Ext.getBody().getById('colorschema-view');
+            colorschema = Ext.getBody().getById('colorschema-view'),
+            htmlLines = '<div class="portrait-label">{0}</div><div class="colorpallet float-l">{1}</div>';
 
         Ext.getStore('flowprocessingstepinputtree').setParams({
             flowprocessingid: data.get('flowprocessingid'),
@@ -1741,14 +1743,11 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         view.down('hiddenfield[name=id]').setValue(data.get('id'));
         view.down('hiddenfield[name=materialboxid]').setValue(data.get('materialboxid'));
 
-        colorpallet = colorpallet.replace(/width: 25px;/g, "width: 50px;");
+        colorpallet = colorpallet.replace(/width: 25px;/g, "width: 40px;");
         colorpallet = colorpallet.replace(/float: left;/g, "float: right;");
         colorpallet = colorpallet.replace(/height: 25px;/g, "height: 100%;");
 
-        colorschema.update(colorpallet);
-
         view.down('textfield[name=search]').focus(false,200);
-        // view.down('container[name=colorschema]').update(colorpallet);
         view.down('textfield[name=username]').setValue(data.get('username'));
         view.down('textfield[name=areasname]').setValue(data.get('areasname'));
         view.down('textfield[name=clientname]').setValue(data.get('clientname'));
@@ -1756,6 +1755,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         view.down('textfield[name=sterilizationtypename]').setValue(data.get('sterilizationtypeversion'));
         view.down('textfield[name=priorityleveldescription]').setValue(data.get('priorityleveldescription'));
         view.down('label[name=materialboxname]').setText(Ext.String.format(text,data.get('materialboxname')));
+
+        portrait.update(Ext.String.format(htmlLines, '...', colorpallet));
 
         Ext.getStore('flowprocessingstepmaterial').setParams({
             method: 'selectCode',
@@ -4270,7 +4271,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
     onSelectMaterialFlowStepAction: function ( rowModel, record, index, eOpts) {
         var me = this,
             view = me.getView(),
-            portrait = view.down('portrait');
+            data = view.xdata,
+            portrait = view.down('portrait'),
+            colorpallet = data.get('colorpallet'),
+            htmlLines = '<div class="portrait-label">{0}</div><div class="colorpallet float-l">{1}</div>';
 
         if(portrait) {
             Ext.Ajax.request({
@@ -4300,8 +4304,11 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 }
             });
 
-            // portrait.beFileData(record.get('filetype'));
-            portrait.update(Ext.String.format('<div class="portrait-label">{0}</div>',record.get('materialname')));
+            colorpallet = colorpallet.replace(/width: 25px;/g, "width: 40px;");
+            colorpallet = colorpallet.replace(/float: left;/g, "float: right;");
+            colorpallet = colorpallet.replace(/height: 25px;/g, "height: 100%;");
+
+            portrait.update(Ext.String.format(htmlLines, record.get('materialname'), colorpallet));
         }
     },
 

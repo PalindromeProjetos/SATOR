@@ -64,11 +64,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingMaterial', {
                         'color': 'yellow',
                         'text-align': 'right;'
                     }
-                // }, {
-                //     width: 80,
-                //     height: 26,
-                //     xtype: 'container',
-                //     name: 'colorschema'
                 }
             ]
         }

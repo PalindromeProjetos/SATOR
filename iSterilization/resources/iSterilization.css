@@ -383,17 +383,19 @@
 }
 
 .colorpallet {
-    height: 50px;
+    height: 40px;
     z-index: 100000;
-    position: relative;
+    position: absolute;
 }
 
 .float-r {
     float: right;
+    margin: 0 0 0 0;
 }
 
 .float-l {
     float: left;
+    margin: 0 0 0 10px;
 }
 
 .thumb-wrap {

@@ -273,7 +273,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingView', {
                                                         flex: 1,
                                                         height: 26,
                                                         xtype: 'container',
-                                                        // html: '<div id="colorschema-view" class="colorpallet float-l" style="position: fixed; margin-top: 60px;"></div>',
                                                         name: 'colorschema'
                                                     }, {
                                                         width: 120,
