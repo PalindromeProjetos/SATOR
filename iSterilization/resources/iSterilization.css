@@ -402,7 +402,7 @@
     width: 30px;
     height: 30px;
     float: right;
-    /*margin: 0 0 0 0;*/
+    font-size: 16px;
     z-index: 100000;
     line-height: 30px;
     position: relative;
@@ -411,22 +411,21 @@
     background-color: rgb(246, 246, 246) !important;
 }
 
-/*.smart-btn-header:hover {*/
-    /*background-color: rgb(255, 255, 0)!important;*/
-    /*border-color: rgb(255, 255, 0) !important;*/
+.hold-close-btn:hover {
+    background-color: rgb(255, 255, 0)!important;
+    border-color: rgb(255, 255, 0) !important;
 
-    /*top: -7px;*/
-    /*left: -7px;*/
-    /*box-shadow: 0 0 0 4px rgba(119,136,153,.4);*/
-    /*-webkit-transition: -webkit-transform 0.5s, opacity 0.5s;*/
-    /*-webkit-transform: scale(.8);*/
-    /*-moz-transition: -moz-transform 0.5s, opacity 0.5s;*/
-    /*-moz-transform: scale(.8);*/
-    /*-ms-transform: scale(.8);*/
-    /*transition: transform 0.5s, opacity 0.5s;*/
-    /*transform: scale(.8);*/
-    /*opacity: 1;*/
-/*}*/
+    cursor: pointer;
+    box-shadow: 0 0 0 4px rgba(119,136,153,.4);
+    -webkit-transition: -webkit-transform 0.5s, opacity 0.5s;
+    -webkit-transform: scale(.8);
+    -moz-transition: -moz-transform 0.5s, opacity 0.5s;
+    -moz-transform: scale(.8);
+    -ms-transform: scale(.8);
+    transition: transform 0.5s, opacity 0.5s;
+    transform: scale(.8);
+    opacity: 1;
+}
 
 .thumb-wrap {
     float: left;
