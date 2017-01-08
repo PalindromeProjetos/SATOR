@@ -5,9 +5,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingLoad', {
     xtype: 'flowprocessingload',
 
     requires: [
+        'Smart.util.Message',
         'Smart.util.IonSound',
         'iSterilization.store.flowprocessing.*',
-        'iSterilization.view.flowprocessing.FlowProcessingLoadView',
+        'iSterilization.view.flowprocessing.protocol.*',
         'iSterilization.view.flowprocessing.FlowProcessingController'
     ],
 
@@ -29,8 +30,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingLoad', {
     header: false,
 
     listeners: {
-       queryreader: 'onLoadDoQuery',
-       afterrender: 'onAfterRenderType'
+        queryreader: 'onLoadDoQuery',
+        afterrender: 'onAfterRenderType'
     },
 
     bodyStyle: 'padding: 10px',

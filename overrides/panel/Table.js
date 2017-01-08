@@ -22,7 +22,7 @@ Ext.define( 'Ext.overrides.panel.Table', {
 
         me.viewConfig = {
             deferEmptyText: false,
-            loadMask: { msg: 'Carregando...!' },
+            loadMask: { msg: 'Carregando dados...!' },
             emptyText: me.getEmptyTextElement()
         };
 

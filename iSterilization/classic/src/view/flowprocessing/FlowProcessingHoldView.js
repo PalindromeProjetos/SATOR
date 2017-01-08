@@ -5,7 +5,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingHoldView', {
     xtype: 'flowprocessingholdview',
 
     requires: [
-        'Ext.view.View'
+        'Ext.view.View',
+        'Ext.data.Store',
+        'iSterilization.store.flowprocessing.*'
     ],
 
     trackOver: true,

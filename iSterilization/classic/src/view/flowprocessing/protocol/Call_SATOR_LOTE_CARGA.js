@@ -5,10 +5,14 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_CARGA',
     xtype: 'call_SATOR_LOTE_CARGA',
 
     requires: [
+        'Ext.data.Store',
+        'Ext.grid.Panel',
         'Ext.form.Panel',
         'Smart.plugins.*',
         'Ext.window.Window',
         'iSterilization.store.*',
+        'iSterilization.store.flowprocessing.FlowProcessingCharge',
+        'iSterilization.store.flowprocessing.FlowProcessingChargeItem',
         'iSterilization.view.flowprocessing.FlowProcessingController'
     ],
 

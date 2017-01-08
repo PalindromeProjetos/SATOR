@@ -13,6 +13,8 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
     public function preInsert( \iSterilization\Model\flowprocessingscreeningitem &$model ) {
         Session::hasProfile('','');
 
+		// $this->hasBeAvailable($model);
+
 		$materialid = $model->getMaterialid();
         $dataflowstep = $model->getDataflowstep();
 		$hasexception = $model->getHasexception();

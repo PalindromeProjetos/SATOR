@@ -302,6 +302,23 @@
     float: right;
 }
 
+.step .originplace {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 16px;
+    color: #900000;
+}
+
+.step .targetplace {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 14px;
+    line-height: 18px;
+    color: #105aeb;
+}
+
 .step .step-line {
     white-space: nowrap;
     overflow: hidden;

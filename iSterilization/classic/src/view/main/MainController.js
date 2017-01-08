@@ -6,7 +6,10 @@ Ext.define( 'iSterilization.view.main.MainController', {
 
     requires: [
         'Smart.ux.main.MainController',
-        'iAdmin.view.person.client.ClientEdit'
+        'iAdmin.view.person.client.ClientEdit',
+        'iSterilization.view.flowprocessing.FlowProcessingLoad',
+        'iSterilization.view.flowprocessing.FlowProcessingStep',
+        'iSterilization.view.flowprocessing.FlowProcessingHold'
     ],
 
     url: '../iAdmin/business/Calls/users.php',

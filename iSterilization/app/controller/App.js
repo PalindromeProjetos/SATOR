@@ -4,6 +4,7 @@ Ext.define( 'iSterilization.controller.App', {
 
     requires: [
         'Smart.ux.app.ApplicationController',
+        'iSterilization.view.flowprocessing.FlowProcessingLoad',
         'iSterilization.view.flowprocessing.FlowProcessingStep',
         'iSterilization.view.flowprocessing.FlowProcessingHold'
     ],
@@ -29,9 +30,6 @@ Ext.define( 'iSterilization.controller.App', {
         },
         'flowprocessingtype': {
             action: 'setFlowProcessingType'
-        },
-        'dashboardtemplate01': {
-            action: 'setDashBoardTemplate01'
         }
     },
 

@@ -3,7 +3,8 @@ Ext.define( 'iSterilization.model.flowprocessing.FlowProcessingScreeningBox', {
     extend: 'Ext.data.Model',
 
     requires: [
-        'Smart.data.identifier.Auto'
+        'Smart.data.identifier.Auto',
+        'Smart.data.field.ColorPallet'
     ],
 
     identifier: 'auto',

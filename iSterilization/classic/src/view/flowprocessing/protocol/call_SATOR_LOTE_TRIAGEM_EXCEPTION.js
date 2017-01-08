@@ -5,10 +5,11 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
     xtype: 'call_SATOR_LOTE_TRIAGEM_EXCEPTION',
 
     requires: [
+        'Ext.data.Store',
+        'Ext.grid.Panel',
         'Ext.form.Panel',
         'Smart.plugins.*',
         'Ext.window.Window',
-        'Ext.grid.column.Widget',
         'iSterilization.view.flowprocessing.FlowProcessingController'
     ],
 

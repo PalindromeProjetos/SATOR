@@ -218,7 +218,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingView', {
                                     {
                                         flex: 1,
                                         fieldLabel: 'Local',
-                                        name: 'areasname',
+                                        name: 'areasname'
                                     }, {
                                         xtype: 'splitter'
                                     }, {

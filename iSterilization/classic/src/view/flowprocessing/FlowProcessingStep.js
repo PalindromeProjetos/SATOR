@@ -5,9 +5,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingStep', {
     xtype: 'flowprocessingstep',
 
     requires: [
+        'Smart.util.Message',
         'Smart.util.IonSound',
         'iSterilization.store.flowprocessing.*',
-        'iSterilization.view.flowprocessing.FlowProcessingDataView',
+        'iSterilization.view.flowprocessing.protocol.*',
         'iSterilization.view.flowprocessing.FlowProcessingController'
     ],
 

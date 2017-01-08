@@ -5,7 +5,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingDataView', {
     xtype: 'flowprocessingdataview',
 
     requires: [
-        'Ext.view.View'
+        'Ext.view.View',
+        'Ext.data.Store',
+        'iSterilization.store.flowprocessing.*'
     ],
 
     trackOver: true,
@@ -95,10 +97,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingDataView', {
                 '</div>',
                 '<div class="step-right" style="font-weight: 700;">',
                     '<div class="steptype-items">{items}</div>',
-                    '<div style="font-size: 16px; color: #900000;">{originplace}</div>',
+                    '<div class="originplace">{originplace}</div>',
                     '<div class="step-line">{sterilizationtypename} {version}</div>',
                     '<div class="step-line">{materialname}</div>',
-                    '<div class="step-line" style="color: #105aeb;">{targetplace}</div>',
+                    '<div class="targetplace">{targetplace}</div>',
                     '<div>',
                         '<div style="text-align: left; float: left; width: 30%;">{timeof}</div>',
                         '<div style="text-align: right; float: right; width: 70%;">{barcode}</div>',

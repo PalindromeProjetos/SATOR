@@ -1288,8 +1288,8 @@ $include-isterilization-view-flowprocessing-flowprocessingholdsearch: dynamic(tr
 $include-isterilization-view-flowprocessing-flowprocessingholdview: dynamic(true);;
 $include-isterilization-view-flowprocessing-flowprocessinginput: dynamic(true);;
 $include-isterilization-view-flowprocessing-flowprocessinglist: dynamic(false);;
-$include-isterilization-view-flowprocessing-flowprocessingload: dynamic(false);;
-$include-isterilization-view-flowprocessing-flowprocessingloadview: dynamic(false);;
+$include-isterilization-view-flowprocessing-flowprocessingload: dynamic(true);;
+$include-isterilization-view-flowprocessing-flowprocessingloadview: dynamic(true);;
 $include-isterilization-view-flowprocessing-flowprocessingmaterial: dynamic(true);;
 $include-isterilization-view-flowprocessing-flowprocessingmessage: dynamic(true);;
 $include-isterilization-view-flowprocessing-flowprocessingopen: dynamic(true);;
@@ -1326,7 +1326,7 @@ $include-isterilization-view-flowprocessing-protocol-call_sator_relatar_cycle_st
 $include-isterilization-view-flowprocessing-protocol-call_sator_relatar_exception: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_reverte_fase: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_unconformities: dynamic(true);;
-$include-isterilization-view-flowprocessing-protocol-call_sator_valida_carga: dynamic(false);;
+$include-isterilization-view-flowprocessing-protocol-call_sator_valida_carga: dynamic(true);;
 $include-isterilization-view-login-login: dynamic(true);;
 $include-isterilization-view-login-logincontroller: dynamic(true);;
 $include-isterilization-view-main-main: dynamic(true);;

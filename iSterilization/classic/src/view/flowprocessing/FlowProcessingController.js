@@ -13,6 +13,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         }
     },
 
+    requires: [
+        'iSterilization.store.flowprocessing.*'
+    ],
+
     listen: {
         store: {
             '#flowprocessingloadarea': {
@@ -77,7 +81,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         var me = this,
             view = me.getView(),
             dataView = view.down('flowprocessingloadview'),
-            storeView = dataView.getStore(),
+            storeView = dataView.store,
             resultSet = operation.getResultSet();
 
         if(!dataView) {
@@ -127,7 +131,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         var me = this,
             view = me.getView(),
             dataView = view.down('flowprocessingdataview'),
-            storeView = dataView.getStore(),
+            storeView = dataView.store,
             resultSet = operation.getResultSet();
 
         if(!dataView) {
@@ -183,13 +187,15 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
     onHoldArea: function (store, records, successful, operation, eOpts) {
         var me = this,
             view = me.getView(),
-            resultSet = operation.getResultSet(),
-            totalrecords = view.down('textfield[name=totalrecords]'),
-            storeView = view.down('flowprocessingholdview').getStore();
+            dataView = view.down('flowprocessingholdview'),
+            storeView = dataView.store,
+            resultSet = operation.getResultSet();
 
-        if (totalrecords) {
-            totalrecords.setValue(resultSet.total);
+        if(!dataView) {
+            return false;
         }
+
+        var totalrecords = view.down('textfield[name=totalrecords]');
 
         store.each(function (record) {
             var rec = storeView.findRecord('id',record.get('id'));
@@ -210,6 +216,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 storeView.remove(record);
             }
         });
+
+        if (totalrecords) {
+            totalrecords.setValue(resultSet.total);
+        }
     },
 
     onBeforeHoldArea: function (store, operation, eOpts) {

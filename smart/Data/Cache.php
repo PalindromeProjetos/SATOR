@@ -99,8 +99,8 @@ class Cache {
         $query = $data['query'];
         $start = $data['start'];
         $limit = $data['limit'];
-        $params = json_decode($data['params']);
         $proxy = $this->getStore()->getProxy();
+		$params = json_decode($data['params']);		
         $notate = $this->getStore()->getModel()->getNotate();
         $extend = $notate->instance->Entity->name;
         $fields = (isset($data['fields']) && count(json_decode($data['fields'])) !== 0) ? json_decode($data['fields']) : self::objectToArray($notate->property);

@@ -5,10 +5,15 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
     xtype: 'call_SATOR_LOTE_TRIAGEM',
 
     requires: [
+        'Ext.data.Store',
+        'Ext.grid.Panel',
         'Ext.form.Panel',
         'Smart.plugins.*',
         'Ext.window.Window',
         'iSterilization.store.*',
+        'iSterilization.store.flowprocessing.FlowProcessingScreening',
+        'iSterilization.store.flowprocessing.FlowProcessingScreeningBox',
+        'iSterilization.store.flowprocessing.FlowProcessingScreeningItem',
         'iSterilization.view.flowprocessing.FlowProcessingController'
     ],
 
@@ -121,6 +126,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                                 xtype: 'gridpanel',
                                 cls: 'search-grid',
                                 name: 'screeningbox',
+
                                 store: 'flowprocessingscreeningbox',
                                 columns: [
                                     {

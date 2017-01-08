@@ -5,10 +5,14 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_CICLO',
     xtype: 'call_SATOR_LOTE_CICLO',
 
     requires: [
+        'Ext.data.Store',
+        'Ext.grid.Panel',
         'Ext.form.Panel',
         'Smart.plugins.*',
         'Ext.window.Window',
         'iSterilization.store.*',
+        'iSterilization.store.flowprocessing.FlowProcessingCharge',
+        'iSterilization.store.flowprocessing.FlowProcessingChargeItem',
         'iSterilization.view.flowprocessing.SearchCycle',
         'iSterilization.view.flowprocessing.SearchEquipment',
         'iSterilization.view.flowprocessing.FlowProcessingController'

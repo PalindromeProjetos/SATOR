@@ -10,6 +10,8 @@ Ext.define( 'iSterilization.store.flowprocessing.FlowProcessingStepArea', {
 
     url: '../iSterilization/business/Calls/Heart/HeartFlowProcessing.php',
 
+    controller: 'flowprocessing',
+
     fields: [
         {
             name: 'id',
