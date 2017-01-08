@@ -1727,6 +1727,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             text = 'Material ({0})',
             portrait = view.down('portrait'),
             colorpallet = data.get('colorpallet'),
+            holdclosebtn = Ext.getBody().getById('hold-close-btn'),
             colorschema = Ext.getBody().getById('colorschema-view'),
             htmlLines = '<div class="portrait-label">{0}</div><div class="colorpallet float-l">{1}</div>';
 
@@ -1790,6 +1791,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 }
             }
         });
+
+        holdclosebtn.el.on('click', function(){ history.back(); }, me);
     },
 
     onSelectUserCode: function (win,field,eOpts) {

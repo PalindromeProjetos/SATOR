@@ -29,7 +29,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingView', {
 
     header: false,
 
-    html: '<div class="hold-close-btn"><i class="fa fa-arrow-left"></i></div>',
+    html: '<div id="hold-close-btn" class="hold-close-btn"><i class="fa fa-arrow-left"></i></div>',
 
     listeners: {
         afterrender: 'onAfterRenderView',
