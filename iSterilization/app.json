@@ -1,6 +1,6 @@
 {
     "name": "iSterilization",
-    "version": "1.0.0.371",
+    "version": "1.0.0.372",
     "indexHtmlPath": "index.html",
     "classpath": [
         "app",
@@ -215,6 +215,6 @@
     "buildby": {
         "application": "production",
         "logusername": "DSADES21",
-        "lastdateapp": "2017-01-08 22:22"
+        "lastdateapp": "2017-01-09 01:17"
     }
 }

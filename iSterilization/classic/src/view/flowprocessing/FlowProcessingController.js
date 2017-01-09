@@ -1933,6 +1933,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
         view.down('hiddenfield[name=materialid]').setValue(record.get('id'));
         view.down('hiddenfield[name=version]').setValue(record.get('version'));
+        view.down('hiddenfield[name=dataflowstep]').setValue(record.get('dataflowstep'));
         view.down('hiddenfield[name=prioritylevel]').setValue(record.get('prioritylevel'));
         view.down('hiddenfield[name=materialboxid]').setValue(record.get('materialboxid'));
         view.down('hiddenfield[name=sterilizationtypeid]').setValue(record.get('sterilizationtypeid'));
@@ -2059,6 +2060,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 var result = Ext.decode(response.responseText);
 
                 view.setLoading(false);
+
+                console.info(options, success, response);
+                console.info(view);
 
                 if(!success || !result.success) {
                     Smart.Msg.showToast(result.text,'error');

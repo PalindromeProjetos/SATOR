@@ -73,6 +73,7 @@ class flowprocessing extends \Smart\Data\Cache {
                 mtf.sterilizationtypeid,
                 st.name as sterilizationtypename,
 				m.materialstatus,
+				st.dataflowstep,
 				dbo.getEnum('materialstatus',m.materialstatus) as materialstatusdescription,
 				dbo.getEnum('itemgroup',ib.itemgroup) as itemgroupdescription,
                 mtf.prioritylevel,

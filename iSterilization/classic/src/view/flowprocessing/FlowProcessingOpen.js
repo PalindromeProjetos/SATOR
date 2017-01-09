@@ -74,6 +74,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingOpen', {
                         xtype: 'hiddenfield',
                         name: 'version'
                     }, {
+                        xtype: 'hiddenfield',
+                        name: 'dataflowstep'
+                    }, {
                         xtype: 'label',
                         cls: 'title-label',
                         text: 'Iniciar Nova Leitura'
@@ -134,8 +137,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingOpen', {
                                         var searchmaterial = me.down('searchmaterial');
                                         if (store.getCount() == 1) {
                                             var record = store.getAt(0);
-                                            searchmaterial.fireEvent('nextfield',searchmaterial,eOpts);
-                                            searchmaterial.fireEvent('select', searchmaterial, record, eOpts);
+                                            if(record.get('areavailable') == 1) {
+                                                searchmaterial.fireEvent('nextfield',searchmaterial,eOpts);
+                                                searchmaterial.fireEvent('select', searchmaterial, record, eOpts);4
+                                            }
                                         }
                                         if (store.getCount() >= 2) {
                                             searchmaterial.expand();
