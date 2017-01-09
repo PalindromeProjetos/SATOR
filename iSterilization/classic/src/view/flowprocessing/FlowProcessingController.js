@@ -2034,6 +2034,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
     insertFlow: function () {
         var me = this,
             view = me.getView(),
+            rows = { newflow: true },
             form = view.down('form'),
             data = form.getValues(),
             store = Ext.getStore('flowprocessingstepaction');
@@ -2041,6 +2042,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         if(!form.isValid()) {
             return false;
         }
+
+        rows.username = data.username;
 
         var patient = form.down('searchpatient').foundRecord();
 
@@ -2060,10 +2063,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 var result = Ext.decode(response.responseText);
 
                 view.setLoading(false);
-
-                console.info(options, success, response);
-                console.info(view);
-
+                
                 if(!success || !result.success) {
                     Smart.Msg.showToast(result.text,'error');
                     return false;
@@ -2088,7 +2088,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                             return false;
                         }
                         var record = Ext.create('iSterilization.model.flowprocessing.FlowProcessingStepAction',result.rows[0]);
-                        me.onFlowStepAction(null,record);
+                        me.onFlowStepAction(rows,record);
                     }
                 });
             }
@@ -4146,6 +4146,11 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
                 return true;
             };
+
+        if(viewView && viewView.newflow == true) {
+            doCallBack(viewView);
+            return false;
+        }
 
         if(!Smart.workstation) {
             Smart.ion.sound.play("computer_error");
