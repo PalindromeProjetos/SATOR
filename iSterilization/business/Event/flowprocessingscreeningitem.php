@@ -6,6 +6,38 @@ use Smart\Utils\Session;
 
 class flowprocessingscreeningitem extends \Smart\Data\Event {
 
+    public function preInsertBeAvailable( \iSterilization\Model\flowprocessingscreeningitem &$model ) {
+        $proxy = $this->getProxy();
+        $id = $model->getFlowprocessingscreeningid();
+
+        $sql = "
+            declare
+                @id int = :id;
+
+            select
+                closedby,
+                screeningflag,
+                dbo.getEnum('screeningflag',screeningflag) as screeningflagdescription
+            from
+                flowprocessingscreening
+            where id = @id;";
+
+        $pdo = $proxy->prepare($sql);
+        $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
+        $pdo->execute();
+        $rows = $pdo->fetchAll();
+
+        if(count($rows) == 0) {
+            throw new \PDOException('O Documento não foi encontrado na base de dados!');
+        }
+
+        if($rows[0]['screeningflag'] != '001') {
+            $closedby = $rows[0]['closedby'];
+            $screeningflagdescription = $rows[0]['screeningflagdescription'];
+            throw new \PDOException("O Documento <b>não pode</b> mais receber modificações! <br/>{$closedby}: {$screeningflagdescription}");
+        }
+    }
+
     /**
      * @param \iSterilization\Model\flowprocessingscreeningitem $model
      * @return bool
@@ -13,7 +45,7 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
     public function preInsert( \iSterilization\Model\flowprocessingscreeningitem &$model ) {
         Session::hasProfile('','');
 
-		// $this->hasBeAvailable($model);
+		$this->preInsertBeAvailable($model);
 
 		$materialid = $model->getMaterialid();
         $dataflowstep = $model->getDataflowstep();
@@ -75,12 +107,47 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
     public function posUpdate( \iSterilization\Model\flowprocessingscreeningitem &$model ) {
     }
 
+    public function preDeleteBeAvailable( \iSterilization\Model\flowprocessingscreeningitem &$model ) {
+        $proxy = $this->getProxy();
+        $id = $model->getId();
+
+        $sql = "
+            declare
+                @id int = :id;
+
+            select
+                a.closedby,
+                a.screeningflag,
+                dbo.getEnum('screeningflag',a.screeningflag) as screeningflagdescription
+            from
+                flowprocessingscreening a
+                inner join flowprocessingscreeningitem b on ( b.flowprocessingscreeningid = a.id ) 
+            where b.id = @id;";
+
+        $pdo = $proxy->prepare($sql);
+        $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
+        $pdo->execute();
+        $rows = $pdo->fetchAll();
+
+        if(count($rows) == 0) {
+            throw new \PDOException('O Documento não foi encontrado na base de dados!');
+        }
+
+        if($rows[0]['screeningflag'] != '001') {
+            $closedby = $rows[0]['closedby'];
+            $screeningflagdescription = $rows[0]['screeningflagdescription'];
+            throw new \PDOException("O Documento <b>não pode</b> mais receber modificações! <br/>{$closedby}: {$screeningflagdescription}");
+        }
+    }
+
     /**
      * @param \iSterilization\Model\flowprocessingscreeningitem $model
      * @return bool
      */
     public function preDelete( \iSterilization\Model\flowprocessingscreeningitem &$model ) {
         Session::hasProfile('','');
+
+        $this->preDeleteBeAvailable($model);
 
         $proxy = $this->getProxy();
 

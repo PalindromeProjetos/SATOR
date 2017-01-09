@@ -4416,7 +4416,14 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 if (choice === 'yes') {
                     store.remove(record);
                     store.sync({
-                        callback: function () {
+                        callback: function (batch, options) {
+                            var operations = batch.getOperations()[0];
+
+                            if(!operations.success) {
+                                Smart.Msg.showToast(operations.error,'error');
+                                return false;
+                            }
+
                             var materialboxid = record.get('materialboxid');
                             if(materialboxid && materialboxid.length != 1) {
                                 Ext.getStore('flowprocessingscreeningbox').load();
