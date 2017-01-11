@@ -145,9 +145,8 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                                 width: 40,
                                 sortable: false,
                                 dataIndex: 'chargestatus',
-                                renderer: function (value,metaData,record) {
+                                renderer: function (value) {
                                     var flag = '<div class="unconformities chargestatus{0}"></div>';
-
                                     return Ext.String.format(flag,value);
                                 }
                             }, {
