@@ -2341,14 +2341,12 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
     onReaderMaterialTriagem: function (field, e, eOpts) {
         var me = this,
             view = me.getView(),
-            // form = view.down('form'),
-            form = view,
             value = field.getValue(),
-            record = form.getRecord(),
+            record = view.getRecord(),
             id = view.down('hiddenfield[name=id]'),
             store = Ext.getStore('flowprocessingscreeningitem');
 
-        if(!form.isValid()){
+        if(!view.isValid()){
             return false;
         }
 
@@ -2482,7 +2480,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
     setEncerraTriagem: function (record) {
         var me = this,
-            // view = me.getView(),
             doCallBack = function (rows) {
 
                 Ext.Ajax.request({
@@ -2504,11 +2501,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                         }
 
                         Smart.ion.sound.play("button_tiny");
-                        //view.master.updateType();
 
                         history.back();
-
-                        //view.close();
                     }
                 });
 

@@ -1842,39 +1842,44 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 					break;
 				}
 
-				if($hasexception && strlen($hasexception) != 0) {
+				$items = intval($item['items']);
+				$loads = intval($item['loads']);
 
-					$temp = array("id"=>$result->rows->id,"areasid"=>$item['areasid']);
+				if($items == $loads) {
+					if ($hasexception && strlen($hasexception) != 0) {
 
-					$step = $this->selectException($temp);
+						$temp = array("id" => $result->rows->id, "areasid" => $item['areasid']);
 
-					$flow = self::objectToArray($result->rows);
+						$step = $this->selectException($temp);
 
-					$hasexception = self::jsonToArray($hasexception);
+						$flow = self::objectToArray($result->rows);
 
-					$temp = array();
-					foreach ($hasexception as $key) {
-						$temp[] = self::jsonToArray($key['element']);
-					}
+						$hasexception = self::jsonToArray($hasexception);
 
-					if(count($temp) == 0) {
-						throw new \PDOException("Não foram configuradas corretamente as exceções!");
-						break;
-					}
+						$temp = array();
+						foreach ($hasexception as $key) {
+							$temp[] = self::jsonToArray($key['element']);
+						}
 
-					$flow['hasTran'] = 0;
-					$flow['flowprocessingid'] = $step->rows->id;
-					$flow['params'] = self::arrayToJson($temp);
-					$flow['flowprocessingstepid'] = $step->rows->flowprocessingstepid;
-					$flow['flowprocessingstepactionid'] = $step->rows->flowprocessingstepactionid;
+						if (count($temp) == 0) {
+							throw new \PDOException("As exceções <b>não foram configuradas<b/> corretamente!");
+							break;
+						}
 
-					$flow = self::encodeUTF8($flow);
+						$flow['hasTran'] = 0;
+						$flow['flowprocessingid'] = $step->rows->id;
+						$flow['params'] = self::arrayToJson($temp);
+						$flow['flowprocessingstepid'] = $step->rows->flowprocessingstepid;
+						$flow['flowprocessingstepactionid'] = $step->rows->flowprocessingstepactionid;
 
-					$result = self::jsonToObject($this->setExceptionDo($flow));
+						$flow = self::encodeUTF8($flow);
 
-					if(!$result->success) {
-						throw new \PDOException($result->text);
-						break;
+						$result = self::jsonToObject($this->setExceptionDo($flow));
+
+						if (!$result->success) {
+							throw new \PDOException($result->text);
+							break;
+						}
 					}
 				}
 			}
