@@ -1275,8 +1275,8 @@ $include-isterilization-store-flowprocessing-flowprocessingstepmaterial: dynamic
 $include-isterilization-store-flowprocessing-flowprocessingstepmessage: dynamic(true);;
 $include-isterilization-store-service-serviceitembase: dynamic(true);;
 $include-isterilization-store-service-serviceregistration: dynamic(true);;
-$include-isterilization-view-dashboard-dashboardcontroller: dynamic(true);;
-$include-isterilization-view-dashboard-dashboardtemplate01: dynamic(true);;
+$include-isterilization-view-dashboard-dashboardcontroller: dynamic(false);;
+$include-isterilization-view-dashboard-dashboardtemplate01: dynamic(false);;
 $include-isterilization-view-flowprocessing-flowprocessingclient: dynamic(true);;
 $include-isterilization-view-flowprocessing-flowprocessingcontroller: dynamic(true);;
 $include-isterilization-view-flowprocessing-flowprocessingdash: dynamic(true);;
@@ -1293,6 +1293,7 @@ $include-isterilization-view-flowprocessing-flowprocessingloadview: dynamic(true
 $include-isterilization-view-flowprocessing-flowprocessingmaterial: dynamic(true);;
 $include-isterilization-view-flowprocessing-flowprocessingmessage: dynamic(true);;
 $include-isterilization-view-flowprocessing-flowprocessingopen: dynamic(true);;
+$include-isterilization-view-flowprocessing-flowprocessingpick: dynamic(true);;
 $include-isterilization-view-flowprocessing-flowprocessingstep: dynamic(true);;
 $include-isterilization-view-flowprocessing-flowprocessingsteppreload: dynamic(true);;
 $include-isterilization-view-flowprocessing-flowprocessinguser: dynamic(true);;
@@ -1317,6 +1318,7 @@ $include-isterilization-view-flowprocessing-protocol-call_sator_lote_ciclo: dyna
 $include-isterilization-view-flowprocessing-protocol-call_sator_lote_ciclo_final: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_lote_triagem: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_lote_triagem_exception: dynamic(true);;
+$include-isterilization-view-flowprocessing-protocol-call_sator_lote_triagem_origem: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_movimento_in: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_movimento_of: dynamic(true);;
 $include-isterilization-view-flowprocessing-protocol-call_sator_movimento_to: dynamic(true);;

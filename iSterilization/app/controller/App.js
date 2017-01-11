@@ -5,6 +5,7 @@ Ext.define( 'iSterilization.controller.App', {
     requires: [
         'Smart.ux.app.ApplicationController',
         'iSterilization.view.flowprocessing.FlowProcessingLoad',
+        'iSterilization.view.flowprocessing.FlowProcessingPick',
         'iSterilization.view.flowprocessing.FlowProcessingStep',
         'iSterilization.view.flowprocessing.FlowProcessingHold'
     ],
@@ -77,16 +78,8 @@ Ext.define( 'iSterilization.controller.App', {
         return me.onMainPageView({ xtype: 'flowprocessingdash', iconCls: rc.get("iconCls") });
     },
 
-    setDashBoardTemplate01: function () {
-        var me = this,
-            rc = me.getMainTree().getSelection();
-
-        return me.onMainPageView({ xtype: 'dashboardtemplate01', iconCls: rc.get("iconCls") });
-    },
-
     setFlowProcessingType: function () {
-        var me = this,
-            rc = me.getMainTree().getSelection();
+        var me = this;
 
         if(!Smart.workstation || !Smart.workstation.areasid) {
             Smart.Msg.showToast('Estação de Trabalho Não Configurada!','error');
@@ -103,22 +96,19 @@ Ext.define( 'iSterilization.controller.App', {
                 rows: Ext.encode({id: Smart.workstation.areasid})
             },
             callback: function (options, success, response) {
-                var report = 'flowprocessingstep',
-                    result = Ext.decode(response.responseText);
+                var result = Ext.decode(response.responseText);
 
                 if(!success || !result.success) {
                     return false;
                 }
 
                 var data = result.rows[0];
+                var report = (data.hasstock == 1) ? 'flowprocessinghold' : 'flowprocessingstep';
 
                 Smart.workstation.startreader = data.startreader;
 
-                report = (data.hasstock == 1) ? 'flowprocessinghold' : report;
-                var returnClass = me.onMainPageView({ xtype: report, iconCls: (rc) ? rc.get("iconCls") : null });
-                history.pushState({}, "route", "#flowprocessingtype");
-
-                return returnClass;
+                me.onMainPageView({ xtype: report });
+                // history.pushState({}, "route", "#flowprocessingtype");
             }
         });
 

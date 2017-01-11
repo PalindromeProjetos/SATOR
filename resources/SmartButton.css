@@ -27,23 +27,6 @@
     color: black !important;
 }
 
-.smart-btn-header-over {
-    background-color: rgb(255, 255, 0)!important;
-    border-color: rgb(255, 255, 0) !important;
-
-    top: -7px;
-    left: -7px;
-    box-shadow: 0 0 0 4px rgba(119,136,153,.4);
-    -webkit-transition: -webkit-transform 0.5s, opacity 0.5s;
-    -webkit-transform: scale(.8);
-    -moz-transition: -moz-transform 0.5s, opacity 0.5s;
-    -moz-transform: scale(.8);
-    -ms-transform: scale(.8);
-    transition: transform 0.5s, opacity 0.5s;
-    transform: scale(.8);
-    opacity: 1;
-}
-
 .smart-btn-header:hover {
     background-color: rgb(255, 255, 0)!important;
     border-color: rgb(255, 255, 0) !important;
@@ -60,37 +43,6 @@
     transform: scale(.8);
     opacity: 1;
 }
-
-/*
-    btn-green
-    rgb(179, 219, 101);
-*/
-/*.smart-btn-green {*/
-    /*background-image: none !important;*/
-    /*border-width: 1px !important;*/
-    /*border-style: solid !important;*/
-    /*background-color: rgb(179, 219, 101) !important;*/
-    /*border-color: rgb(179, 219, 101) !important;*/
-/*}*/
-
-/*.smart-btn-green-over {*/
-    /*background-color: rgb(179, 219, 101) !important;*/
-    /*border-color: rgb(179, 219, 101) !important;*/
-/*}*/
-
-/*.smart-btn-green.x-btn-pressed {*/
-    /*background-color: rgb(179, 219, 101) !important;*/
-    /*border-color: rgb(179, 219, 101) !important;*/
-/*}*/
-
-/*.smart-btn-green.x-btn-focus, .x-btn-focus.x-btn-pressed {*/
-    /*box-shadow: 0px 0px 0px 0px inset !important;*/
-/*}*/
-
-/*.smart-btn-green .x-btn-inner {*/
-    /*color: black !important;*/
-/*}*/
-
 
 /*
     btn-blue

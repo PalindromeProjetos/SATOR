@@ -118,10 +118,6 @@
     background: rgb(208, 208, 208);
 }
 
-/*.processing-field .x-form-trigger-default:before {*/
-    /*font-size: 19px;*/
-/*}*/
-
 .portrait-label {
     margin: 10px;
     font-size: 16px;
@@ -416,7 +412,7 @@
     border-color: rgb(255, 255, 0) !important;
 
     cursor: pointer;
-    box-shadow: 0 0 0 4px rgba(119,136,153,.4);
+    /*box-shadow: 0 0 0 4px rgba(119,136,153,.4);*/
     -webkit-transition: -webkit-transform 0.5s, opacity 0.5s;
     -webkit-transform: scale(.8);
     -moz-transition: -moz-transform 0.5s, opacity 0.5s;
@@ -812,6 +808,39 @@
     padding-left: 10px;
 }
 
+.pick .x-grid-view {
+    background: rgba(208,208,208, .3) !important;
+}
+
+.pick .x-grid-empty {
+    background: transparent !important;
+}
+
+.pick .x-grid-body {
+    background: rgba(208,208,208, .3) !important;
+}
+
+.pick .x-grid-header-ct {
+    opacity: .7 !important;
+}
+
+.pick .x-grid-item {
+    background-color: transparent !important;
+}
+
+.pick .x-grid-item-selected {
+    background-color: rgba(255, 239, 187, .3) !important;
+}
+
+.pick .x-grid-cell-inner {
+    font-weight: 500;
+}
+
+.pick .x-column-header-inner {
+    font-size: 15px;
+    font-weight: 700;
+}
+
 /*
     LoadView end
 */
@@ -908,6 +937,69 @@
 
 .search-grid .action-delete-color-font:before {
     font-size: 35px !important;
+}
+
+.search-grid .action-insert-color-font:before {
+    cursor: pointer;
+    font-size: 35px !important;
+    color: rgb(11, 72, 107) !important;
+}
+
+.action-insert-color-font:hover {
+    color: rgb(11, 72, 250) !important;
+
+    top: -7px;
+    left: -7px;
+    -webkit-transition: -webkit-transform 0.5s, opacity 0.5s;
+    -webkit-transform: scale(1.2);
+    -moz-transition: -moz-transform 0.5s, opacity 0.5s;
+    -moz-transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    transition: transform 0.5s, opacity 0.5s;
+    transform: scale(1.2);
+    opacity: 1;
+}
+
+.search-grid .action-checked-color-font:before {
+    cursor: pointer;
+    font-size: 35px !important;
+    color: rgb(251, 228, 0) !important;
+}
+
+.action-checked-color-font:hover {
+    color: rgb(255, 177, 20) !important;
+
+    top: -7px;
+    left: -7px;
+    -webkit-transition: -webkit-transform 0.5s, opacity 0.5s;
+    -webkit-transform: scale(1.2);
+    -moz-transition: -moz-transform 0.5s, opacity 0.5s;
+    -moz-transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    transition: transform 0.5s, opacity 0.5s;
+    transform: scale(1.2);
+    opacity: 1;
+}
+
+.search-grid .action-refresh-color-font:before {
+    cursor: pointer;
+    font-size: 35px !important;
+    color: rgb(63, 81, 181) !important;
+}
+
+.action-refresh-color-font:hover {
+    color: rgb(48, 79, 254) !important;
+
+    top: -7px;
+    left: -7px;
+    -webkit-transition: -webkit-transform 0.5s, opacity 0.5s;
+    -webkit-transform: scale(1.2);
+    -moz-transition: -moz-transform 0.5s, opacity 0.5s;
+    -moz-transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    transition: transform 0.5s, opacity 0.5s;
+    transform: scale(1.2);
+    opacity: 1;
 }
 
 .movement-title {

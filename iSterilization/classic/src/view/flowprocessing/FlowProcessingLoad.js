@@ -9,6 +9,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingLoad', {
         'Smart.util.IonSound',
         'iSterilization.store.flowprocessing.*',
         'iSterilization.view.flowprocessing.protocol.*',
+        'iSterilization.view.flowprocessing.FlowProcessingPick',
         'iSterilization.view.flowprocessing.FlowProcessingController'
     ],
 

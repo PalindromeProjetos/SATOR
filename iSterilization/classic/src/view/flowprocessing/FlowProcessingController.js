@@ -10,6 +10,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         },
         'flowprocessingview/:id/:barcode': {
             action: 'getFlowProcessingId'
+        },
+        'flowprocessingpick/:id': {
+            action: 'getFlowProcessingPick'
         }
     },
 
@@ -73,6 +76,30 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 }
 
                 app.onMainPageView({xtype: 'flowprocessingview', xdata: store.getAt(0), barcode: barcode});
+            }
+        });
+    },
+
+    getFlowProcessingPick: function (id) {
+        var me = this,
+            view = me.getView(),
+            app = Smart.app.getController('App'),
+            store = Ext.getStore('flowprocessingscreening') || Ext.create('iSterilization.store.flowprocessing.FlowProcessingScreening');
+
+        store.setParams({
+            method: 'selectCode',
+            rows: Ext.encode({ id: id })
+        }).load({
+            scope: me,
+            callback: function (records, operation, success) {
+
+                if (!success || store.getCount() == 0) {
+                    Smart.ion.sound.play("computer_error");
+                    Smart.Msg.showToast('Não foi possível carregar o documento solicitado!', 'error');
+                    return false;
+                }
+
+                app.onMainPageView({ xtype: 'flowprocessingpick', xdata: store.getAt(0), master: view });
             }
         });
     },
@@ -612,34 +639,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
     onLoadSelectElement: function (record) {
         var me = this,
             view = me.getView(),
+            ctrll = Smart.app.getController('App'),
             store = Ext.getStore('flowprocessingscreening') || Ext.create('iSterilization.store.flowprocessing.FlowProcessingScreening');
 
-        view.setLoading('Carregando Triagem...');
-
-        store.setParams({
-            method: 'selectCode',
-            rows: Ext.encode({ id: record.get('id') })
-        }).load({
-            scope: me,
-            callback: function(records, operation, success) {
-
-                view.setLoading(false);
-
-                if(!success || records.length == 0) {
-                    return false;
-                }
-
-                var rec = records[0];
-
-                Ext.widget('call_SATOR_LOTE_TRIAGEM').show(null,function () {
-                    this.master = view;
-                    this.down('form').loadRecord(rec);
-                    this.down('textfield[name=materialboxname]').focus(false,200);
-                    Ext.getStore('flowprocessingscreeningbox').setParams({query: rec.get('id')}).load();
-                    Ext.getStore('flowprocessingscreeningitem').setParams({query: rec.get('id')}).load();
-                });
-            }
-        });
+        me.redirectTo('flowprocessingpick/' + record.get('id'));
     },
 
     callSATOR_CONSULTAR_MOVIMENTO: function () {
@@ -1719,6 +1722,17 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         me.selectDatePicker(datepicker,datepicker.getValue());
     },
 
+    onAfterRenderPick: function () {
+        var me = this,
+            view = me.getView(),
+            data = view.xdata;
+
+        view.loadRecord(data);
+        view.down('textfield[name=materialboxname]').focus(false,200);
+        Ext.getStore('flowprocessingscreeningbox').setParams({query: data.get('id')}).load();
+        Ext.getStore('flowprocessingscreeningitem').setParams({query: data.get('id')}).load();
+    },
+
     onAfterRenderView: function () {
         var me = this,
             view = me.getView(),
@@ -2327,7 +2341,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
     onReaderMaterialTriagem: function (field, e, eOpts) {
         var me = this,
             view = me.getView(),
-            form = view.down('form'),
+            // form = view.down('form'),
+            form = view,
             value = field.getValue(),
             record = form.getRecord(),
             id = view.down('hiddenfield[name=id]'),
@@ -2374,7 +2389,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                         return false;
                     }
 
-                    store.insert(0,{
+                    store.insert(0, {
                         barcode: result.rows.barcode,
                         clientname: result.rows.clientname,
                         materialid: result.rows.materialid,
@@ -2489,9 +2504,11 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                         }
 
                         Smart.ion.sound.play("button_tiny");
-                        view.master.updateType();
+                        //view.master.updateType();
 
-                        view.close();
+                        history.back();
+
+                        //view.close();
                     }
                 });
 
@@ -2837,6 +2854,13 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 me.callSATOR_ALLOW_DENY('EPI_ENCERRAR');
                 return false;
             }
+        }
+
+        /**
+         * 003 - Relatar inconformidades
+         */
+        if(stepflaglist.indexOf('003') != -1) {
+            return false;
         }
 
         if (me.checkUnconformities('001')) {
@@ -4397,6 +4421,26 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 model.commit();
                 view.close();
             }
+        });
+    },
+
+    setUpdateScreening: function(grid, rowIndex, colIndex) {
+        var me = this,
+            view = me.getView(),
+            store = grid.getStore(),
+            record = store.getAt(rowIndex);
+
+        Ext.widget('call_SATOR_LOTE_TRIAGEM_ORIGEM').show(null, function () {
+            this.master = view;
+            this.down('form').loadRecord(record);
+            this.down('gridpanel').getStore().setParams({
+                    query: record.get('materialboxid')
+                }).load({
+                scope: me,
+                callback: function (records, operation, success) {
+                    var record = records[0];
+                }
+            });
         });
     },
 

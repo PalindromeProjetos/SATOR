@@ -637,11 +637,11 @@
 
 .action-insert-color-font {
     cursor: pointer;
-    color: rgb(0, 190, 237) !important;
+    color: rgb(11, 72, 107) !important;
 }
 
 .action-insert-color-font:hover {
-    color: rgb(11, 72, 107) !important;
+    color: rgb(11, 72, 250) !important;
 
     top: -7px;
     left: -7px;
@@ -696,12 +696,28 @@
 }
 
 .action-checked-color-font {
+    cursor: pointer;
     color: rgb(255, 177, 68) !important;
 }
 
 .action-checked-color-font:hover {
-    color: rgb(141, 30, 11) !important;
+    color: rgb(255, 177, 20) !important;
+
+    top: -7px;
+    left: -7px;
+    -webkit-transition: -webkit-transform 0.5s, opacity 0.5s;
+    -webkit-transform: scale(1.2);
+    -moz-transition: -moz-transform 0.5s, opacity 0.5s;
+    -moz-transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    transition: transform 0.5s, opacity 0.5s;
+    transform: scale(1.2);
+    opacity: 1;
 }
+
+/*.action-checked-color-font:hover {*/
+    /*color: rgb(141, 30, 11) !important;*/
+/*}*/
 
 .update-grid .x-action-col-icon {
     font-size: 24px !important;
