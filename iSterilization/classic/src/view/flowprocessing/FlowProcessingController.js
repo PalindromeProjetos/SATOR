@@ -2482,7 +2482,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
     setEncerraTriagem: function (record) {
         var me = this,
-            view = me.getView(),
+            // view = me.getView(),
             doCallBack = function (rows) {
 
                 Ext.Ajax.request({
@@ -4438,7 +4438,16 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 }).load({
                 scope: me,
                 callback: function (records, operation, success) {
-                    var record = records[0];
+                    var item = Ext.getStore('flowprocessingscreeningitem');
+
+                    Ext.each(records,function (rec,index) {
+                        var gotcha = item.findRecord('barcode',rec.get('barcode'));
+                        if(gotcha) {
+                            rec.set('chargestatus','001');
+                            rec.commit();
+                        }
+                    });
+
                 }
             });
         });

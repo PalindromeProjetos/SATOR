@@ -120,17 +120,17 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                         columns: [
                             {
                                 flex: 1,
-                                text: '<span style="color: blue; font-size: 16px">Áreas com leituras</span>',
+                                text: '<span style="color: blue; font-size: 16px">Leituras</span>',
                                 sortable: false,
                                 dataIndex: "sourcename"
                             }, {
                                 width: 310,
-                                text: '<span style="color: blue; font-size: 16px">Áreas com exceções</span>',
+                                text: '<span style="color: blue; font-size: 16px">Exceções</span>',
                                 sortable: false,
                                 dataIndex: "targetname",
                                 xtype: 'widgetcolumn',
                                 widget: {
-                                    xtype: 'combo',
+                                    xtype: 'combobox',
                                     pageSize: 0,
                                     editable: false,
 

@@ -131,6 +131,10 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                             }, {
                                 name: 'proprietaryname',
                                 type: 'auto'
+                            }, {
+                                name: 'chargestatus',
+                                type: 'auto',
+                                defaultValue: '002'
                             }
                         ],
 
@@ -140,13 +144,11 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                             }, {
                                 width: 40,
                                 sortable: false,
+                                dataIndex: 'chargestatus',
                                 renderer: function (value,metaData,record) {
-                                    var items = record.get('items'),
-                                        loads = record.get('loads'),
-                                        chargestatus = (items == loads) ? '001' : '002',
-                                        flag = '<div class="unconformities chargestatus{0}"></div>';
+                                    var flag = '<div class="unconformities chargestatus{0}"></div>';
 
-                                    return Ext.String.format(flag,chargestatus);
+                                    return Ext.String.format(flag,value);
                                 }
                             }, {
                                 flex: 1,
