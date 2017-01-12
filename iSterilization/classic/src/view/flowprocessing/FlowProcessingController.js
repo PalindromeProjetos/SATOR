@@ -2473,8 +2473,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                             find.targetid = exceptiondo.id;
                             find.sourcename = find.elementname;
                             find.element = Ext.encode({
-                                stepchoice: exceptiondo.stepchoice,
                                 steplevel: exceptiondo.steplevel,
+                                stepchoice: exceptiondo.stepchoice,
                                 elementtype: exceptiondo.elementtype,
                                 elementcode: exceptiondo.elementcode,
                                 elementname: exceptiondo.elementname,
@@ -2985,7 +2985,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                             me.callSATOR_IMPRIMIR_ETIQUETA();
                         }
                         me.callSATOR_ENCERRAR_LEITURA(jump);
-                        // me.encerrarEtapa();
                         dialog.close();
                         return false;
                         break;
@@ -3095,7 +3094,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 md.set('unconformities',value);
                 md.store.sync({async: false});
                 md.commit();
-                // sm.select(md);
 
                 md.store.each(function (item) {
                     data.push(item.get('unconformities'));
@@ -3137,7 +3135,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                         callback: function () {
                             Smart.ion.sound.play("button_tiny");
                             view.close();
-                            //me.setView(master);
                             history.back();
                         }
                     });
