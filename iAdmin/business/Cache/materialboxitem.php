@@ -7,55 +7,18 @@ use iAdmin\Model\materialboxitem as Model;
 class materialboxitem extends \Smart\Data\Cache {
 
 	public function selectList(array $data) {
-		$query = $data['query'];
-		$proxy = $this->getStore()->getProxy();
 
-		$sql = "
-			declare
-				@id int = :id;
-				
-            select
-                mbi.id,
-                mbi.materialboxid,
-                mbi.materialid,
-                ib.barcode,
-                ib.name as materialname,
-                m.numberproceedings,
-                m.isconsigned,
-                p.name as proprietaryname,
-                mb.statusbox,
-                mbi.boxitemstatus,
-                dbo.getEnum('boxitemstatus',mbi.boxitemstatus) as boxitemstatusdescription
-            from
-                materialboxitem mbi
-                inner join materialbox mb on ( mb.id = mbi.materialboxid )
-                inner join itembase ib on ( ib.id = mbi.materialid )
-                inner join material m on ( m.id = ib.id )
-                inner join proprietary p on ( p.id = ib.proprietaryid )
-            where mbi.materialboxid = @id";
-
-		try {
-			$pdo = $proxy->prepare($sql);
-
-			$pdo->bindValue(":id", $query, \PDO::PARAM_INT);
-
-			$pdo->execute();
-			$rows = $pdo->fetchAll();
-
-			self::_setRows($rows);
-
-		} catch ( \PDOException $e ) {
-			self::_setSuccess(false);
-			self::_setText($e->getMessage());
-		}
-
-		return self::getResultToJson();
+		$data['paged'] = false;
+		
+		return $this->selectCode($data);
 	}
 
 	public function selectCode(array $data) {
         $query = $data['query'];
         $start = $data['start'];
         $limit = $data['limit'];
+		$paged = isset($data['paged']) ? $data['paged'] : true;
+		
 		$proxy = $this->getStore()->getProxy();
 
 		$sql = "
@@ -91,7 +54,10 @@ class materialboxitem extends \Smart\Data\Cache {
 			$rows = $pdo->fetchAll();
 
 			self::_setRows($rows);
-            self::_setPage($start,$limit);
+			
+			if($paged == true) {				
+				self::_setPage($start,$limit);
+			}
 
 		} catch ( \PDOException $e ) {
 			self::_setSuccess(false);

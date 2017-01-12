@@ -6,10 +6,19 @@ use iAdmin\Model\materialboxitem as Model;
 
 class materialboxitem extends \Smart\Data\Cache {
 
+	public function selectList(array $data) {
+
+		$data['paged'] = false;
+		
+		return $this->selectCode($data);
+	}
+
 	public function selectCode(array $data) {
         $query = $data['query'];
         $start = $data['start'];
         $limit = $data['limit'];
+		$paged = isset($data['paged']) ? $data['paged'] : true;
+		
 		$proxy = $this->getStore()->getProxy();
 
 		$sql = "
@@ -45,7 +54,10 @@ class materialboxitem extends \Smart\Data\Cache {
 			$rows = $pdo->fetchAll();
 
 			self::_setRows($rows);
-            self::_setPage($start,$limit);
+			
+			if($paged == true) {				
+				self::_setPage($start,$limit);
+			}
 
 		} catch ( \PDOException $e ) {
 			self::_setSuccess(false);

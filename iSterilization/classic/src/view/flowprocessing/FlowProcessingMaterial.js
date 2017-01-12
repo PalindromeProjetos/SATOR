@@ -11,6 +11,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingMaterial', {
     ],
 
     editable: false,
+    hiddenScore: false,
 
     cls: 'update-grid',
 
@@ -32,42 +33,78 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingMaterial', {
 
     initComponent: function () {
         var me = this;
+
+        me.dockedItems = [
+            {
+                margin: '0 0 6 0',
+                anchor: '100%',
+                xtype: 'container',
+                layout: 'hbox',
+                items: [
+                    {
+                        hidden: me.hiddenScore,
+                        flex: 1,
+                        xtype: 'label',
+                        cls: 'processing-field-font',
+                        text: 'Materiais',
+                        name: 'materialboxname',
+                        style: {
+                            "overflow": "hidden;",
+                            "white-space": "nowrap;",
+                            "text-overflow": "ellipsis;"
+                        }
+                    }, {
+                        hidden: me.hiddenScore,
+                        width: 120,
+                        xtype: 'label',
+                        cls: 'processing-field-font',
+                        text: '(00/00)',
+                        name: 'materialaccount',
+                        style: {
+                            'color': 'yellow',
+                            'text-align': 'right;'
+                        }
+                    }
+                ]
+            }
+        ];
+
         me.buildItems();
         me.callParent();
     },
 
-    dockedItems: [
-        {
-            margin: '0 0 6 0',
-            anchor: '100%',
-            xtype: 'container',
-            layout: 'hbox',
-            items: [
-                {
-                    flex: 1,
-                    xtype: 'label',
-                    cls: 'processing-field-font',
-                    text: 'Materiais',
-                    name: 'materialboxname',
-                    style: {
-                        "overflow": "hidden;",
-                        "white-space": "nowrap;",
-                        "text-overflow": "ellipsis;"
-                    }
-                }, {
-                    width: 120,
-                    xtype: 'label',
-                    cls: 'processing-field-font',
-                    text: '(00/00)',
-                    name: 'materialaccount',
-                    style: {
-                        'color': 'yellow',
-                        'text-align': 'right;'
-                    }
-                }
-            ]
-        }
-    ],
+    //dockedItems: [
+    //    {
+    //        margin: '0 0 6 0',
+    //        anchor: '100%',
+    //        xtype: 'container',
+    //        layout: 'hbox',
+    //        items: [
+    //            {
+    //                flex: 1,
+    //                xtype: 'label',
+    //                cls: 'processing-field-font',
+    //                text: 'Materiais',
+    //                name: 'materialboxname',
+    //                style: {
+    //                    "overflow": "hidden;",
+    //                    "white-space": "nowrap;",
+    //                    "text-overflow": "ellipsis;"
+    //                }
+    //            }, {
+    //                width: 120,
+    //                xtype: 'label',
+    //                cls: 'processing-field-font',
+    //                text: '(00/00)',
+    //                name: 'materialaccount',
+    //                style: {
+    //                    'color': 'yellow',
+    //                    'text-align': 'right;'
+    //                }
+    //            }
+    //        ]
+    //    }
+    //],
 
     buildItems: function () {
         var me = this;

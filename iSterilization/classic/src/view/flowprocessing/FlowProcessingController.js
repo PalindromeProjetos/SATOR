@@ -3055,6 +3055,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 sm.select(item);
                 grid.plugins[0].startEditByPosition({row: grid.store.indexOf(item), column: 1});
             }
+
+            //me.onChangedMaterial(grid.store, null);
         });
     },
 
@@ -3127,9 +3129,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                             params: Ext.encode(master.xdata.data)
                         },
                         callback: function () {
-                            //PlaySound
+                            Smart.ion.sound.play("button_tiny");
                             view.close();
-                            me.setView(master);
+                            //me.setView(master);
                             history.back();
                         }
                     });

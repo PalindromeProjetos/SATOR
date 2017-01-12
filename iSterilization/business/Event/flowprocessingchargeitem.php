@@ -44,7 +44,7 @@ class flowprocessingchargeitem extends \Smart\Data\Event {
     public function preInsert( \iSterilization\Model\flowprocessingchargeitem &$model ) {
         Session::hasProfile('','');
 		
-		$this->preInsertBeAvailable($model);
+		//$this->preInsertBeAvailable($model);
     }
 
     /**
@@ -106,7 +106,7 @@ class flowprocessingchargeitem extends \Smart\Data\Event {
     public function preDelete( \iSterilization\Model\flowprocessingchargeitem &$model ) {
         Session::hasProfile('','');
 		
-		$this->preDeleteBeAvailable($model);
+		//$this->preDeleteBeAvailable($model);
     }
 
     /**

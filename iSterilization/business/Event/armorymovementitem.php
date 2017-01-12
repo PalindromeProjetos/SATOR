@@ -45,7 +45,7 @@ class armorymovementitem extends \Smart\Data\Event {
     public function preInsert( \iSterilization\Model\armorymovementitem &$model ) {
         Session::hasProfile('','');
 		
-		$this->preInsertBeAvailable($model);
+		//$this->preInsertBeAvailable($model);
     }
 
     /**
@@ -107,7 +107,7 @@ class armorymovementitem extends \Smart\Data\Event {
     public function preDelete( \iSterilization\Model\armorymovementitem &$model ) {
         Session::hasProfile('','');
 		
-		$this->preDeleteBeAvailable($model);
+		//$this->preDeleteBeAvailable($model);
     }
 
     /**

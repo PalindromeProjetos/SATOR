@@ -92,6 +92,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_UNCONFORMITI
                     }, {
                         height: 500,
                         editable: true,
+                        hiddenScore: true,
                         margin: '20 0 0 0',
                         xtype: 'flowprocessingmaterial'
                     }
