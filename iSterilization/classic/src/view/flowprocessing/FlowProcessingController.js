@@ -3049,7 +3049,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                     list.push(data);
                 }
             });
-
+            console.info(list);
             if(list.length != 0) {
                 var item = list[0];
                 sm.select(item);
@@ -4321,7 +4321,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             view = me.getView(),
             data = view.xdata,
             portrait = view.down('portrait'),
-            colorpallet = data.get('colorpallet'),
+            colorpallet = data ? data.get('colorpallet') : null,
             htmlLines = '<div class="portrait-label">{0}</div><div class="colorpallet float-l">{1}</div>';
 
         if(portrait) {
