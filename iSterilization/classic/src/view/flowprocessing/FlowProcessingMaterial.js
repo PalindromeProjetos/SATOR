@@ -42,6 +42,12 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingMaterial', {
                 layout: 'hbox',
                 items: [
                     {
+                        xtype: 'label',
+                        margin: '10 0 10 0',
+                        hidden: !me.hiddenScore,
+                        text: 'Materiais do Kit',
+                        cls: 'sub-title-label'
+                    }, {
                         hidden: me.hiddenScore,
                         flex: 1,
                         xtype: 'label',

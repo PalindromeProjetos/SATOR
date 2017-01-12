@@ -3055,9 +3055,15 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 sm.select(item);
                 grid.plugins[0].startEditByPosition({row: grid.store.indexOf(item), column: 1});
             }
-
-            //me.onChangedMaterial(grid.store, null);
         });
+    },
+
+    onRenderUnconformities: function () {
+        var me = this,
+            view = me.getView(),
+            grid = view.down('flowprocessingmaterial');
+
+        me.onChangedMaterial(grid.store, null);
     },
 
     onStartReaderUnconformities: function (field, e, eOpts) {
@@ -3972,13 +3978,21 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         var me = this,
             count = 0,
             score = '{0}/{1}',
-            materialaccount = me.getView().down('label[name=materialaccount]');
+            view = me.getView(),
+            titlelabel = view.down('label[name=countitems]'),
+            materialaccount = view.down('label[name=materialaccount]');
 
         store.each(function (item) {
             count += item.get('unconformities') != '001' ? 1 : 0;
         });
 
-        if(materialaccount) materialaccount.setText(Ext.String.format(score,count,store.getCount()));
+        if (titlelabel) {
+            titlelabel.setText(Ext.String.format(score,count,store.getCount()));
+        }
+
+        if(materialaccount) {
+            materialaccount.setText(Ext.String.format(score,count,store.getCount()));
+        }
     },
 
     onChangedCharge: function (store, eOpts) {

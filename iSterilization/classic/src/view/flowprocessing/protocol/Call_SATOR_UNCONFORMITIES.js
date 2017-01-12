@@ -25,6 +25,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_UNCONFORMITI
     doCallBack: Ext.emptyFn,
 
     listeners: {
+        afterrender: 'onRenderUnconformities',
         startreaderunconformities: 'onStartReaderUnconformities'
     },
 
