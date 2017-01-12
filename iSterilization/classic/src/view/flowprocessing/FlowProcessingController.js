@@ -132,7 +132,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         });
 
         if (count != 0) {
-            // Smart.ion.sound.play("door_bell");
+            Smart.ion.sound.play("button_tiny");
         }
 
         storeView.each(function (record) {
@@ -188,7 +188,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         });
 
         if (count != 0) {
-            // Smart.ion.sound.play("door_bell");
+            Smart.ion.sound.play("button_tiny");
         }
 
         storeView.each(function (record) {
@@ -251,7 +251,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         });
 
         if (count != 0) {
-            // Smart.ion.sound.play("door_bell");
+            Smart.ion.sound.play("button_tiny");
         }
 
         storeView.each(function (record) {
