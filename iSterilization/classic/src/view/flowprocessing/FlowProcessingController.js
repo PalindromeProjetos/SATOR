@@ -106,6 +106,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
     onLoadArea: function (store, records, successful, operation, eOpts) {
         var me = this,
+            count = 0,
             view = me.getView(),
             dataView = view.down('flowprocessingloadview'),
             storeView = dataView.store,
@@ -120,7 +121,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         Ext.each(records, function (record) {
             var rec = storeView.findRecord('id',record.get('id'));
 
-            if(!rec) {
+            if (!rec) {
+                count++;
                 storeView.add(record.data);
             }
 
@@ -128,6 +130,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 rec.set('items', record.get('items'));
             }
         });
+
+        if (count != 0) {
+            // Smart.ion.sound.play("door_bell");
+        }
 
         storeView.each(function (record) {
             var rec = store.findRecord('id',record.get('id'));
@@ -156,6 +162,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
     onStepArea: function (store, records, successful, operation, eOpts) {
         var me = this,
+            count = 0,
             view = me.getView(),
             dataView = view.down('flowprocessingdataview'),
             storeView = dataView.store,
@@ -170,7 +177,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         Ext.each(records, function (record) {
             var rec = storeView.findRecord('id',record.get('id'));
 
-            if(!rec) {
+            if (!rec) {
+                count++;
                 storeView.add(record.data);
             }
 
@@ -178,6 +186,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 rec.set('items', record.get('items'));
             }
         });
+
+        if (count != 0) {
+            // Smart.ion.sound.play("door_bell");
+        }
 
         storeView.each(function (record) {
             var rec = store.findRecord('id',record.get('id'));
@@ -213,6 +225,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
     onHoldArea: function (store, records, successful, operation, eOpts) {
         var me = this,
+            count = 0,
             view = me.getView(),
             dataView = view.down('flowprocessingholdview'),
             storeView = dataView.store,
@@ -227,7 +240,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         Ext.each(records, function (record) {
             var rec = storeView.findRecord('id',record.get('id'));
 
-            if(!rec) {
+            if (!rec) {
+                count++;
                 storeView.add(record.data);
             }
 
@@ -235,6 +249,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 rec.set('items', record.get('items'));
             }
         });
+
+        if (count != 0) {
+            // Smart.ion.sound.play("door_bell");
+        }
 
         storeView.each(function (record) {
             var rec = store.findRecord('id',record.get('id'));

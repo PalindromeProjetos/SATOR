@@ -26,10 +26,11 @@ Ext.define( 'iSterilization.view.main.Main', {
 
         Smart.ion.sound({
             sounds: [
-                {name: "button_tiny"},
-                {name: "metal_plate"},
-                {name: "water_droplet"},
-                {name: "computer_error"}
+                { name: "door_bell" },
+                { name: "button_tiny" },
+                { name: "metal_plate" },
+                { name: "water_droplet" },
+                { name: "computer_error" }
             ],
             path: "resources/sounds/",
             preload: true,
