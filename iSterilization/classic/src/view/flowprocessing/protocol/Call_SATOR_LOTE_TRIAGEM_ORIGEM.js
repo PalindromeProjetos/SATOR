@@ -113,7 +113,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_LOTE_TRIAGEM
                         name: 'materialbox',
                         params: {
                             action: 'select',
-                            method: 'selectCode'
+                            method: 'selectList'
                         },
 
                         url: '../iAdmin/business/Calls/materialboxitem.php',

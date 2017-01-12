@@ -13,7 +13,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_UNCONFORMITI
 
     controller: 'flowprocessing',
 
-    width: 800,
+    width: 950,
     modal: true,
     layout: 'fit',
     header: false,
@@ -51,11 +51,46 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_UNCONFORMITI
                 },
                 items: [
                     {
-                        xtype: 'label',
-                        cls: 'title-label',
-                        text: 'Inconformidades'
+                        xtype: 'container',
+                        layout: 'hbox',
+                        defaultType: 'label',
+                        defaults: {
+                            cls: 'title-label'
+                        },
+                        items: [
+                            {
+                                flex: 4,
+                                text: 'Inconformidades'
+                            }, {
+                                flex: 2,
+                                name: 'countitems',
+                                style : { 'text-align': 'right', 'color': 'rgb(173, 20, 87)' }
+                            }, {
+                                xtype: 'splitter'
+                            }, {
+                                width: 30,
+                                height: 30,
+                                xtype: 'component',
+                                html: '<div class="smart-btn-header" style="padding-left: 7px;"><i class="fa fa-times"></i></div>',
+                                style: {
+                                    cursor: 'pointer',
+                                    fontSize: '20px;',
+                                    borderRadius: '50%',
+                                    backgroundColor:'rgb(246, 246, 246);'
+                                },
+                                listeners: {
+                                    render: function(c){
+                                        c.getEl().on({
+                                            click: function() {
+                                                me.close();
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        ]
                     }, {
-                        height: 400,
+                        height: 500,
                         editable: true,
                         margin: '20 0 0 0',
                         xtype: 'flowprocessingmaterial'
@@ -63,19 +98,6 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_UNCONFORMITI
                 ]
             }
         ]
-    },
-
-    buttonAlign: 'center',
-
-    buttons: [
-        {
-            scale: 'medium',
-            text: 'Cancelar',
-            showSmartTheme: 'red',
-            handler: function (btn) {
-                btn.windowClose();
-            }
-        }
-    ]
+    }
 
 });

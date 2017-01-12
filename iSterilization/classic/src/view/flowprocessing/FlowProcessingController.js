@@ -3045,11 +3045,11 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 sm = grid.getSelectionModel();
 
             grid.store.each(function(data) {
-                if(['001','010'].indexOf(data.get('unconformities')) != -1) {
+                if(['001'].indexOf(data.get('unconformities')) != -1) {
                     list.push(data);
                 }
             });
-            console.info(list);
+
             if(list.length != 0) {
                 var item = list[0];
                 sm.select(item);
@@ -3062,24 +3062,32 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         var me = this,
             view = me.getView(),
             master = view.master,
-            value = field.getValue();
+            value = field.getValue(),
+            grid = view.down('flowprocessingmaterial'),
+            sm = grid.getSelectionModel(),
+            md = sm.getSelection()[0];
 
         field.reset();
+
+        var seek = grid.store.findRecord('unconformities','001',sm.selection.rowIdx + 1);
+
+        if(seek) {
+            e.stopEvent();
+            sm.select(seek);
+            grid.plugins[0].startEditByPosition({row: grid.store.indexOf(seek), column: 1});
+        }
 
         if(value && value.length != 0) {
             if(value.indexOf('SATOR-U') != -1) {
                 var list = [],
                     data = [],
-                    grid = view.down('flowprocessingmaterial'),
-                    sm = grid.getSelectionModel(),
-                    md = sm.getSelection()[0],
                     id = md.store.indexOf(md) +1;
 
                 value = value.replace('SATOR-U','');
                 md.set('unconformities',value);
                 md.store.sync({async: false});
                 md.commit();
-                sm.select(md);
+                // sm.select(md);
 
                 md.store.each(function (item) {
                     data.push(item.get('unconformities'));

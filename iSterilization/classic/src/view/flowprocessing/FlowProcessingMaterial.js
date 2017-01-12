@@ -99,6 +99,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingMaterial', {
                             if ([e.ESC].indexOf(e.getKey()) != -1) {
                                 field.reset();
                             }
+                            
                             if ([e.TAB,e.ENTER].indexOf(e.getKey()) != -1) {
                                 var view = field.up('call_SATOR_UNCONFORMITIES');
                                 if(view) {
@@ -121,15 +122,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingMaterial', {
             }, {
                 dataIndex: 'unconformitiesdescription',
                 width: 180
-                // editor: {
-                //     xtype: 'comboenum',
-                //     queryFilter: 'I',
-                //     name: 'unconformitiesdescription',
-                //     fieldCls: 'smart-field-style-action',
-                //     listeners: {
-                //         select: 'onSelectUnconformities'
-                //     }
-                // }
             }
         ];
     }
