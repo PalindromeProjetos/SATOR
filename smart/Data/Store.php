@@ -27,9 +27,10 @@ class Store {
      * @var array $reserved
      */
     private static $reserved = array(
-        'instance'=>array('Entity'),
-        'property'=>array('Policy','Column'),
-        'function'=>array('PreInsert','PosInsert','PreUpdate','PosUpdate','PreDelete','PosDelete'));
+		'instance'=>array('Entity'),
+		'property'=>array('Policy','Column'),
+		'function'=>array('PreInsert','PosInsert','PreUpdate','PosUpdate','PreDelete','PosDelete')
+	);
 
     /**
      * Proxy de Acesso ao Banco de Dados

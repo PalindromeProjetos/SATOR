@@ -4,6 +4,7 @@ namespace iSterilization\Quick;
 
 use Smart\Utils\Report;
 use Smart\Utils\Session;
+use Endroid\QrCode\QrCode;
 
 class dispensingreport extends Report {
 
@@ -22,60 +23,62 @@ class dispensingreport extends Report {
         $sql = "
             declare
                 @id int = :id;
-
-            select
-                ami.*,
-                fp.barcode,
-                t.colorschema,
-                t.materialname,
-                dbo.getEnum('outputtype',ami.outputtype) as outputtypedescription,
-                dbo.getEnum('armorylocal',ami.armorylocal) as armorylocaldescription
-            from
-                armorymovementitem ami
-                inner join flowprocessingstep fps on ( fps.id = ami.flowprocessingstepid )
-                inner join flowprocessing fp on ( fp.id = fps.flowprocessingid )
-                cross apply (
-                    select
-                        ta.colorschema,
-                        coalesce(ta.name,tb.name) as materialname
-                    from
-                        flowprocessing a
-                        outer apply (
-                            select
-                                mb.name,
-                                colorschema = (
-                                    select stuff
-                                        (
-                                            (
-                                                select
-                                                    ',#' + tc.colorschema
-                                                from
-                                                    materialboxtarge mbt
-                                                    inner join targecolor tc on ( tc.id = mbt.targecolorid )
-                                                where mbt.materialboxid = mb.id
-                                                order by mbt.targeorderby asc
-                                                for xml path ('')
-                                            ) ,1,1,''
-                                        )
-                                )
-                            from
-                                materialbox mb
-                            where mb.id = a.materialboxid
-                        ) ta
-                        outer apply (
-                            select top 1
-                                ib.name
-                            from
-                                flowprocessingstep b
-                                inner join flowprocessingstepmaterial c on ( c.flowprocessingstepid = b.id )
-                                inner join itembase ib on ( ib.id = c.materialid )
-                            where b.flowprocessingid = fp.id
-                              and b.id < fps.id
-                              and ( b.stepflaglist like '%001%' or b.stepflaglist like '%019%' )
-                        ) tb
-                    where a.id = fp.id
-                ) t
-            where ami.armorymovementid = @id";
+            
+		select
+			--am.*,
+			fp.barcode,
+			ami.*,
+			t.id,
+			t.materialid,
+			t.materialcode,
+			t.materialname,
+			q.materialboxcode,
+			q.materialboxname,
+			t.proprietaryname,
+			dbo.getEnum('outputtype',ami.outputtype) as outputtypedescription
+		from
+			armorymovement am
+			inner join armorymovementoutput amo on ( amo.id = am.id )
+			inner join armorymovementitem ami on ( ami.armorymovementid = am.id )
+			inner join flowprocessingstep fps on ( fps.id = ami.flowprocessingstepid )
+			inner join flowprocessing fp on ( fp.id = fps.flowprocessingid )
+			cross apply (
+				select
+					max(a.id) as id,
+					m.materialid,
+					m.barcode	as materialcode,
+					m.name		as materialname,
+					m.proprietaryname
+				from
+					flowprocessingstep a
+					cross apply (
+						select
+							fpsm.materialid,
+							ib.barcode,
+							ib.name,
+							p.name as proprietaryname
+						from
+							flowprocessingstepmaterial fpsm
+							inner join itembase ib on ( ib.id = fpsm.materialid )
+							inner join proprietary p on ( p.id = ib.proprietaryid )
+						where fpsm.flowprocessingstepid = a.id
+					) m
+				where a.flowprocessingid = fp.id
+				 and ( a.stepflaglist like '%001%' or a.stepflaglist like '%019%' )
+				group by m.materialid, m.barcode, m.name, m.proprietaryname
+			) t
+			outer apply (
+				select
+					mb.name		as materialboxname,
+					mb.barcode	as materialboxcode
+				from
+					materialbox mb
+				where mb.id = fp.materialboxid
+			) q
+		where am.releasestype = 'E'
+		  and am.movementtype = '002'
+		  and am.id = @id
+		order by ami.id, q.materialboxcode, t.materialcode";
 
         $pdo = $this->getProxy()->prepare($sql);
         $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
@@ -93,11 +96,14 @@ class dispensingreport extends Report {
         $sw = $this->squareWidth;
 
         $this->SetFont('Arial', '', 9);
-        $this->SetFillColor(245, 242, 198);
+        $this->SetFillColor(255, 255, 255);
+//        $this->SetFillColor(245, 242, 198);
 
-        $this->Cell($sw * 1.0,7,'Material','B',0,'L',1);
-        $this->Cell($sw * 2.0,7,utf8_decode('Descricão'),'B',0,'L',1);
-        $this->Cell($sw * 3.0,7,'','B',1,'L',1);
+        $this->Cell($sw * 0.7,7,utf8_decode('Processo'),'B',0,'C',1);
+        $this->Cell($sw * 1.3,7,utf8_decode('Kit'),'B',0,'L',1);
+        $this->Cell($sw * 2.5,7,utf8_decode('Material'),'B',0,'L',1);
+        $this->Cell($sw * 0.75,7,utf8_decode('Proprietário'),'B',0,'L',1);
+        $this->Cell($sw * 0.75,7,utf8_decode('Tipo de Saída'),'B',1,'L',1);
     }
 
     public function Header() {
@@ -105,6 +111,9 @@ class dispensingreport extends Report {
         $this->squareWidth = intval($this->getInternalW() / 6);
 
         $sql = "
+            declare
+                @id int = :id;
+                
             SELECT
                 am.id,
                 am.areasid,
@@ -113,8 +122,9 @@ class dispensingreport extends Report {
                 am.movementtype,
                 dbo.getEnum('movementtype',am.movementtype) as movementtypedescription,
                 am.releasestype,
-                amo.clientid,
+                amo.clientid,                
                 c.name,
+                c.clienttype,
                 amo.barcode,
                 amo.patientname,
                 amo.surgicalwarning,
@@ -130,8 +140,8 @@ class dispensingreport extends Report {
                 armorymovement am
                 INNER JOIN armorymovementoutput amo on (amo.id = am.id)
                 INNER JOIN client c on (c.id = amo.clientid)
-            WHERE am.id = :id
-              and am.movementtype = '002' ";
+            WHERE am.id = @id
+              and am.movementtype = '002'";
 
         $pdo = $this->getProxy()->prepare($sql);
         $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
@@ -139,86 +149,137 @@ class dispensingreport extends Report {
         $pdo->execute();
         $rows = $pdo->fetchAll();
 
-        //print_r($rows);
-        //exit;
-
         $local = $rows[0]['name'];
+        $barcode = $rows[0]['barcode'];
+        $surgicalroom = $rows[0]['surgicalroom'];
         $operator = $rows[0]['movementuser'];
+        $surgical = $rows[0]['surgical'];
+        $dateof = $rows[0]['dateof'];
+        $timeof = $rows[0]['timeof'];
+
+        $patientname = $rows[0]['patientname'];
+        $surgicalwarning = $rows[0]['surgicalwarning'];
+
         $circulante = 'Circulante Geral';
-        $datamovimento = new \DateTime($rows[0]['movementdate']);
+//        $datamovimento = new \DateTime($rows[0]['movementdate']);
+        $datamovimento = new \DateTime("$dateof $timeof");
+
+        $sw = $this->squareWidth;
 
         $id = str_pad($id, 6, '0', STR_PAD_LEFT);
 
         $this->configStyleHeader(11);
-        $this->Cell($this->squareWidth/*$this->getInternalW()*/,5, utf8_decode("HAM - RELAÇÃO DE MATERIAIS RETIRADOS -  #$id"),0,1,'L',false);
+        $this->Cell($this->squareWidth,5, utf8_decode("HAM - RELAÇÃO DE MATERIAIS RETIRADOS -  #$id"),0,1,'L',false);
         $this->configStyleHeader(10);
 
         $this->SetLineWidth(.2);
         $this->Cell($this->getInternalW(),3, '','B',1,'C');
         $this->Ln(4);
 
+        $y = $this->y;
         $this->SetFont('Arial', '', 10);
-        $this->Cell($this->squareWidth,5,'LOCAL:',0,0,'L',0);
+        $this->Cell($sw * 0.7,5,'Cliente:',0,0,'L',0);
         $this->configStyleHeader(10);
-        $this->Cell($this->squareWidth*4,5,"$local",0,1,'L',0);
+        $this->Cell($sw * 1.3,5,$local,0,0,'L',0);
 
         $this->SetFont('Arial', '', 10);
-        $this->Cell($this->squareWidth,5,utf8_decode('OPERADOR:'),0,0,'L',0);
+        $this->Cell($sw * 0.5,5,'Local:',0,0,'L',0);
         $this->configStyleHeader(10);
-        $this->Cell($this->squareWidth*4,5,"$operator",0,1,'L',0);
-
-//        $this->SetFont('Arial', '', 10);
-//        $this->Cell($this->squareWidth,5,'CIRCULANTE:',0,0,'L',0);
-//        $this->configStyleHeader(10);
-//        $this->Cell($this->squareWidth*4,5,$circulante,0,1,'L',0);
-//        $this->Ln(1);
+        $this->Cell($sw * 1.3,5,"$surgicalroom",0,1,'L',0);
 
         $this->SetFont('Arial', '', 10);
-        $this->Cell($this->squareWidth,5,'DATA:',0,0,'L',0);
+        $this->Cell($sw * 0.7,5,utf8_decode('Operador:'),0,0,'L',0);
         $this->configStyleHeader(10);
-        $this->Cell($this->squareWidth*4,5,$datamovimento->format('d/m/Y H:i:s'),0,1,'L',0);
+        $this->Cell($sw * 1.3,5,"$operator",0,0,'L',0);
+
+        $this->SetFont('Arial', '', 10);
+        $this->Cell($sw * 0.5,5,'Aviso:',0,0,'L',0);
+        $this->configStyleHeader(10);
+        $this->Cell($sw * 1.3,5,"$surgicalwarning $patientname",0,1,'L',0);
+
+        $this->SetFont('Arial', '', 10);
+        $this->Cell($sw * 0.7,5,'Data:',0,0,'L',0);
+        $this->configStyleHeader(10);
+        $this->Cell($sw * 1.3,5,$datamovimento->format('d/m/Y H:i'),0,0,'L',0);
+
+        $this->SetFont('Arial', '', 10);
+        $this->Cell($sw * 0.5,5,'',0,0,'L',0);
+        $this->configStyleHeader(10);
+        $this->Cell($sw * 1.3,5,$surgical,0,1,'L',0);
+
+        if(strlen($barcode) != 0) {
+            $qrTemp = __DIR__;
+            $qrCode = new QrCode();
+
+            $qrFile = "{$qrTemp}{$barcode}.png";
+
+            $qrCode->setText($barcode)
+                ->setSize(70)
+                ->setPadding(2)
+                ->setErrorCorrection('high')
+                ->setImageType(QrCode::IMAGE_TYPE_PNG)
+                ->render($qrFile);
+
+            $this->Image($qrFile,$sw * 5.7,$y-2);
+            unlink($qrFile);
+        }
+
         $this->Ln(1);
 
         $this->SetLineWidth(.2);
         $this->Cell($this->getInternalW(),3, '','B',1,'C');
-        $this->Ln(4);
+        $this->Ln(1);
 
+        $this->getHeaderColumns();
     }
 
     public function Detail() {
         $sw = $this->squareWidth;
 
         $lineColor = 1;
-
-        $this->getHeaderColumns();
+        $oldbarcode = '';
 
         foreach($this->rows as $item) {
 
-            //Control line color
+            $barcode = '';
+
+            $this->configStyleDetail();
+            $this->SetFont('LucidaSans-Typewriter', '', 6);
+
+            $newbarcode = $item['barcode'];
+            $materialname = $item['materialname'];
+            $materialcode = $item['materialcode'];
+            $materialboxname = $item['materialboxname'];
+            $proprietaryname = $item['proprietaryname'];
+            $outputtypedescription = $item['outputtypedescription'];
+
             $lineColor = ($lineColor == 0) ? 1 : 0;
 
-            //Config Style Details
-            $this->configStyleDetail();
-            $this->SetFont('LucidaSans-Typewriter', '', 8);
+            if($newbarcode != $oldbarcode) {
+                $barcode = $newbarcode;
+            }
 
-            //Print Datas
-            $this->Cell($sw * 1.0,5, $item['barcode'],0,0,'L',$lineColor);
-            $this->Cell($sw * 2.0,5,$item['materialname'],0,0,'L',$lineColor);
-            $this->Cell($sw * 3.0,5,$item['outputtypedescription'],0,1,'L',$lineColor);
+            $this->Cell($sw * 0.7,5, $barcode,0,0,'C',$lineColor);
+            $this->Cell($sw * 1.3,5, (strlen($barcode) != 0) ? $materialboxname : '','L',0,'L',$lineColor);
+            $this->Cell($sw * 2.5,5, $materialcode . ' ' . $materialname,'L',0,'L',$lineColor);
+            $this->Cell($sw * 0.75,5, (strlen($barcode) != 0) ? $proprietaryname : '','L',0,'L',$lineColor);
+            $this->Cell($sw * 0.75,5, (strlen($barcode) != 0) ? $outputtypedescription : '','L',1,'L',$lineColor);
+
+            $oldbarcode = $newbarcode;
+
+            if($this->y >= $this->getInternalH() + 10) {
+                $this->AddPage();
+            }
         }
 
         $this->SetLineWidth(.2);
         $this->Cell($this->getInternalW(),3, '','T',1,'C');
 
-//        $this->Ln(20);
-//        $this->SetFont('Arial', '', 7);
-//        $this->Cell($sw * 2.0,4, utf8_decode("Lançado por"),'T',0,'C');
-//        $this->Cell($sw * 2.0,3, '',0,0,'C');
-//        $this->Cell($sw * 2.0,4, utf8_decode("Encerrado por"),'T',1,'C');
-    }
-
-    public function Footer() {
-        $this->loadFooter($this->getInternalW(),true);
+        $this->Ln(20);
+        $this->SetFont('Arial', '', 7);
+        $this->Cell($sw * 2.0,4, utf8_decode("Lançado por"),'T',0,'C');
+        $this->Cell($sw * 2.0,3, '',0,0,'C');
+        $this->Cell($sw * 2.0,4, utf8_decode("Encerrado por"),'T',1,'C');
     }
 
 }
