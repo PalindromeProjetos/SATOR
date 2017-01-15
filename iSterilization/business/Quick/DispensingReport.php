@@ -24,61 +24,61 @@ class dispensingreport extends Report {
             declare
                 @id int = :id;
             
-		select
-			--am.*,
-			fp.barcode,
-			ami.*,
-			t.id,
-			t.materialid,
-			t.materialcode,
-			t.materialname,
-			q.materialboxcode,
-			q.materialboxname,
-			t.proprietaryname,
-			dbo.getEnum('outputtype',ami.outputtype) as outputtypedescription
-		from
-			armorymovement am
-			inner join armorymovementoutput amo on ( amo.id = am.id )
-			inner join armorymovementitem ami on ( ami.armorymovementid = am.id )
-			inner join flowprocessingstep fps on ( fps.id = ami.flowprocessingstepid )
-			inner join flowprocessing fp on ( fp.id = fps.flowprocessingid )
-			cross apply (
-				select
-					max(a.id) as id,
-					m.materialid,
-					m.barcode	as materialcode,
-					m.name		as materialname,
-					m.proprietaryname
-				from
-					flowprocessingstep a
-					cross apply (
-						select
-							fpsm.materialid,
-							ib.barcode,
-							ib.name,
-							p.name as proprietaryname
-						from
-							flowprocessingstepmaterial fpsm
-							inner join itembase ib on ( ib.id = fpsm.materialid )
-							inner join proprietary p on ( p.id = ib.proprietaryid )
-						where fpsm.flowprocessingstepid = a.id
-					) m
-				where a.flowprocessingid = fp.id
-				 and ( a.stepflaglist like '%001%' or a.stepflaglist like '%019%' )
-				group by m.materialid, m.barcode, m.name, m.proprietaryname
-			) t
-			outer apply (
-				select
-					mb.name		as materialboxname,
-					mb.barcode	as materialboxcode
-				from
-					materialbox mb
-				where mb.id = fp.materialboxid
-			) q
-		where am.releasestype = 'E'
-		  and am.movementtype = '002'
-		  and am.id = @id
-		order by ami.id, q.materialboxcode, t.materialcode";
+            select
+                --am.*,
+                fp.barcode,
+                ami.*,
+                t.id,
+                t.materialid,
+                t.materialcode,
+                t.materialname,
+                q.materialboxcode,
+                q.materialboxname,
+                t.proprietaryname,
+                dbo.getEnum('outputtype',ami.outputtype) as outputtypedescription
+            from
+                armorymovement am
+                inner join armorymovementoutput amo on ( amo.id = am.id )
+                inner join armorymovementitem ami on ( ami.armorymovementid = am.id )
+                inner join flowprocessingstep fps on ( fps.id = ami.flowprocessingstepid )
+                inner join flowprocessing fp on ( fp.id = fps.flowprocessingid )
+                cross apply (
+                    select
+                        max(a.id) as id,
+                        m.materialid,
+                        m.barcode	as materialcode,
+                        m.name		as materialname,
+                        m.proprietaryname
+                    from
+                        flowprocessingstep a
+                        cross apply (
+                            select
+                                fpsm.materialid,
+                                ib.barcode,
+                                ib.name,
+                                p.name as proprietaryname
+                            from
+                                flowprocessingstepmaterial fpsm
+                                inner join itembase ib on ( ib.id = fpsm.materialid )
+                                inner join proprietary p on ( p.id = ib.proprietaryid )
+                            where fpsm.flowprocessingstepid = a.id
+                        ) m
+                    where a.flowprocessingid = fp.id
+                     and ( a.stepflaglist like '%001%' or a.stepflaglist like '%019%' )
+                    group by m.materialid, m.barcode, m.name, m.proprietaryname
+                ) t
+                outer apply (
+                    select
+                        mb.name		as materialboxname,
+                        mb.barcode	as materialboxcode
+                    from
+                        materialbox mb
+                    where mb.id = fp.materialboxid
+                ) q
+            where am.releasestype = 'E'
+              and am.movementtype = '002'
+              and am.id = @id
+            order by ami.id, q.materialboxcode, t.materialcode";
 
         $pdo = $this->getProxy()->prepare($sql);
         $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
