@@ -34,7 +34,8 @@ class dispensingreport extends Report {
                 q.materialboxcode,
                 q.materialboxname,
                 t.proprietaryname,
-                dbo.getEnum('outputtype',ami.outputtype) as outputtypedescription
+                dbo.getEnum('outputtype',ami.outputtype) as outputtypedescription,
+				t.items
             from
                 armorymovement am
                 inner join armorymovementoutput amo on ( amo.id = am.id )
@@ -47,7 +48,8 @@ class dispensingreport extends Report {
                         m.materialid,
                         m.barcode	as materialcode,
                         m.name		as materialname,
-                        m.proprietaryname
+                        m.proprietaryname,
+						m.items
                     from
                         flowprocessingstep a
                         cross apply (
@@ -55,7 +57,10 @@ class dispensingreport extends Report {
                                 fpsm.materialid,
                                 ib.barcode,
                                 ib.name,
-                                p.name as proprietaryname
+                                p.name as proprietaryname,
+								items = (
+									select count(id) from flowprocessingstepmaterial where flowprocessingstepid = fpsm.flowprocessingstepid
+								)
                             from
                                 flowprocessingstepmaterial fpsm
                                 inner join itembase ib on ( ib.id = fpsm.materialid )
@@ -64,7 +69,7 @@ class dispensingreport extends Report {
                         ) m
                     where a.flowprocessingid = fp.id
                      and ( a.stepflaglist like '%001%' or a.stepflaglist like '%019%' )
-                    group by m.materialid, m.barcode, m.name, m.proprietaryname
+                    group by m.materialid, m.barcode, m.name, m.proprietaryname, m.items
                 ) t
                 outer apply (
                     select
@@ -238,6 +243,7 @@ class dispensingreport extends Report {
             $this->configStyleDetail();
             $this->SetFont('LucidaSans-Typewriter', '', 6);
 
+            $items = $item['items'];
             $newbarcode = $item['barcode'];
             $materialname = $item['materialname'];
             $materialcode = $item['materialcode'];
@@ -256,10 +262,11 @@ class dispensingreport extends Report {
                 if((strlen($barcode) != 0)) {
                     $this->Cell($sw * 0.7, 5, $newbarcode, 0, 0, 'C', $lineColor);
                     $this->SetFont('LucidaSans-Typewriter', '', 9);
-                    $this->Cell($sw * 3.3, 5, $materialboxname, 'L', 0, 'L', $lineColor);
+                    $this->Cell($sw * 3.3, 5, "$materialboxname - $items item(s)", 'L', 0, 'L', $lineColor);
+                    $this->SetFont('LucidaSans-Typewriter', '', 6);
                     $this->Cell($sw * 1.0, 5, $proprietaryname, 'L', 0, 'L', $lineColor);
                     $this->Cell($sw * 1.0, 5, $outputtypedescription, 'L', 1, 'L', $lineColor);
-                    $this->SetFont('LucidaSans-Typewriter', '', 6);
+
                     $this->Cell($sw * 0.7,4, "",0,0,'C',$lineColor);
                     $this->Cell($sw * 3.3,4, "  $materialcode $materialname",'L',0,'L',$lineColor);
                     $this->Cell($sw * 1.0,4, "",'L',0,'L',$lineColor);
