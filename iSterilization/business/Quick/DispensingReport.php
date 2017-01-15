@@ -25,7 +25,6 @@ class dispensingreport extends Report {
                 @id int = :id;
             
             select
-                --am.*,
                 fp.barcode,
                 ami.*,
                 t.id,
@@ -88,10 +87,6 @@ class dispensingreport extends Report {
 
     }
 
-    public function posConstruct() {
-        parent::posConstruct();
-    }
-
     public function getHeaderColumns() {
         $sw = $this->squareWidth;
 
@@ -100,10 +95,9 @@ class dispensingreport extends Report {
 //        $this->SetFillColor(245, 242, 198);
 
         $this->Cell($sw * 0.7,7,utf8_decode('Processo'),'B',0,'C',1);
-        $this->Cell($sw * 1.3,7,utf8_decode('Kit'),'B',0,'L',1);
-        $this->Cell($sw * 2.5,7,utf8_decode('Material'),'B',0,'L',1);
-        $this->Cell($sw * 0.75,7,utf8_decode('Proprietário'),'B',0,'L',1);
-        $this->Cell($sw * 0.75,7,utf8_decode('Tipo de Saída'),'B',1,'L',1);
+        $this->Cell($sw * 3.3,7,utf8_decode('Kit / Material'),'B',0,'L',1);
+        $this->Cell($sw * 1.0,7,utf8_decode('Proprietário'),'B',0,'L',1);
+        $this->Cell($sw * 1.0,7,utf8_decode('Tipo de Saída'),'B',1,'L',1);
     }
 
     public function Header() {
@@ -160,8 +154,6 @@ class dispensingreport extends Report {
         $patientname = $rows[0]['patientname'];
         $surgicalwarning = $rows[0]['surgicalwarning'];
 
-        $circulante = 'Circulante Geral';
-//        $datamovimento = new \DateTime($rows[0]['movementdate']);
         $datamovimento = new \DateTime("$dateof $timeof");
 
         $sw = $this->squareWidth;
@@ -241,7 +233,7 @@ class dispensingreport extends Report {
 
         foreach($this->rows as $item) {
 
-            $barcode = '';
+            $barcode = "";
 
             $this->configStyleDetail();
             $this->SetFont('LucidaSans-Typewriter', '', 6);
@@ -249,6 +241,7 @@ class dispensingreport extends Report {
             $newbarcode = $item['barcode'];
             $materialname = $item['materialname'];
             $materialcode = $item['materialcode'];
+            $materialboxcode = $item['materialboxcode'];
             $materialboxname = $item['materialboxname'];
             $proprietaryname = $item['proprietaryname'];
             $outputtypedescription = $item['outputtypedescription'];
@@ -259,11 +252,30 @@ class dispensingreport extends Report {
                 $barcode = $newbarcode;
             }
 
-            $this->Cell($sw * 0.7,5, $barcode,0,0,'C',$lineColor);
-            $this->Cell($sw * 1.3,5, (strlen($barcode) != 0) ? $materialboxname : '','L',0,'L',$lineColor);
-            $this->Cell($sw * 2.5,5, $materialcode . ' ' . $materialname,'L',0,'L',$lineColor);
-            $this->Cell($sw * 0.75,5, (strlen($barcode) != 0) ? $proprietaryname : '','L',0,'L',$lineColor);
-            $this->Cell($sw * 0.75,5, (strlen($barcode) != 0) ? $outputtypedescription : '','L',1,'L',$lineColor);
+            if(strlen($materialboxcode) != 0) {
+                if((strlen($barcode) != 0)) {
+                    $this->Cell($sw * 0.7, 5, $newbarcode, 0, 0, 'C', $lineColor);
+                    $this->SetFont('LucidaSans-Typewriter', '', 9);
+                    $this->Cell($sw * 3.3, 5, $materialboxname, 'L', 0, 'L', $lineColor);
+                    $this->Cell($sw * 1.0, 5, $proprietaryname, 'L', 0, 'L', $lineColor);
+                    $this->Cell($sw * 1.0, 5, $outputtypedescription, 'L', 1, 'L', $lineColor);
+                    $this->SetFont('LucidaSans-Typewriter', '', 6);
+                    $this->Cell($sw * 0.7,4, "",0,0,'C',$lineColor);
+                    $this->Cell($sw * 3.3,4, "  $materialcode $materialname",'L',0,'L',$lineColor);
+                    $this->Cell($sw * 1.0,4, "",'L',0,'L',$lineColor);
+                    $this->Cell($sw * 1.0,4, "",'L',1,'L',$lineColor);
+                } else {
+                    $this->Cell($sw * 0.7,4, "",0,0,'C',$lineColor);
+                    $this->Cell($sw * 3.3,4, "  $materialcode $materialname",'L',0,'L',$lineColor);
+                    $this->Cell($sw * 1.0,4, "",'L',0,'L',$lineColor);
+                    $this->Cell($sw * 1.0,4, "",'L',1,'L',$lineColor);
+                }
+            } else {
+                $this->Cell($sw * 0.7,5, $barcode,0,0,'C',$lineColor);
+                $this->Cell($sw * 3.3,5, "$materialcode $materialname",'L',0,'L',$lineColor);
+                $this->Cell($sw * 1.0,5, $proprietaryname,'L',0,'L',$lineColor);
+                $this->Cell($sw * 1.0,5, $outputtypedescription,'L',1,'L',$lineColor);
+            }
 
             $oldbarcode = $newbarcode;
 
