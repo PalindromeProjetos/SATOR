@@ -57,6 +57,7 @@ Ext.define( 'Smart.ux.main.MainModuleSearch', {
         minWidth:300,
         maxHeight:400
     },
+    
     matchFieldWidth: false,
 
     // template for the content List

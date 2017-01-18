@@ -9,6 +9,7 @@ Ext.define( 'iTools.view.main.Main', {
     requires: [
         'Ext.form.Panel',
         'Ext.plugin.Viewport',
+        'Smart.ux.main.MainModuleSearch',
         'iTools.view.main.MainController',
         'iAdmin.view.helper.areas.CMESubAreasSearch'
     ],
@@ -86,13 +87,14 @@ Ext.define( 'iTools.view.main.Main', {
                         defaultType: 'textfield',
                         defaults: {
                             anchor: '100%',
-                            allowBlank: false,
+                            allowBlank: true,
                             fieldCls: 'smart-field-style-login'
                         },
                         items: [
                             {
                                 pageSize: 5,
                                 editable: false,
+                                allowBlank: false,
                                 name: 'areasname',
                                 cls: 'workstation',
                                 fieldLabel: 'Área',
@@ -111,9 +113,13 @@ Ext.define( 'iTools.view.main.Main', {
                                     '</tpl>'
                                 ]
                             }, {
-                                allowBlank: true,
                                 name: 'printlocate',
                                 fieldLabel: 'Impressora'
+                            }, {
+                                cls: 'workstation',
+                                fieldLabel: 'Retornar',
+                                matchFieldWidth: true,
+                                xtype: 'mainmodulesearch'
                             }, {
                                 height: 20,
                                 xtype: 'container'

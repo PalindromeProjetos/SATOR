@@ -1,6 +1,6 @@
 {
     "name": "iTools",
-    "version": "1.0.0.36",
+    "version": "1.0.0.38",
     "indexHtmlPath": "index.html",
     "classpath": [
         "app",
@@ -186,6 +186,6 @@
     "buildby": {
         "application": "production",
         "logusername": "DSADES21",
-        "lastdateapp": "2017-01-18 00:14"
+        "lastdateapp": "2017-01-18 12:33"
     }
 }

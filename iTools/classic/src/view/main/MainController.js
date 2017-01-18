@@ -69,7 +69,6 @@ Ext.define( 'iTools.view.main.MainController', {
         };
 
         var setKeys = function () {
-            storage.del('workstation');
             return storage.set('workstation', JSON.stringify(workstation));
         };
 
