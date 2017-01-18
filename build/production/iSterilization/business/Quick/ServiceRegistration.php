@@ -196,8 +196,4 @@ class serviceregistration extends Report {
         $this->Cell($sw * 2.0,4, utf8_decode("Encerrado por"),'T',1,'C');
     }
 
-    public function Footer() {
-        $this->loadFooter($this->getInternalW(),false);
-    }
-
 }

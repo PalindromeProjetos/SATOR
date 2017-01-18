@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html manifest="">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <title>iTools</title>
+
+    
+    <script type="text/javascript">
+        var Ext = Ext || {};
+
+        // This function is called by the Microloader after it has performed basic
+        // device detection. The results are provided in the "tags" object. You can
+        // use these tags here or even add custom tags. These can be used by platform
+        // filters in your manifest or by platformConfig expressions in your app.
+        //
+        Ext.beforeLoad = function (tags) {
+            var s = location.search,  // the query string (ex "?foo=1&bar")
+                    profile = 'classic';
+
+            Ext.manifest = profile;
+        };
+    </script>
+    
+    
+    <!-- The line below must be kept intact for Sencha Cmd to build your application -->
+    <script id="microloader" data-app="8991bc16-c864-4c94-a13a-76c36293349d" type="text/javascript" src="bootstrap.js"></script>
+
+</head>
+<body>
+
+    <a class="buildapp" id="buildapp"></a>
+
+    <div id="preloader">
+        <div class="loader">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
+    <audio id="audio" src="../resources/sounds/pipe5.wav" ></audio>
+
+    <div id="marquee" class="marquee down">
+        <p><a class="one"></a></p>
+        <p><a class="two"></a></p>
+    </div>
+
+</body>
+</html>

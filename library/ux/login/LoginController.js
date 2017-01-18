@@ -147,18 +147,20 @@ Ext.define( 'Smart.ux.login.LoginController', {
                 imageLogo = imageInfo ? Ext.String.format("data:{0};base64,{1}", imageInfo.fileType, rows.logodata) : null,
                 photoData = photoInfo ? Ext.String.format("data:{0};base64,{1}", photoInfo.fileType, rows.filedata) : null;
 
-            main.down('image[name=filedata]').setSrc(photoData);
-            main.down('image[name=filelogo]').setSrc(imageLogo);
-            main.down('mainmodulesearch').setRawValue(rows.legalname);
-            main.down('tbtext[name=username]').update(Ext.String.format('<a>{0}</a>',rows.fullname));
+            if(main.down('image[name=filedata]')) {
+                main.down('image[name=filedata]').setSrc(photoData);
+                main.down('image[name=filelogo]').setSrc(imageLogo);
+                main.down('mainmodulesearch').setRawValue(rows.legalname);
+                main.down('tbtext[name=username]').update(Ext.String.format('<a>{0}</a>',rows.fullname));
 
-            link.href = imageLogo;
-            link.type = 'image/x-icon';
-            link.rel = 'shortcut icon';
+                link.href = imageLogo;
+                link.type = 'image/x-icon';
+                link.rel = 'shortcut icon';
 
-            Ext.getBody().onBefore('unload', 'onUnLoad', this);
+                Ext.getBody().onBefore('unload', 'onUnLoad', this);
 
-            document.getElementsByTagName('head')[0].appendChild(link);
+                document.getElementsByTagName('head')[0].appendChild(link);
+            }
 
             var expireto = new Date(rows.lastactivity);
             expireto.setDate(expireto.getDate() + 364);

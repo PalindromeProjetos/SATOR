@@ -15,11 +15,6 @@ class Report extends FPDF {
     protected $entity = [];
     protected $margin = 12;
 
-    /**
-     * Instância da Sessão
-     *
-     * @var null|Session
-     */
     public $stash = null;
 
     protected $translate = array(
@@ -48,12 +43,6 @@ class Report extends FPDF {
         )
     );
 
-    /**
-     * @param $month
-     * @param $year
-     * @return bool|int|string
-     * @author http://phil.lavin.me.uk/2013/02/php-find-number-of-weeks-in-a-given-month/#codesyntax_1
-     */
     protected function weekInMonth($month, $year) {
         $start = mktime(0, 0, 0, $month, 1, $year);
         $end = mktime(0, 0, 0, $month, date('t', $start), $year);
@@ -124,6 +113,10 @@ class Report extends FPDF {
             $this->Image($name,$posX,$posY,$sizeW,$sizeH);
             unlink($name);
         }
+    }
+
+    public function Detail() {
+
     }
 
     public function posConstruct() {

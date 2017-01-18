@@ -1,0 +1,191 @@
+{
+    "name": "iTools",
+    "version": "1.0.0.35",
+    "indexHtmlPath": "index.html",
+    "classpath": [
+        "app",
+        "${toolkit.name}/src",
+        "${app.dir}/../library",
+        "${app.dir}/../iAdmin/app/store",
+        "${app.dir}/../iAdmin/app/model",
+        "${app.dir}/../iAdmin/classic/src/view/helper/areas"
+    ],
+    "overrides": [
+        "overrides",
+        "${app.dir}/../overrides",
+        "${toolkit.name}/overrides"
+    ],
+    "locale": "pt_BR",
+    "framework": "ext",
+    "requires": [
+        "font-awesome"
+    ],
+    "fashion": {
+        "inliner": {
+            "enable": false
+        }
+    },
+    "sass": {
+        "namespace": "iTools",
+        "etc": [
+            "sass/etc/all.scss",
+            "${toolkit.name}/sass/etc/all.scss"
+        ],
+        "var": [
+            "sass/var/all.scss",
+            "sass/var",
+            "${toolkit.name}/sass/var"
+        ],
+        "src": [
+            "sass/src",
+            "${toolkit.name}/sass/src"
+        ]
+    },
+    "js": [
+        {
+            "path": "app.js",
+            "bundle": true
+        },
+        {
+            "path": "../library/crossdomain/lib/hub.js"
+        },
+        {
+            "path": "../library/crossdomain/lib/client.js"
+        }
+    ],
+    "classic": {
+        "js": [
+            {
+                "path": "${framework.dir}/build/ext-all-rtl-debug.js"
+            }
+        ]
+    },
+    "modern": {
+        "js": [
+            {
+                "path": "${framework.dir}/build/ext-modern-all-debug.js"
+            }
+        ]
+    },
+    "css": [
+        {
+            "path": "resources/iTools.css"
+        },
+        {
+            "path": "../resources/SATOR.css"
+        },
+        {
+            "path": "../resources/Smart.css"
+        },
+        {
+            "path": "../resources/SmartButton.css"
+        },
+        {
+            "path": "../resources/FontFamily.css"
+        },
+        {
+            "path": "../resources/Fontello.css"
+        },
+        {
+            "path": "../resources/Animate.css"
+        },
+        {
+            "path": "${build.out.css.path}",
+            "bundle": true,
+            "exclude": [
+                "fashion"
+            ]
+        }
+    ],
+    "loader": {
+        "cache": false,
+        "cacheParam": "_dc"
+    },
+    "production": {
+        "output": {
+            "appCache": {
+                "enable": true,
+                "path": "cache.appcache"
+            }
+        },
+        "loader": {
+            "cache": "${build.timestamp}"
+        },
+        "cache": {
+            "enable": true
+        },
+        "compressor": {
+            "type": "yui"
+        }
+    },
+    "testing": {},
+    "development": {
+        "tags": []
+    },
+    "bootstrap": {
+        "base": "${app.dir}",
+        "manifest": "${build.id}.json",
+        "microloader": "bootstrap.js",
+        "css": "bootstrap.css"
+    },
+    "output": {
+        "base": "${workspace.build.dir}/${build.environment}/${app.name}",
+        "page": "index.html",
+        "manifest": "${build.id}.json",
+        "js": "${build.id}/app.js",
+        "appCache": {
+            "enable": false
+        },
+        "resources": {
+            "path": "${build.id}/resources",
+            "shared": "resources"
+        }
+    },
+    "cache": {
+        "enable": false,
+        "deltas": "${build.id}/deltas"
+    },
+    "appCache": {
+        "cache": [
+            "index.html"
+        ],
+        "network": [
+            "*"
+        ],
+        "fallback": []
+    },
+    "resources": [
+        {
+            "path": "resources",
+            "output": "shared"
+        },
+        {
+            "path": "${toolkit.name}/resources"
+        },
+        {
+            "path": "${build.id}/resources"
+        }
+    ],
+    "ignore": [
+        "(^|/)CVS(/?$|/.*?$)"
+    ],
+    "archivePath": "archive/${build.id}",
+    "builds": {
+        "classic": {
+            "toolkit": "classic",
+            "theme": "theme-triton",
+            "sass": {}
+        },
+        "modern": {
+            "toolkit": "modern",
+            "theme": "theme-triton",
+            "sass": {}
+        }
+    },
+    "id": "8991bc16-c864-4c94-a13a-76c36293349d",
+    "buildby": {
+        "application": "production",
+        "logusername": "DSADES21",
+        "lastdateapp": "2017-01-17 23:40"
+    }
+}

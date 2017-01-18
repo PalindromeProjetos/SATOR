@@ -292,6 +292,19 @@ Ext.define( 'Ext.overrides.app.BaseController', {
             docElm.msRequestFullscreen();
             me.fullscreenState = 'yep';
         }
+    },
+
+    onAppUpdate: function () {
+        var me = this;
+
+        Ext.Msg.confirm('Atualizar a aplicação', 'Esta aplicação não está atualizada, recarregar?',
+            function (choice) {
+                if (choice === 'yes') {
+                    me.redirectTo(Ext.manifest.name.toLowerCase());
+                    window.location.reload();
+                }
+            }
+        );
     }
 
 });
