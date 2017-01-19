@@ -25,13 +25,15 @@ Ext.define( 'Ext.overrides.app.BaseController', {
             idValue = fm.getForm().findField(idName).getValue(),
             defaultParams = { action: 'update', rows: Ext.encode(values) };
 
-        if(fm.isValid() === false) {
+        if (fm.isValid() === false) {
+
             Ext.Msg.show({
                 icon: Ext.Msg.WARNING,
                 buttons: Ext.Msg.CANCEL,
                 title: 'Campos inválidos!',
                 msg: 'Existem campos que não foram corretamente preenchidos...'
             });
+
             return false;
         }
 
@@ -111,10 +113,10 @@ Ext.define( 'Ext.overrides.app.BaseController', {
         if(fm.isValid() === false) {
 
             Ext.Msg.show({
-                title: 'Campos inválidos!',
-                msg: 'Existem campos que não foram corretamente preenchidos...',
+                icon: Ext.Msg.WARNING,
                 buttons: Ext.Msg.CANCEL,
-                icon: Ext.Msg.WARNING
+                title: 'Campos inválidos!',
+                msg: 'Existem campos que não foram corretamente preenchidos...'
             });
 
             return false;

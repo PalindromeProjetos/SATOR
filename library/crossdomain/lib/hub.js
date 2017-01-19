@@ -38,7 +38,8 @@ CrossStorageHub._listener = function(message) {
 	var origin, targetOrigin, request, method, error, result, response;
 
 	// postMessage returns the string "null" as the origin for "file://"
-	origin = (message.origin === 'null') ? 'file://' : message.origin;
+	//origin = (message.origin === 'null') ? 'file://' : message.origin;
+	origin = (message.origin === 'null') ? 'file://' : message.source.location.href ;
 
 	// Handle polling for a ready message
 	if (message.data === 'cross-storage:poll') {

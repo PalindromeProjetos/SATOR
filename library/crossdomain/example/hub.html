@@ -6,7 +6,13 @@
 	<body>
 		<script type="text/javascript" src="../lib/hub.js"></script>
 		<script type="text/javascript">
-			CrossStorageHub.init([{origin: /.*localhost$/, allow: ['get', 'set', 'del']}]);
+			CrossStorageHub.init([
+				{ origin: /.*localhost\/SATOR-(pro|dev)\/.*?/, allow: ['get', 'set', 'del'] }
+			]);
+//			CrossStorageHub.init([{origin: /https?:\/\/.*\/SATOR-(pro|dev)\/.*?/, allow: ['get', 'set', 'del']}]);
+//			CrossStorageHub.init([{origin: /.*localhost$/, allow: ['get', 'set', 'del']}]);
 		</script>
 	</body>
 </html>
+
+<!--http://localhost/SATOR-dev/iTools/#itools-->
