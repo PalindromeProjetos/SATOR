@@ -70,8 +70,29 @@ Ext.define( 'iAdmin.view.sterilizationtype.SterilizationTypeEdit', {
                         },
                         items: [
                             {
-                                name: 'name',
-                                fieldLabel: 'Nome'
+                                xtype: 'container',
+                                layout: 'hbox',
+                                labelCls: 'sub-title-label',
+                                defaultType: 'textfield',
+                                defaults: {
+                                    anchor: '100%',
+                                    allowBlank: false,
+                                    fieldStyle: { fontSize: '16px;' }
+                                },
+                                items: [
+                                    {
+                                        flex: 1,
+                                        name: 'name',
+                                        fieldLabel: 'Nome',
+                                        margin: '0 5 0 0'
+                                    }, {
+                                        width: 140,
+                                        fieldLabel: 'Tipo',
+                                        xtype: 'comboenum',
+                                        name: 'flowtypedescription',
+                                        margin: '0 0 0 5'
+                                    }
+                                ]
                             }, {
                                 xtype: 'container',
                                 layout: 'hbox',
@@ -84,18 +105,18 @@ Ext.define( 'iAdmin.view.sterilizationtype.SterilizationTypeEdit', {
                                 },
                                 items: [
                                     {
-                                        flex: 3,
+                                        flex: 1,
                                         name: 'description',
-                                        fieldLabel: 'Descrição'
+                                        fieldLabel: 'Descrição',
+                                        margin: '0 5 0 0'
                                     }, {
-                                        xtype: 'splitter'
-                                    }, {
-                                        flex: 2,
+                                        width: 140,
                                         minValue: 1,
                                         hideTrigger: true,
                                         fieldLabel: 'Validade',
                                         xtype: 'numberfield',
-                                        name: 'validity'
+                                        name: 'validity',
+                                        margin: '0 0 0 5'
                                     }
                                 ]
                             }, {

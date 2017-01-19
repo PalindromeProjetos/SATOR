@@ -13,7 +13,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingUser', {
 
     controller: 'flowprocessing',
 
-    width: 300,
+    width: 400,
     modal: true,
     layout: 'fit',
     header: false,

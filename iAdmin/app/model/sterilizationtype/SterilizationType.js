@@ -46,6 +46,11 @@ Ext.define( 'iAdmin.model.sterilizationtype.SterilizationType', {
         }, {
             name: 'validity',
             type: 'int'
+        }, {
+            name: 'flowtype',
+            type: 'auto',
+            persist: true,
+            critical: true
         }
     ]
 

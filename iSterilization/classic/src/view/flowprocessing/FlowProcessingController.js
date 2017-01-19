@@ -465,6 +465,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             case 'SATOR_PROCESSAR_ITENS':
                 me.callSATOR_PROCESSAR_ITENS();
                 break;
+            case 'SATOR_PROCESSA_TECIDO':
+                me.callSATOR_PROCESSA_TECIDO();
+                break;
             case 'SATOR_REVERTE_FASE':
                 me.callSATOR_REVERTE_FASE();
                 break;
@@ -1693,6 +1696,37 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             };
 
         if (Smart.workstation.startreader != 1) {
+            Smart.ion.sound.play("computer_error");
+            Smart.Msg.showToast('Protocolo inválido para esta área', 'error');
+            return false;
+        }
+
+        Ext.widget('flowprocessinguser', {
+            scope: me,
+            doCallBack: doCallBack
+        }).show(null,function () {
+            this.down('form').reset();
+            this.down('textfield[name=usercode]').focus(false,200);
+        });
+    },
+
+    callSATOR_PROCESSA_TECIDO: function () {
+        var me = this,
+            view = me.getView(),
+            doCallBack = function (rows) {
+                Ext.widget('flowprocessingwoof').show(null,function () {
+                    this.master = view;
+                    // this.down('searchmaterial').focus(false,200);
+                    this.down('textfield[name=username]').setValue(rows.username);
+                    this.down('hiddenfield[name=areasid]').setValue(Smart.workstation.areasid);
+                    this.down('textfield[name=areasname]').setValue(Smart.workstation.areasname);
+                });
+
+                return true;
+            };
+
+        if (Smart.workstation.startreader != 1) {
+            Smart.ion.sound.play("computer_error");
             Smart.Msg.showToast('Protocolo inválido para esta área', 'error');
             return false;
         }

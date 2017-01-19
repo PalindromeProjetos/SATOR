@@ -74,6 +74,10 @@ Ext.define( 'iAdmin.view.sterilizationtype.SterilizationTypeList', {
                         text: 'Descrição',
                         dataIndex: 'description'
                     }, {
+                        width: 140,
+                        text: 'Tipo',
+                        dataIndex: 'flowtypedescription'
+                    }, {
                         width: 100,
                         text: 'Versão',
                         dataIndex: 'version'

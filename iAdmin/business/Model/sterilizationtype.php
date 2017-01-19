@@ -69,6 +69,18 @@ class sterilizationtype extends \Smart\Data\Model {
     private $validity;
 
     /**
+     * @Policy {"nullable":false}
+     * @Column {"description":"", "type":"string", "policy":true, "logallow":true, "default":"001"}
+     */
+    private $flowtype;
+
+    /**
+     * @Policy {"nullable":true}
+     * @Column {"description":"", "type":"formula", "policy":false, "logallow":true, "default":"getEnumSearch,flowtype"}
+     */
+    private $flowtypedescription;
+
+    /**
      * @return type integer
      */
     public function getId() {
@@ -225,6 +237,22 @@ class sterilizationtype extends \Smart\Data\Model {
      */
     public function setValidity($validity) {
         $this->validity = $validity;
+        return $this;
+    }
+
+    /**
+     * @return type string
+     */
+    public function getFlowtype() {
+        return $this->flowtype;
+    }
+
+    /**
+     * @param type $flowtype
+     * @return \iAdmin\Model\sterilizationtype
+     */
+    public function setFlowtype($flowtype) {
+        $this->flowtype = $flowtype;
         return $this;
     }
 
