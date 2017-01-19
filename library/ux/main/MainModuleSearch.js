@@ -64,7 +64,7 @@ Ext.define( 'Smart.ux.main.MainModuleSearch', {
     tpl: [
         '<tpl for=".">',
             '<div class="x-boundlist-item">',
-                '<img src="{filetype}" style="width: 42px; float: left; margin-right: 10px;">',
+                '<img src="{filetype}" style="width: 42px; float: left; margin: 8px 10px 0 0;">',
                 '<div style="font-size: 22px;">{legalname}</div>',
                 '<div style="font-size: 14px;">{observation}</div>',
             '</div>',
