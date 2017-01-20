@@ -71,12 +71,6 @@ Ext.define( 'iSterilization.model.flowprocessing.FlowProcessingStep', {
             name: 'datefinal',
             type: 'auto'
         }, {
-            name: 'cyclestart',
-            type: 'auto'
-        }, {
-            name: 'cyclefinal',
-            type: 'auto'
-        }, {
             name: 'flowstepstatus',
             type: 'auto'
         }, {

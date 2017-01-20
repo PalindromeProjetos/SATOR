@@ -1716,7 +1716,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             doCallBack = function (rows) {
                 Ext.widget('flowprocessingwoof').show(null,function () {
                     this.master = view;
-                    // this.down('searchmaterial').focus(false,200);
+                    this.down('searchmaterial').focus(false,200);
                     this.down('textfield[name=username]').setValue(rows.username);
                     this.down('hiddenfield[name=areasid]').setValue(Smart.workstation.areasid);
                     this.down('textfield[name=areasname]').setValue(Smart.workstation.areasname);
@@ -2058,6 +2058,15 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         combo.store.setParams({ materialid: rec.get('id') });
     },
 
+    onBeforeQuerySterilizationWoof: function (queryPlan , eOpts) {
+        var combo = queryPlan.combo;
+
+        delete combo.lastQuery;
+        combo.store.removeAll();
+
+        combo.store.setParams({ method: 'selectOpenSterilizationTypeWoof' });
+    },    
+    
     onSelectClient: function (combo,record,eOpts) {
         var me = this,
             view = me.getView(),

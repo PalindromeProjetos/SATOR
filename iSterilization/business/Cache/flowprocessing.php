@@ -175,9 +175,15 @@ class flowprocessing extends \Smart\Data\Cache {
 
     public function selectOpenSterilizationType(array $data) {
         $materialid = $data['materialid'];
+        $flowtype = isset($data['flowtype']) ? $data['flowtype'] : '001';
+
         $proxy = $this->getStore()->getProxy();
 
         $sql = "
+            declare
+                @flowtype char(3) = :flowtype,
+                @materialid int = :materialid;
+
             select
                 st.id,
                 st.name,
@@ -189,11 +195,47 @@ class flowprocessing extends \Smart\Data\Cache {
                 inner join material m on ( m.id = ib.id )
                 inner join materialtypeflow mtf on ( mtf.materialid = m.id )
                 inner join sterilizationtype st on ( st.id = mtf.sterilizationtypeid )
-            where mtf.materialid = :materialid";
+            where ST.flowtype = @flowtype 
+              and mtf.materialid = @materialid";
 
         try {
             $pdo = $proxy->prepare($sql);
+            $pdo->bindValue(":flowtype", $flowtype, \PDO::PARAM_STR);
             $pdo->bindValue(":materialid", $materialid, \PDO::PARAM_INT);
+            $pdo->execute();
+            $rows = $pdo->fetchAll();
+
+            self::_setRows($rows);
+
+        } catch ( \PDOException $e ) {
+            self::_setSuccess(false);
+            self::_setText($e->getMessage());
+        }
+
+        return self::getResultToJson();
+    }
+
+    public function selectOpenSterilizationTypeWoof(array $data) {
+        $query = $data['query'];
+        $proxy = $this->getStore()->getProxy();
+
+        $sql = "
+            declare
+                @query varchar(60) = :query;
+                
+            select
+                st.id,
+                st.name,
+                'N' as prioritylevel,
+                dbo.getEnum('prioritylevel','N') as priorityleveldescription,
+                st.name +' ('+ dbo.getEnum('prioritylevel','N') +')' as sterilizationpriority
+            from
+                sterilizationtype st
+            where st.flowtype = '002' and st.name COLLATE Latin1_General_CI_AI LIKE @query";
+
+        try {
+            $pdo = $proxy->prepare($sql);
+            $pdo->bindValue(":query", $query, \PDO::PARAM_INT);
             $pdo->execute();
             $rows = $pdo->fetchAll();
 

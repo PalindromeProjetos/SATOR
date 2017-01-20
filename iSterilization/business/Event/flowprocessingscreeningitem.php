@@ -45,12 +45,12 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
     public function preInsert( \iSterilization\Model\flowprocessingscreeningitem &$model ) {
         Session::hasProfile('','');
 
-		//$this->preInsertBeAvailable($model);
+        //$this->preInsertBeAvailable($model);
 
-		$materialid = $model->getMaterialid();
+        $materialid = $model->getMaterialid();
         $dataflowstep = $model->getDataflowstep();
-		$hasexception = $model->getHasexception();
-		$materialboxid = $model->getMaterialboxid();
+        $hasexception = $model->getHasexception();
+        $materialboxid = $model->getMaterialboxid();
         $sterilizationtypeid = $model->getSterilizationtypeid();
         $flowprocessingscreeningid = $model->getFlowprocessingscreeningid();
 
@@ -59,7 +59,7 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
         }
 
         $model->set('dataflowstep', null);
-		$model->set('hasexception', null);
+        $model->set('hasexception', null);
         $model->set('sterilizationtypeid', null);
 
         $proxy = $this->getProxy();
@@ -68,13 +68,13 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
 
         $box->getStore()->setProxy($proxy);
 
-        $data = self::jsonToObject($box->getStore()->getCache()->getBoxCount(array("query"=>$materialboxid)));
+        $data = self::jsonToObject($box->getStore()->getCache()->getBoxCount(array("query"=>$materialboxid, "id"=>$flowprocessingscreeningid)));
 
         if($data->rows->loads == 0) {
             $box->getStore()->getModel()->set('items', $data->rows->items);
             $box->getStore()->getModel()->set('dataflowstep', $dataflowstep);
-			$box->getStore()->getModel()->set('hasexception', $hasexception);
-			$box->getStore()->getModel()->set('materialid', $materialid);
+            $box->getStore()->getModel()->set('hasexception', $hasexception);
+            $box->getStore()->getModel()->set('materialid', $materialid);
             $box->getStore()->getModel()->set('materialboxid', $materialboxid);
             $box->getStore()->getModel()->set('sterilizationtypeid', $sterilizationtypeid);
             $box->getStore()->getModel()->set('flowprocessingscreeningid', $flowprocessingscreeningid);
@@ -157,6 +157,7 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
         $data = self::jsonToObject($item->getStore()->select());
 
         $materialboxid = $data->rows[0]->materialboxid;
+        $flowprocessingscreeningid = $data->rows[0]->flowprocessingscreeningid;
 
         if($materialboxid == null || strlen($materialboxid) == 0) {
             return false;
@@ -166,7 +167,7 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
 
         $box->getStore()->setProxy($proxy);
 
-        $item = self::jsonToObject($box->getStore()->getCache()->getBoxItems(array("query"=>$materialboxid)));
+        $item = self::jsonToObject($box->getStore()->getCache()->getBoxItems(array("query"=>$materialboxid, "id"=>$flowprocessingscreeningid)));
 
         if($item->rows->items == 1) {
             $box->getStore()->getModel()->set('id', $item->rows->id);

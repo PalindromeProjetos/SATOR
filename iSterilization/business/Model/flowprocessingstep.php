@@ -108,18 +108,6 @@ class flowprocessingstep extends \Smart\Data\Model {
      * @Policy {"nullable":true}
      * @Column {"description":"", "type":"string", "policy":true, "logallow":true, "default":""}
      */
-    private $cyclestart;
-
-    /**
-     * @Policy {"nullable":true}
-     * @Column {"description":"", "type":"string", "policy":true, "logallow":true, "default":""}
-     */
-    private $cyclefinal;
-
-    /**
-     * @Policy {"nullable":true}
-     * @Column {"description":"", "type":"string", "policy":true, "logallow":true, "default":""}
-     */
     private $exceptionby;
 
     /**
@@ -405,38 +393,6 @@ class flowprocessingstep extends \Smart\Data\Model {
      */
     public function setDatefinal($datefinal) {
         $this->datefinal = $datefinal;
-        return $this;
-    }
-
-    /**
-     * @return type string
-     */
-    public function getCyclestart() {
-        return $this->cyclestart;
-    }
-
-    /**
-     * @param type $cyclestart
-     * @return \iSterilization\Model\flowprocessingstep
-     */
-    public function setCyclestart($cyclestart) {
-        $this->cyclestart = $cyclestart;
-        return $this;
-    }
-
-    /**
-     * @return type string
-     */
-    public function getCyclefinal() {
-        return $this->cyclefinal;
-    }
-
-    /**
-     * @param type $cyclefinal
-     * @return \iSterilization\Model\flowprocessingstep
-     */
-    public function setCyclefinal($cyclefinal) {
-        $this->cyclefinal = $cyclefinal;
         return $this;
     }
 

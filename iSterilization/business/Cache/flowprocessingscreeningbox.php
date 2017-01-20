@@ -7,11 +7,13 @@ use iSterilization\Model\flowprocessingscreeningbox as Model;
 class flowprocessingscreeningbox extends \Smart\Data\Cache {
 
     public function getBoxCount(array $data) {
+        $id = $data['id'];
         $query = $data['query'];
         $proxy = $this->getStore()->getProxy();
 
         $sql = "
             declare
+                @id int = :id,
                 @materialboxid int = :materialboxid;
             
             select
@@ -25,12 +27,14 @@ class flowprocessingscreeningbox extends \Smart\Data\Cache {
 					from
 						flowprocessingscreeningbox
 					where materialboxid = @materialboxid
+					  and flowprocessingscreeningid = @id
 				) a
             where materialboxid = @materialboxid
 			group by a.loads;";
 
         try {
             $pdo = $proxy->prepare($sql);
+            $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
             $pdo->bindValue(":materialboxid", $query, \PDO::PARAM_INT);
             $pdo->execute();
             $rows = $pdo->fetchAll();
@@ -46,11 +50,13 @@ class flowprocessingscreeningbox extends \Smart\Data\Cache {
     }
 
     public function getBoxItems(array $data) {
+        $id = $data['id'];
         $query = $data['query'];
         $proxy = $this->getStore()->getProxy();
 
         $sql = "
             declare
+                @id int = :id,
                 @materialboxid int = :materialboxid;
             
             select
@@ -64,12 +70,15 @@ class flowprocessingscreeningbox extends \Smart\Data\Cache {
 					from
 						flowprocessingscreeningbox
 					where materialboxid = @materialboxid
+					  and flowprocessingscreeningid = @id
 				) a
-            where materialboxid = @materialboxid
+            where fpsi.materialboxid = @materialboxid
+              and fpsi.flowprocessingscreeningid = @id
 			group by a.id;";
 
         try {
             $pdo = $proxy->prepare($sql);
+            $pdo->bindValue(":id", $id, \PDO::PARAM_INT);
             $pdo->bindValue(":materialboxid", $query, \PDO::PARAM_INT);
             $pdo->execute();
             $rows = $pdo->fetchAll();

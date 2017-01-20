@@ -44,7 +44,7 @@ Ext.define( 'Smart.ux.main.Main', {
                         xtype: 'image',
                         name: 'filelogo'
                     }, {
-                        width: 230,
+                        width: 300,
                         xtype: 'mainmodulesearch'
                     }, {
                         xtype: 'tbfill'

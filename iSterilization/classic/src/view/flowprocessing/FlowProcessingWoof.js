@@ -18,7 +18,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingWoof', {
         'iSterilization.view.flowprocessing.SearchSterilizationType'
     ],
 
-    width: 600,
+    width: 850,
     modal: true,
     header: false,
     resizable: false,
@@ -60,7 +60,13 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingWoof', {
                         name: 'prioritylevel'
                     }, {
                         xtype: 'hiddenfield',
+                        name: 'materialboxid'
+                    }, {
+                        xtype: 'hiddenfield',
                         name: 'version'
+                    }, {
+                        xtype: 'hiddenfield',
+                        name: 'flowtype'
                     }, {
                         xtype: 'hiddenfield',
                         name: 'dataflowstep'
@@ -144,6 +150,35 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingWoof', {
                         items: [
                             {
                                 margin: '0 5 0 0',
+                                fieldLabel: 'Material',
+                                xtype: 'searchmaterial',
+                                hiddenNameId: 'materialid',
+                                name: 'materialname',
+                                readerBarCode: true,
+                                configStoreListeners: {
+                                    load: function (store, records, successful, operation, eOpts) {
+                                        var searchmaterial = me.down('searchmaterial');
+                                        if (store.getCount() == 1) {
+                                            var record = store.getAt(0);
+                                            if(record.get('areavailable') == 1) {
+                                                searchmaterial.fireEvent('nextfield',searchmaterial,eOpts);
+                                                searchmaterial.fireEvent('select', searchmaterial, record, eOpts);4
+                                            }
+                                        }
+                                        if (store.getCount() >= 2) {
+                                            searchmaterial.expand();
+                                        }
+                                    }
+                                },
+                                listeners: {
+                                    select: 'onSelectMaterial',
+                                    nextfield: 'nextFieldMaterial',
+                                    showclear: 'showClearMaterial',
+                                    beforedeselect: 'showClearMaterial'
+                                }
+                            }, {
+                                // pageSize: 0,
+                                margin: '0 0 0 5',
                                 fieldLabel: 'Fluxo e prioridade',
                                 hiddenNameId: 'sterilizationtypeid',
                                 xtype: 'searchsterilizationtype',
@@ -152,26 +187,13 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingWoof', {
                                     select: 'onSelectSterilization',
                                     beforequery: 'onBeforeQuerySterilization'
                                 }
-                            }, {
-                                pageSize: 0,
-                                margin: '0 0 0 5',
-                                fieldLabel: 'Origem (cliente)',
-                                xtype: 'clientsearch',
-                                name: 'clientname',
-                                hiddenNameId: 'clientid',
-                                listeners: {
-                                    select: 'onSelectClient',
-                                    showclear: 'showClearClient',
-                                    beforedeselect: 'showClearClient'
-                                }
                             }
                         ]
                     }, {
-                        margin: '0 0 20 0',
                         xtype: 'fieldcontainer',
                         layout: 'hbox',
-                        labelCls: 'sub-title-label',
-                        fieldLabel: 'Leitura',
+                        // labelCls: 'sub-title-label',
+                        // fieldLabel: 'Leitura',
                         defaultType: 'textfield',
                         defaults: {
                             flex: 1,
@@ -183,60 +205,45 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingWoof', {
                         items: [
                             {
                                 margin: '0 5 0 0',
-                                fieldLabel: 'Consulta',
-                                xtype: 'textfield',
-                                useUpperCase: true,
-                                name: 'materialboxname',
+                                pageSize: 0,
+                                fieldLabel: 'Origem (cliente)',
+                                xtype: 'clientsearch',
+                                name: 'clientname',
+                                hiddenNameId: 'clientid',
                                 listeners: {
-                                    specialkey: 'onReaderMaterialBoxCarga'
+                                    select: 'onSelectClient',
+                                    showclear: 'showClearClient',
+                                    beforedeselect: 'showClearClient'
                                 }
                             }, {
-                                pageSize: 0,
                                 margin: '0 0 0 5',
                                 fieldLabel: 'Kit'
                             }
-                        ]
-                    }, {
-                        xtype: 'gridpanel',
-                        height: 300,
-                        store: Ext.create('Ext.data.Store', {
-                            fields:[ 'name', 'email', 'phone'],
-                            data: [
-                                { name: 'Lisa', email: 'lisa@simpsons.com', phone: '555-111-1224' },
-                                { name: 'Bart', email: 'bart@simpsons.com', phone: '555-222-1234' },
-                                { name: 'Homer', email: 'homer@simpsons.com', phone: '555-222-1244' },
-                                { name: 'Marge', email: 'marge@simpsons.com', phone: '555-222-1254' }
-                            ]
-                        }),
-                        columns: [
-                            { text: 'Name', dataIndex: 'name' },
-                            { text: 'Email', dataIndex: 'email', flex: 1 },
-                            { text: 'Phone', dataIndex: 'phone' }
                         ]
                     }
                 ]
             }
         ]
-    }
+    },
 
-    // buttonAlign: 'center',
-    //
-    // buttons: [
-    //     {
-    //         scale: 'medium',
-    //         text: 'Confirmar',
-    //         showSmartTheme: 'blue',
-    //         listeners: {
-    //             click: 'insertFlow'
-    //         }
-    //     }, {
-    //         scale: 'medium',
-    //         text: 'Fechar',
-    //         showSmartTheme: 'red',
-    //         handler: function (btn) {
-    //             btn.windowClose();
-    //         }
-    //     }
-    // ]
+    buttonAlign: 'center',
+
+    buttons: [
+        {
+            scale: 'medium',
+            text: 'Confirmar',
+            showSmartTheme: 'blue',
+            listeners: {
+                click: 'insertFlow'
+            }
+        }, {
+            scale: 'medium',
+            text: 'Fechar',
+            showSmartTheme: 'red',
+            handler: function (btn) {
+                btn.windowClose();
+            }
+        }
+    ]
 
 });

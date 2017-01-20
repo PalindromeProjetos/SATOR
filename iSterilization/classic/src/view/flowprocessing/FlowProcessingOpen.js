@@ -77,9 +77,44 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingOpen', {
                         xtype: 'hiddenfield',
                         name: 'dataflowstep'
                     }, {
-                        xtype: 'label',
-                        cls: 'title-label',
-                        text: 'Iniciar Nova Leitura'
+                        xtype: 'container',
+                        layout: 'hbox',
+                        defaultType: 'label',
+                        defaults: {
+                            cls: 'title-label'
+                        },
+                        items: [
+                            {
+                                flex: 4,
+                                text: 'Iniciar Nova Leitura'
+                            }, {
+                                flex: 1,
+                                name: 'countitems',
+                                style : { 'text-align': 'right', 'color': 'rgb(173, 20, 87)' }
+                            }, {
+                                xtype: 'splitter'
+                            }, {
+                                width: 30,
+                                height: 30,
+                                xtype: 'component',
+                                html: '<div class="smart-btn-header" style="padding-left: 7px;"><i class="fa fa-times"></i></div>',
+                                style: {
+                                    cursor: 'pointer',
+                                    fontSize: '20px;',
+                                    borderRadius: '50%',
+                                    backgroundColor:'rgb(246, 246, 246);'
+                                },
+                                listeners: {
+                                    render: function(c){
+                                        c.getEl().on({
+                                            click: function() {
+                                                me.close();
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        ]
                     }, {
                         margin: '10 0 10 0',
                         xtype: 'fieldcontainer',
