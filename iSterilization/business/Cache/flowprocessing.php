@@ -40,6 +40,8 @@ class flowprocessing extends \Smart\Data\Cache {
     public function selectOpenMaterial(array $data) {
         $query = $data['query'];
         $param = $data['param'];
+        $itemgroup = isset($data['itemgroup']) ? $data['itemgroup'] : '000';
+
         $proxy = $this->getStore()->getProxy();
 
         if ($param == 'P') {
@@ -52,12 +54,14 @@ class flowprocessing extends \Smart\Data\Cache {
         $sql = "
             declare
                 @name varchar(80) = :name,
-                @barcode varchar(20) = :barcode;
+                @barcode varchar(20) = :barcode,
+                @itemgroup varchar(3) = :itemgroup;
                 
             select TOP 5
                 ib.id,
                 ib.name,
                 ib.barcode,
+				ib.itemgroup,                
                 ib.description,
                 a.materialboxid,
                 a.materialboxname,
@@ -125,6 +129,7 @@ class flowprocessing extends \Smart\Data\Cache {
                     inner join itembase ibt on ( ibt.id = mbi.materialid )
                 ) a
             where ib.isactive = 1
+              and ( ib.itemgroup = @itemgroup or @itemgroup = '000' )
               and (
                     ib.barcode = @barcode OR
                     ib.name COLLATE Latin1_General_CI_AI LIKE @name
@@ -134,6 +139,7 @@ class flowprocessing extends \Smart\Data\Cache {
             $pdo = $proxy->prepare($sql);
             $pdo->bindValue(":barcode", $query, \PDO::PARAM_STR);
             $pdo->bindValue(":name", "{$query}%", \PDO::PARAM_STR);
+            $pdo->bindValue(":itemgroup", $itemgroup, \PDO::PARAM_STR);
             $pdo->execute();
             $rows = $pdo->fetchAll();
 
@@ -371,12 +377,8 @@ class flowprocessing extends \Smart\Data\Cache {
                 fp.materialboxid,
                 mb.name as materialboxname,
                 fp.dateto, 
-                fp.placeid, 
-                fp.flowingid, 
-                fp.instrumentatorid, 
                 fp.surgicalwarning, 
-                fp.patientname, 
-                fp.healthinsurance
+                fp.patientname
             from
                 flowprocessing fp
                 inner join areas a on ( a.id = fp.areasid )
@@ -419,12 +421,8 @@ class flowprocessing extends \Smart\Data\Cache {
                 --fp.materialboxid,
                 mb.name as materialboxname,
                 --fp.dateto, 
-                --fp.placeid, 
-                --fp.flowingid, 
-                --fp.instrumentatorid, 
                 fp.surgicalwarning, 
                 fp.patientname, 
-                fp.healthinsurance
             from
                 flowprocessing fp
                 inner join areas a on ( a.id = fp.areasid )

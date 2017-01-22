@@ -53,12 +53,6 @@ Ext.define( 'iSterilization.model.flowprocessing.FlowProcessing', {
             name: 'clientid',
             type: 'int'
         }, {
-            name: 'flowingid',
-            type: 'int'
-        }, {
-            name: 'instrumentatorid',
-            type: 'int'
-        }, {
             name: 'surgicalwarning',
             type: 'auto'
         }, {
@@ -69,6 +63,12 @@ Ext.define( 'iSterilization.model.flowprocessing.FlowProcessing', {
             type: 'auto'
         }, {
             name: 'flowstatusdescription',
+            type: 'auto'
+        }, {
+            name: 'flowtype',
+            type: 'auto'
+        }, {
+            name: 'flowtypedescription',
             type: 'auto'
         }
     ]

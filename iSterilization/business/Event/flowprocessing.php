@@ -65,6 +65,18 @@ class flowprocessing extends \Smart\Data\Event {
         $barcode = "P". $dateof . $rows[0]['newcode'];
 
         $model->set('barcode',$barcode);
+
+        $patientname = $model->get('patientname');
+        $surgicalwarning = $model->get('surgicalwarning');
+
+        if(strlen($patientname) == 0) {
+            $model->set('patientname',null);
+        }
+
+        if(strlen($surgicalwarning) == 0) {
+            $model->set('surgicalwarning',null);
+        }
+
     }
 
     /**
@@ -97,7 +109,6 @@ class flowprocessing extends \Smart\Data\Event {
      * @param \iSterilization\Model\flowprocessing $model
      */
     public function posDelete( \iSterilization\Model\flowprocessing &$model ) {
-
     }
 
 }

@@ -198,8 +198,50 @@ trait TresultSet {
      * @return array Um array associativo.
      */
     public static function jsonToArray($param) {
-        $json = isset($param) ? $param : '{"records":0}';
-        return self::decodeUTF8(json_decode($json,true));
+        $json = !is_null($param) ? $param : '{"records":0}';
+        $error = array("error"=>false);
+        $array = json_decode($json,true);
+
+        switch (json_last_error()) {
+            case JSON_ERROR_NONE:
+                $error["message"] = '';
+                break;
+            case JSON_ERROR_DEPTH:
+                $error["message"] = 'Maximum stack depth exceeded';
+                break;
+            case JSON_ERROR_STATE_MISMATCH:
+                $error["message"] = 'Underflow or the modes mismatch';
+                break;
+            case JSON_ERROR_CTRL_CHAR:
+                $error["message"] = 'Unexpected control character found';
+                break;
+            case JSON_ERROR_SYNTAX:
+                $error["message"] = 'Syntax error, malformed JSON';
+                break;
+            case JSON_ERROR_UTF8:
+                $error["message"] = 'Malformed UTF-8 characters, possibly incorrectly encoded';
+                break;
+            case JSON_ERROR_RECURSION:
+                $error["message"] = 'One or more recursive references in the value to be encoded';
+                break;
+            case JSON_ERROR_INF_OR_NAN;
+                $error["message"] = 'One or more NAN or INF values in the value to be encoded';
+                break;
+            case JSON_ERROR_UNSUPPORTED_TYPE;
+                $error["message"] = 'A value of a type that cannot be encoded was given';
+                break;
+            default:
+                $error["message"] = 'Unknown error';
+                break;
+        }
+
+        $error['error'] = strlen($error["message"]) != 0;
+
+        if($error['error']) {
+            $error['param'] = $param;
+        }
+
+        return $error['error'] == false ? self::decodeUTF8($array) : $error['error'];
     }
 
     /**

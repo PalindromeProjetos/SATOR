@@ -1857,6 +1857,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 						$hasexception = self::jsonToArray($hasexception);
 
 						$temp = array();
+
 						foreach ($hasexception as $key) {
 							$temp[] = self::jsonToArray($key['element']);
 						}

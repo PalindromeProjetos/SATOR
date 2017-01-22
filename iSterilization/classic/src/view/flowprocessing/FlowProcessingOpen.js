@@ -59,6 +59,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingOpen', {
                         name: 'areasid'
                     }, {
                         xtype: 'hiddenfield',
+                        name: 'flowtype',
+                        value: '001'
+                    }, {
+                        xtype: 'hiddenfield',
                         name: 'clienttype'
                     }, {
                         xtype: 'hiddenfield',
@@ -66,10 +70,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingOpen', {
                     }, {
                         xtype: 'hiddenfield',
                         name: 'materialboxid'
-                    }, {
-                        allowBlank: true,
-                        xtype: 'hiddenfield',
-                        name: 'healthinsurance'
                     }, {
                         xtype: 'hiddenfield',
                         name: 'version'

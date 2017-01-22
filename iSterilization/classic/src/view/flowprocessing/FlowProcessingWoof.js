@@ -57,6 +57,13 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingWoof', {
                         name: 'areasid'
                     }, {
                         xtype: 'hiddenfield',
+                        name: 'flowtype',
+                        value: '002'
+                    }, {
+                        xtype: 'hiddenfield',
+                        name: 'clienttype'
+                    }, {
+                        xtype: 'hiddenfield',
                         name: 'prioritylevel'
                     }, {
                         xtype: 'hiddenfield',
@@ -144,7 +151,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingWoof', {
                             flex: 1,
                             allowBlank: false,
                             hideTrigger: true,
-                            useReadColor: false,
+                            // useReadColor: false,
                             fieldCls: 'smart-field-style-action'
                         },
                         items: [
@@ -174,11 +181,13 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingWoof', {
                                     select: 'onSelectMaterial',
                                     nextfield: 'nextFieldMaterial',
                                     showclear: 'showClearMaterial',
-                                    beforedeselect: 'showClearMaterial'
+                                    beforedeselect: 'showClearMaterial',
+                                    beforequery: 'onBeforeQueryMaterialWoof'
                                 }
                             }, {
                                 // pageSize: 0,
                                 margin: '0 0 0 5',
+                                useReadColor: true,
                                 fieldLabel: 'Fluxo e prioridade',
                                 hiddenNameId: 'sterilizationtypeid',
                                 xtype: 'searchsterilizationtype',
@@ -192,14 +201,12 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingWoof', {
                     }, {
                         xtype: 'fieldcontainer',
                         layout: 'hbox',
-                        // labelCls: 'sub-title-label',
-                        // fieldLabel: 'Leitura',
                         defaultType: 'textfield',
                         defaults: {
                             flex: 1,
                             allowBlank: false,
                             hideTrigger: true,
-                            useReadColor: false,
+                            useReadColor: true,
                             fieldCls: 'smart-field-style-action'
                         },
                         items: [

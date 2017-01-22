@@ -25,19 +25,6 @@ class flowprocessingstep extends \Smart\Data\Event {
      */
     public function preUpdate( \iSterilization\Model\flowprocessingstep &$model ) {
         Session::hasProfile('','');
-
-        $cyclestart = $model->getCyclestart();
-        $cyclefinal = $model->getCyclefinal();
-
-        if($cyclestart == 'START') {
-            $datestart = date("Ymd H:i:s");
-            $model->set('cyclestart',$datestart);
-        }
-
-        if($cyclefinal == 'FINAL') {
-            $datefinal = date("Ymd H:i:s");
-            $model->set('cyclefinal',$datefinal);
-        }
     }
 
     /**

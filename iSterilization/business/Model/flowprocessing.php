@@ -3,7 +3,7 @@
 namespace iSterilization\Model;
 
 /**
- * 
+ *
  * @Entity {"name":"flowprocessing", "logbook":true, "cache":"\\iSterilization\\Cache\\flowprocessing", "event":"\\iSterilization\\Event\\flowprocessing"}
  */
 class flowprocessing extends \Smart\Data\Model {
@@ -72,25 +72,7 @@ class flowprocessing extends \Smart\Data\Model {
      * @Policy {"nullable":true}
      * @Column {"description":"", "type":"integer", "policy":true, "logallow":true, "default":""}
      */
-    private $placeid;
-
-    /**
-     * @Policy {"nullable":true}
-     * @Column {"description":"", "type":"integer", "policy":true, "logallow":true, "default":""}
-     */
     private $clientid;
-
-    /**
-     * @Policy {"nullable":true}
-     * @Column {"description":"", "type":"integer", "policy":true, "logallow":true, "default":""}
-     */
-    private $flowingid;
-
-    /**
-     * @Policy {"nullable":true}
-     * @Column {"description":"", "type":"integer", "policy":true, "logallow":true, "default":""}
-     */
-    private $instrumentatorid;
 
     /**
      * @Policy {"nullable":true, "length":20}
@@ -105,12 +87,6 @@ class flowprocessing extends \Smart\Data\Model {
     private $patientname;
 
     /**
-     * @Policy {"nullable":true, "length":80}
-     * @Column {"description":"", "type":"string", "policy":true, "logallow":true, "default":""}
-     */
-    private $healthinsurance;
-
-    /**
      * @Policy {"nullable":true, "length":1}
      * @Column {"description":"", "type":"string", "policy":true, "logallow":true, "default":""}
      */
@@ -121,6 +97,18 @@ class flowprocessing extends \Smart\Data\Model {
      * @Column {"description":"", "type":"formula", "policy":false, "logallow":true, "default":"getEnumSearch,flowstatus"}
      */
     private $flowstatusdescription;
+
+    /**
+     * @Policy {"nullable":false, "length":3}
+     * @Column {"description":"", "type":"string", "policy":true, "logallow":true, "default":""}
+     */
+    private $flowtype;
+
+    /**
+     * @Policy {"nullable":true}
+     * @Column {"description":"", "type":"formula", "policy":false, "logallow":true, "default":"getEnumSearch,flowtype"}
+     */
+    private $flowtypedescription;
 
     /**
      * @Policy {"nullable":true, "length":20}
@@ -275,22 +263,6 @@ class flowprocessing extends \Smart\Data\Model {
     /**
      * @return type integer
      */
-    public function getPlaceid() {
-        return $this->placeid;
-    }
-
-    /**
-     * @param type $placeid
-     * @return \iSterilization\Model\flowprocessing
-     */
-    public function setPlaceid($placeid) {
-        $this->placeid = $placeid;
-        return $this;
-    }
-
-    /**
-     * @return type integer
-     */
     public function getClientid() {
         return $this->clientid;
     }
@@ -301,38 +273,6 @@ class flowprocessing extends \Smart\Data\Model {
      */
     public function setClientid($clientid) {
         $this->clientid = $clientid;
-        return $this;
-    }
-
-    /**
-     * @return type integer
-     */
-    public function getFlowingid() {
-        return $this->flowingid;
-    }
-
-    /**
-     * @param type $flowingid
-     * @return \iSterilization\Model\flowprocessing
-     */
-    public function setFlowingid($flowingid) {
-        $this->flowingid = $flowingid;
-        return $this;
-    }
-
-    /**
-     * @return type integer
-     */
-    public function getInstrumentatorid() {
-        return $this->instrumentatorid;
-    }
-
-    /**
-     * @param type $instrumentatorid
-     * @return \iSterilization\Model\flowprocessing
-     */
-    public function setInstrumentatorid($instrumentatorid) {
-        $this->instrumentatorid = $instrumentatorid;
         return $this;
     }
 
@@ -387,22 +327,6 @@ class flowprocessing extends \Smart\Data\Model {
     /**
      * @return type string
      */
-    public function getHealthinsurance() {
-        return $this->healthinsurance;
-    }
-
-    /**
-     * @param type $healthinsurance
-     * @return \iSterilization\Model\flowprocessing
-     */
-    public function setHealthinsurance($healthinsurance) {
-        $this->healthinsurance = $healthinsurance;
-        return $this;
-    }
-
-    /**
-     * @return type string
-     */
     public function getFlowstatus() {
         return $this->flowstatus;
     }
@@ -413,6 +337,22 @@ class flowprocessing extends \Smart\Data\Model {
      */
     public function setFlowstatus($flowstatus) {
         $this->flowstatus = $flowstatus;
+        return $this;
+    }
+
+    /**
+     * @return type string
+     */
+    public function getFlowtype() {
+        return $this->flowtype;
+    }
+
+    /**
+     * @param type $flowtype
+     * @return \iSterilization\Model\flowprocessing
+     */
+    public function setFlowtype($flowtype) {
+        $this->flowtype = $flowtype;
         return $this;
     }
 

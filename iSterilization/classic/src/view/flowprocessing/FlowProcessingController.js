@@ -1993,6 +1993,11 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             return false;
         }
 
+        if(clientsearch) {
+            clientsearch.reset();
+            clientsearch.setReadColor(false);
+        }
+
         flow.setReadColor(false);
         flow.setValue(record.get('sterilizationtypeid'));
         flow.setRawValue(record.get('sterilizationpriority'));
@@ -2008,14 +2013,23 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
     showClearMaterial: function (field, eOpts) {
         var me = this,
             view = me.getView(),
+            clientsearch = view.down('clientsearch'),
             searchpatient = view.down('searchpatient'),
             flow = view.down('searchsterilizationtype');
 
         flow.reset();
         flow.setReadColor(true);
         view.down('clientsearch').reset();
-        searchpatient.reset();
-        searchpatient.setReadColor(true);
+
+        if(clientsearch) {
+            clientsearch.reset();
+            clientsearch.setReadColor(true);
+        }
+
+        if(searchpatient) {
+            searchpatient.reset();
+            searchpatient.setReadColor(true);
+        }
     },
 
     nextFieldMaterial: function (field,eOpts) {
@@ -2058,13 +2072,13 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         combo.store.setParams({ materialid: rec.get('id') });
     },
 
-    onBeforeQuerySterilizationWoof: function (queryPlan , eOpts) {
+    onBeforeQueryMaterialWoof: function (queryPlan , eOpts) {
         var combo = queryPlan.combo;
 
         delete combo.lastQuery;
         combo.store.removeAll();
 
-        combo.store.setParams({ method: 'selectOpenSterilizationTypeWoof' });
+        combo.store.setParams({ itemgroup: '004' });
     },    
     
     onSelectClient: function (combo,record,eOpts) {
@@ -2078,11 +2092,13 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             return false;
         }
 
-        searchpatient.reset();
-        searchpatient.setReadColor(false);
+        if(searchpatient) {
+            searchpatient.reset();
+            searchpatient.setReadColor(false);
+        }
 
-        if (clienttype == '004') {
-            view.down('searchpatient').focus(false, 200);
+        if (clienttype == '004' && searchpatient) {
+            searchpatient.focus(false, 200);
         }
 
         view.down('hiddenfield[name=clienttype]').setValue(clienttype);
@@ -2093,8 +2109,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             view = me.getView(),
             searchpatient = view.down('searchpatient');
 
-        searchpatient.reset();
-        searchpatient.setReadColor(true);
+        if(searchpatient) {
+            searchpatient.reset();
+            searchpatient.setReadColor(true);
+        }
     },
 
     onSelectPatient: function (combo,record,eOpts) {
