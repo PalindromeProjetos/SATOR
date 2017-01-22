@@ -2097,6 +2097,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         if(boxtypedescription) {
             boxtypedescription.reset();
             boxtypedescription.setReadColor(false);
+            boxtypedescription.fireEvent('showclear',boxtypedescription,{});
+            view.updPosition();
         }
 
         if(clienttype != '004') {
@@ -2130,7 +2132,32 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         if(boxtypedescription) {
             boxtypedescription.reset();
             boxtypedescription.setReadColor(true);
+            boxtypedescription.fireEvent('showclear',boxtypedescription,{});
+            view.updPosition();
         }
+    },
+
+    onSelectBoxType: function () {
+        var me = this,
+            view = me.getView(),
+            containerItems = view.down('container[name=items]'),
+            materialboxname = view.down('textfield[name=materialboxname]');
+
+        containerItems.show();
+        materialboxname.reset();
+        materialboxname.focus(false, 200);
+        view.updPosition();
+    },
+
+    showClearBoxType: function () {
+        var me = this,
+            view = me.getView(),
+            containerItems = view.down('container[name=items]'),
+            materialboxname = view.down('textfield[name=materialboxname]');
+
+        materialboxname.reset();
+        containerItems.hide();
+        view.updPosition();
     },
 
     onSelectPatient: function (combo,record,eOpts) {

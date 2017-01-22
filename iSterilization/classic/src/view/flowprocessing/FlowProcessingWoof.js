@@ -223,10 +223,54 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingWoof', {
                                     beforedeselect: 'showClearClient'
                                 }
                             }, {
+                                showClear: true,
                                 margin: '0 0 0 5',
                                 fieldLabel: 'Kit',
                                 xtype: 'comboenum',
-                                name: 'boxtypedescription'
+                                name: 'boxtypedescription',
+                                listeners: {
+                                    select: 'onSelectBoxType',
+                                    showclear: 'showClearBoxType'
+                                }
+                            }
+                        ]
+                    }, {
+                        hidden: true,
+                        name: 'items',
+                        xtype: 'container',
+                        layout: 'anchor',
+                        defaultType: 'textfield',
+                        defaults: {
+                            anchor: '100%',
+                            fieldCls: 'smart-field-style-action'
+                        },
+                        items: [
+                            {
+                                fieldLabel: 'Consulta',
+                                useUpperCase: true,
+                                name: 'materialboxname'
+                                // listeners: {
+                                //     specialkey: 'onReaderMaterialBoxCiclo'
+                                // }
+                            }, {
+                                height: 200,
+                                xtype: 'gridpanel',
+                                cls: 'update-grid',
+                                store: Ext.create('Ext.data.Store', {
+                                    storeId: 'simpsonsStore',
+                                    fields:[ 'name', 'email', 'phone'],
+                                    data: [
+                                        { name: 'Lisa', email: 'lisa@simpsons.com', phone: '555-111-1224' },
+                                        { name: 'Bart', email: 'bart@simpsons.com', phone: '555-222-1234' },
+                                        { name: 'Homer', email: 'homer@simpsons.com', phone: '555-222-1244' },
+                                        { name: 'Marge', email: 'marge@simpsons.com', phone: '555-222-1254' }
+                                    ]
+                                }),
+                                columns: [
+                                    { text: 'Name', dataIndex: 'name' },
+                                    { text: 'Email', dataIndex: 'email', flex: 1 },
+                                    { text: 'Phone', dataIndex: 'phone' }
+                                ]
                             }
                         ]
                     }
