@@ -2015,7 +2015,8 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             view = me.getView(),
             clientsearch = view.down('clientsearch'),
             searchpatient = view.down('searchpatient'),
-            flow = view.down('searchsterilizationtype');
+            flow = view.down('searchsterilizationtype'),
+            boxtypedescription = view.down('comboenum[name=boxtypedescription]');
 
         flow.reset();
         flow.setReadColor(true);
@@ -2029,6 +2030,11 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         if(searchpatient) {
             searchpatient.reset();
             searchpatient.setReadColor(true);
+        }
+
+        if(boxtypedescription) {
+            clientsearch.reset();
+            clientsearch.setReadColor(true);
         }
     },
 
@@ -2085,7 +2091,13 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         var me = this,
             view = me.getView(),
             clienttype = record.get('clienttype'),
-            searchpatient = view.down('searchpatient');
+            searchpatient = view.down('searchpatient'),
+            boxtypedescription = view.down('comboenum[name=boxtypedescription]');
+
+        if(boxtypedescription) {
+            boxtypedescription.reset();
+            boxtypedescription.setReadColor(false);
+        }
 
         if(clienttype != '004') {
             me.insertFlow();
@@ -2107,11 +2119,17 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
     showClearClient: function (field, eOpts) {
         var me = this,
             view = me.getView(),
-            searchpatient = view.down('searchpatient');
+            searchpatient = view.down('searchpatient'),
+            boxtypedescription = view.down('comboenum[name=boxtypedescription]');
 
         if(searchpatient) {
             searchpatient.reset();
             searchpatient.setReadColor(true);
+        }
+
+        if(boxtypedescription) {
+            boxtypedescription.reset();
+            boxtypedescription.setReadColor(true);
         }
     },
 

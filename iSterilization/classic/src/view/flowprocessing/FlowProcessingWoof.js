@@ -224,7 +224,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingWoof', {
                                 }
                             }, {
                                 margin: '0 0 0 5',
-                                fieldLabel: 'Kit'
+                                fieldLabel: 'Kit',
+                                xtype: 'comboenum',
+                                name: 'boxtypedescription'
                             }
                         ]
                     }
