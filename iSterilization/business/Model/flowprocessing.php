@@ -111,6 +111,18 @@ class flowprocessing extends \Smart\Data\Model {
     private $flowtypedescription;
 
     /**
+     * @Policy {"nullable":false, "length":3}
+     * @Column {"description":"", "type":"string", "policy":true, "logallow":true, "default":""}
+     */
+    private $boxtype;
+
+    /**
+     * @Policy {"nullable":true}
+     * @Column {"description":"", "type":"formula", "policy":false, "logallow":true, "default":"getEnumSearch,boxtype"}
+     */
+    private $boxtypedescription;
+
+    /**
      * @Policy {"nullable":true, "length":20}
      * @Column {"description":"", "type":"string", "policy":true, "logallow":true, "default":""}
      */
@@ -353,6 +365,22 @@ class flowprocessing extends \Smart\Data\Model {
      */
     public function setFlowtype($flowtype) {
         $this->flowtype = $flowtype;
+        return $this;
+    }
+
+    /**
+     * @return type string
+     */
+    public function getBoxtype() {
+        return $this->boxtype;
+    }
+
+    /**
+     * @param type $boxtype
+     * @return \iSterilization\Model\flowprocessing
+     */
+    public function setBoxtype($boxtype) {
+        $this->boxtype = $boxtype;
         return $this;
     }
 

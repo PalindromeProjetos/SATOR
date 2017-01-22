@@ -70,6 +70,12 @@ Ext.define( 'iSterilization.model.flowprocessing.FlowProcessing', {
         }, {
             name: 'flowtypedescription',
             type: 'auto'
+        }, {
+            name: 'boxtype',
+            type: 'auto'
+        }, {
+            name: 'boxtypedescription',
+            type: 'auto'
         }
     ]
 
