@@ -88,6 +88,7 @@ Ext.define( 'iTools.view.main.Main', {
                         defaultType: 'textfield',
                         defaults: {
                             anchor: '100%',
+                            showClear: true,
                             allowBlank: true,
                             fieldCls: 'smart-field-style-login'
                         },
