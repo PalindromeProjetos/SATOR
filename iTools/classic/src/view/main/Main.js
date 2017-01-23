@@ -114,7 +114,7 @@ Ext.define( 'iTools.view.main.Main', {
                                     '</tpl>'
                                 ]
                             }, {
-                                pageSize: 5,
+                                pageSize: 0,
                                 editable: false,
                                 allowBlank: true,
                                 name: 'printlocate',
