@@ -3138,7 +3138,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				case fp.flowtype
 					when '001' then coalesce(mb.name,t.materialname)
 					when '002' then dbo.getEnum('boxtype',fp.boxtype)
-				end as materialname                
+				end as materialboxname,                
                 entityname = ( select top 1 name from entity ),
                 quantity = ( select count(*) from flowprocessingstepmaterial where flowprocessingstepid = fps.id )
             from
