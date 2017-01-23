@@ -18,7 +18,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingOpen', {
         'iSterilization.view.flowprocessing.SearchSterilizationType'
     ],
 
-    width: 850,
+    width: 700,
     modal: true,
     header: false,
     resizable: false,

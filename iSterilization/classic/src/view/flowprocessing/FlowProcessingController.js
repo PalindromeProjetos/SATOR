@@ -1983,6 +1983,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
     onSelectMaterial: function (combo,record,eOpts) {
         var me = this,
             view = me.getView(),
+            grid = view.down('gridpanel'),
             clientsearch = view.down('clientsearch'),
             flow = view.down('searchsterilizationtype');
 
@@ -2004,15 +2005,24 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
         view.down('hiddenfield[name=materialid]').setValue(record.get('id'));
         view.down('hiddenfield[name=version]').setValue(record.get('version'));
-        view.down('hiddenfield[name=dataflowstep]').setValue(record.get('dataflowstep'));
         view.down('hiddenfield[name=prioritylevel]').setValue(record.get('prioritylevel'));
         view.down('hiddenfield[name=materialboxid]').setValue(record.get('materialboxid'));
         view.down('hiddenfield[name=sterilizationtypeid]').setValue(record.get('sterilizationtypeid'));
+
+        if(grid) {
+            grid.getStore().removeAll();
+            grid.getStore().insert(0, {
+                materialid: record.get('id'),
+                barcode: record.get('barcode'),
+                materialname: record.get('name')
+            });
+        }
     },
 
     showClearMaterial: function (field, eOpts) {
         var me = this,
             view = me.getView(),
+            grid = view.down('gridpanel'),
             clientsearch = view.down('clientsearch'),
             searchpatient = view.down('searchpatient'),
             flow = view.down('searchsterilizationtype'),
@@ -2033,21 +2043,30 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         }
 
         if(boxtypedescription) {
-            clientsearch.reset();
-            clientsearch.setReadColor(true);
+            boxtypedescription.reset();
+            boxtypedescription.setReadColor(true);
+            boxtypedescription.fireEvent('showclear',boxtypedescription,{});
+        }
+
+        if(grid) {
+            grid.getStore().removeAll();
         }
     },
 
     nextFieldMaterial: function (field,eOpts) {
         var me = this,
             view = me.getView(),
-            type = view.down('clientsearch');
+            type = view.down('clientsearch'),
+            boxtypedescription = view.down('comboenum[name=boxtypedescription]');
+
+
+        var clientid = (boxtypedescription) ? 29 : 1;
 
         Ext.getStore('client').load({
             scope: me,
             params: {
                 method: 'selectCode',
-                rows: Ext.encode({id: 1})
+                rows: Ext.encode({id: clientid})
             },
             callback: function (records, operation, success) {
                 var record = records[0];
@@ -2203,6 +2222,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 view.setLoading(false);
                 
                 if(!success || !result.success) {
+                    Smart.ion.sound.play("computer_error");
                     Smart.Msg.showToast(result.text,'error');
                     return false;
                 }
@@ -2222,6 +2242,77 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                         var result = Ext.decode(response.responseText);
 
                         if(!success || !result.success) {
+                            Smart.ion.sound.play("computer_error");
+                            Smart.Msg.showToast(result.text,'error');
+                            return false;
+                        }
+                        var record = Ext.create('iSterilization.model.flowprocessing.FlowProcessingStepAction',result.rows[0]);
+                        me.onFlowStepAction(rows,record);
+                    }
+                });
+            }
+        });
+    },
+
+    insertWoof: function () {
+        var me = this,
+            woof = [],
+            view = me.getView(),
+            rows = { newflow: true },
+            form = view.down('form'),
+            data = form.getValues(),
+            grid = view.down('gridpanel'),
+            store = Ext.getStore('flowprocessingstepaction');
+
+        if(!form.isValid()) {
+            return false;
+        }
+
+        rows.username = data.username;
+
+        grid.getStore().each(function (record) {
+            woof.push(record.get('materialid'))
+        });
+
+        data.woof = woof;
+
+        view.setLoading('Gerando estrutura de leitura de materiais...');
+
+        Ext.Ajax.request({
+            scope: me,
+            url: me.url,
+            params: {
+                action: 'select',
+                method: 'newFlowWoof',
+                query: Ext.encode(data)
+            },
+            callback: function (options, success, response) {
+                var result = Ext.decode(response.responseText);
+
+                view.setLoading(false);
+
+                if(!success || !result.success) {
+                    Smart.ion.sound.play("computer_error");
+                    Smart.Msg.showToast(result.text,'error');
+                    return false;
+                }
+
+                view.master.updateType();
+                view.close();
+
+                Ext.Ajax.request({
+                    scope: me,
+                    url: store.getUrl(),
+                    params: {
+                        action: 'select',
+                        method: 'selectTask',
+                        query: result.rows.id
+                    },
+                    callback: function (options, success, response) {
+                        var result = Ext.decode(response.responseText);
+
+                        if(!success || !result.success) {
+                            Smart.ion.sound.play("computer_error");
                             Smart.Msg.showToast(result.text,'error');
                             return false;
                         }
@@ -2642,6 +2733,85 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         });
     },
 
+    onReaderMaterialBoxWoof: function (field, e, eOpts) {
+        var me = this,
+            view = me.getView(),
+            form = view.down('form'),
+            value = field.getValue(),
+            store = view.down('gridpanel').getStore(),
+            prioritylevel = form.down('hiddenfield[name=prioritylevel]'),
+            sterilizationtypeid = form.down('hiddenfield[name=sterilizationtypeid]');
+
+        if(!form.isValid()){
+            return false;
+        }
+
+        if ([e.ENTER].indexOf(e.getKey()) != -1) {
+            e.stopEvent();
+
+            field.reset();
+
+            if (!value || value.length == 0) {
+                return false;
+            }
+
+            // if(value.indexOf('SATOR_ENCERRAR_LEITURA') != -1) {
+            //     if(store.getCount() == 0) {
+            //         Smart.ion.sound.play("computer_error");
+            //         Smart.Msg.showToast('Não existem materiais lançados para encerrar a carga!','error');
+            //         return false;
+            //     }
+            //
+            //     view.close();
+            //
+            //     me.callSATOR_RELATAR_CYCLE_STATUS('PRINT',record);
+            //     return false;
+            // }
+
+            var params = store.getExtraParams();
+
+            params.barcode = value;
+            params.prioritylevel = prioritylevel.getValue();
+            params.sterilizationtypeid = sterilizationtypeid.getValue();
+
+            Ext.Ajax.request({
+                url: store.getUrl(),
+                params: params,
+                callback: function (options, success, response) {
+                    var result = Ext.decode(response.responseText);
+
+                    if(!success || !result.success) {
+                        Smart.ion.sound.play("computer_error");
+                        Smart.Msg.showToast(result.text,'error');
+                        return false;
+                    }
+
+                    if (success && result.success) {
+                        var find = store.findRecord('barcode',result.rows.barcode);
+
+                        if(find) {
+                            Smart.ion.sound.play("computer_error");
+                            Smart.Msg.showToast('O material/tecido <b>já encontra-se lançado</b> no lote atual!');
+                            return false;
+                        }
+
+                        store.add({
+                            barcode: result.rows.barcode,
+                            materialid: result.rows.materialid,
+                            materialname: result.rows.materialname
+                        });
+
+                        Smart.ion.sound.play("button_tiny");
+                        return false;
+                    }
+
+                    Smart.ion.sound.play("computer_error");
+                    Smart.Msg.showToast('O material/tecido <b>não foi encontrado</b> na base de dados!');
+                }
+            });
+        }
+    },
+    
     onReaderMaterialBoxCarga: function (field, e, eOpts) {
         var me = this,
             view = me.getView(),
@@ -4648,6 +4818,22 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 if (choice === 'yes') {
                     store.remove(record);
                     store.sync();
+                    view.down('textfield[name=materialboxname]').focus(false,200);
+                }
+            }
+        );
+    },
+
+    setDeleteWoofItem: function(grid, rowIndex, colIndex) {
+        var me = this,
+            store = grid.getStore(),
+            record = store.getAt(rowIndex),
+            view = me.getView();
+
+        Ext.Msg.confirm('Excluir registro', 'Confirma a exclusão do registro selecionado?',
+            function (choice) {
+                if (choice === 'yes') {
+                    store.remove(record);
                     view.down('textfield[name=materialboxname]').focus(false,200);
                 }
             }

@@ -28,6 +28,69 @@ class heartflowprocessing extends \Smart\Data\Proxy {
      * @param array $data
      * @return object|Traits\json|string
      */
+	public function newFlowWoof(array $data) {
+		$query = self::jsonToObject($data['query']);
+
+		try {
+
+			$coach = new \iSterilization\Coach\flowprocessing();
+
+			$this->beginTransaction();
+
+			$coach->getStore()->setProxy($this);
+			$coach->getStore()->getModel()->set('version',$query->version);
+			$coach->getStore()->getModel()->set('areasid',$query->areasid);
+			$coach->getStore()->getModel()->set('boxtype',$query->boxtype);
+			$coach->getStore()->getModel()->set('clientid',$query->clientid);
+			$coach->getStore()->getModel()->set('username',$query->username);
+			$coach->getStore()->getModel()->set('flowtype',$query->flowtype);
+			$coach->getStore()->getModel()->set('materialid',$query->materialid);
+			$coach->getStore()->getModel()->set('prioritylevel',$query->prioritylevel);
+			$coach->getStore()->getModel()->set('sterilizationtypeid',$query->sterilizationtypeid);
+
+			$result = self::jsonToObject($coach->getStore()->insert());
+
+			if(!$result->success) {
+				throw new \PDOException(self::$FAILURE_STATEMENT);
+			}
+
+			$flow = self::objectToArray($result->rows);
+
+            $flow['dataflowstep'] = $query->dataflowstep;
+
+			$resultStep = self::jsonToObject($this->setFlowStep($flow));
+
+			if(!$resultStep->success) {
+				throw new \PDOException(self::$FAILURE_STATEMENT . '<br/>' . $resultStep->text);
+			}
+
+			$step = array();
+
+            $step['woof'] = $query->woof;
+            $step['flowprocessingid'] = $result->rows->id;
+
+            $resultStep = self::jsonToObject($this->newFlowStep($step));
+
+			if(!$resultStep->success) {
+				throw new \PDOException(self::$FAILURE_STATEMENT);
+			}
+
+			$this->commit();
+
+			$result = self::objectToJson($result);
+
+		} catch ( \PDOException $e ) {
+			if ($this->inTransaction()) {
+				$this->rollBack();
+			}
+			self::_setSuccess(false);
+			self::_setText($e->getMessage());
+			$result = self::getResultToJson();
+		}
+
+		return $result;
+	}
+
     public function newFlowView(array $data) {
 		$query = self::jsonToObject($data['query']);
 		$hasTran = isset($data['hasTran']) ? intval($data['hasTran']) : 1;
@@ -45,6 +108,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 			$coach->getStore()->getModel()->set('areasid',$query->areasid);
 			$coach->getStore()->getModel()->set('clientid',$query->clientid);
 			$coach->getStore()->getModel()->set('username',$query->username);
+			$coach->getStore()->getModel()->set('flowtype',$query->flowtype);
 			$coach->getStore()->getModel()->set('materialid',$query->materialid);
 			$coach->getStore()->getModel()->set('prioritylevel',$query->prioritylevel);
 			$coach->getStore()->getModel()->set('sterilizationtypeid',$query->sterilizationtypeid);
@@ -250,16 +314,20 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 	}
 
 	public function newFlowStep(array $step) {
-		$flowprocessingid = $step['flowprocessingid'];
+        $flowprocessingid = $step['flowprocessingid'];
+        $woof = isset($step['woof']) ? $step['woof'] : null;
 
 		$sql = "
+			declare
+				@flowprocessingid int = :flowprocessingid;
+				
             -- Metodo Inicia Leitura
             select
-                fps.id,  
-                fps.steppriority, 
-                fps.steplevel, 
-                fps.elementtype, 
-                fps.elementname, 
+                fps.id,
+                fps.steplevel,
+                fps.elementtype,
+                fps.elementname,
+                fps.steppriority,                
                 fps.stepflaglist, 
                 fps.stepsettings
             from
@@ -268,7 +336,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
             where fp.flowstatus = 'R'
               and fps.flowstepstatus = '000'
               and fps.elementtype not in ('uml.StartState','uml.EndState')
-              and fps.flowprocessingid = :flowprocessingid 
+              and fps.flowprocessingid = @flowprocessingid 
             order by fps.steplevel, fps.steppriority";
 
 		try {
@@ -330,11 +398,22 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 					$data = array();
 					$data['id'] = $id;
 
-					// insert flowprocessingstepmaterial
-					$resultItem = self::arrayToObject($this->newFlowItem($data));
-					if(!$resultItem->success) {
-						throw new \PDOException(self::$FAILURE_STATEMENT);
-					}
+                    // insert flowprocessingstepmaterial
+                    if($woof) {
+                        // Kit Tecidos
+                        $data['woof'] = $woof;
+                        $resultItem = self::arrayToObject($this->newWoofItem($data));
+                        if(!$resultItem->success) {
+                            throw new \PDOException(self::$FAILURE_STATEMENT);
+                        }
+                    } else {
+                        // Material/Kit
+                        $resultItem = self::arrayToObject($this->newFlowItem($data));
+                        if(!$resultItem->success) {
+                            throw new \PDOException(self::$FAILURE_STATEMENT);
+                        }
+                    }
+
 					break;
 				}
 			}
@@ -346,6 +425,38 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
 		return self::getResultToJson();
 	}
+
+    public function newWoofItem(array $data) {
+        $id = $data['id'];
+        $woof = $data['woof'];
+
+        try {
+
+            $material = new \iSterilization\Coach\flowprocessingstepmaterial();
+
+            foreach ($woof as $item) {
+                $date = date("Ymd H:i:s");
+                $material->getStore()->setProxy($this);
+                $material->getStore()->getModel()->set('flowprocessingstepid',$id);
+                $material->getStore()->getModel()->set('materialid',$item);
+                $material->getStore()->getModel()->set('unconformities','010');
+                $material->getStore()->getModel()->set('dateto',$date);
+                $result = self::jsonToObject($material->getStore()->insert());
+
+                if(!$result->success) {
+                    throw new \PDOException(self::$FAILURE_STATEMENT);
+                }
+            }
+
+            self::_setSuccess(true);
+
+        } catch ( \PDOException $e ) {
+            self::_setSuccess(false);
+            self::_setText($e->getMessage());
+        }
+
+        return self::getResult();
+    }
 
     public function newFlowItem(array $data) {
         $id = $data['id'];
@@ -1392,6 +1503,103 @@ class heartflowprocessing extends \Smart\Data\Proxy {
     /**
      * Select
      */
+	public function selectMaterialBoxWoof(array $data) {
+		$barcode = $data['barcode'];
+		$prioritylevel = $data['prioritylevel'];
+		$sterilizationtypeid = $data['sterilizationtypeid'];
+
+		$sql = "
+			SET XACT_ABORT ON
+			SET NOCOUNT ON
+			SET ANSI_NULLS ON
+			SET ANSI_WARNINGS ON		
+		
+			declare
+				@materialid int,
+				@materialboxid int,
+				@areavailable int = 0,
+				@message varchar(250) = '',
+				@colorschema varchar(250) = '',
+				@materialname varchar(80) = '',
+				@barcode varchar(20) = :barcode,
+				@prioritylevel char(1) = :prioritylevel,				
+				@sterilizationtypeid int = :sterilizationtypeid;
+		
+			if object_id('tempdb.dbo.#tblTemp') is not null drop table #tblTemp;
+			
+			create table #tblTemp ( areavailable int, message varchar(250) );
+		
+			insert into #tblTemp ( areavailable, message ) exec dbo.getAvailableForProcessing @barcode, 'T';
+		
+			select
+				@message = message,
+				@areavailable = areavailable
+			from #tblTemp;
+		
+			select
+				@materialid = ib.id,
+				@materialname = ib.name,
+				@materialboxid = a.materialboxid
+			from
+				itembase ib
+				inner join materialtypeflow mtf on ( mtf.materialid = ib.id )
+				outer apply (
+					select
+						mb.name,
+						mbi.materialboxid
+					from
+						materialboxitem mbi
+						inner join materialbox mb on ( mb.id = mbi.materialboxid and mbi.materialid = ib.id )
+				) a
+			where ib.barcode = @barcode
+			  and ib.itemgroup = '004'
+			  and mtf.prioritylevel = @prioritylevel
+			  and mtf.sterilizationtypeid = @sterilizationtypeid;
+
+			if(@areavailable = 1 and @materialboxid is null)
+			begin
+				select @areavailable as areavailable, @materialid as materialid, @materialname as materialname, @barcode as barcode
+			end
+			else
+			begin
+				set @areavailable = 0;
+				set @message = 'O Material/Tecido <b>não está disponível</b> para processamento em Kit avulso!';
+				select @areavailable as areavailable, @message as message;
+			end
+
+			if object_id('tempdb.dbo.#tblTemp') is not null drop table #tblTemp;";
+
+		try {
+			$pdo = $this->prepare($sql);
+			$pdo->bindValue(":barcode", $barcode, \PDO::PARAM_STR);
+			$pdo->bindValue(":prioritylevel", $prioritylevel, \PDO::PARAM_STR);
+			$pdo->bindValue(":sterilizationtypeid", $sterilizationtypeid, \PDO::PARAM_INT);
+			$callback = $pdo->execute();
+
+			if(!$callback) {
+				throw new \PDOException(self::$FAILURE_STATEMENT);
+			}
+
+			$rows = $pdo->fetchAll();
+
+			if(count($rows) == 0) {
+				throw new \PDOException('Não foi possível localizar o material!');
+			}
+
+			if($rows[0]['areavailable'] == 0) {
+				throw new \PDOException($rows[0]['message']);
+			}
+
+			self::_setRows($rows[0]);
+
+		} catch ( \PDOException $e ) {
+			self::_setSuccess(false);
+			self::_setText($e->getMessage());
+		}
+
+		return self::getResultToJson();
+	}
+
     public function selectEquipment(array $data) {
         $areasid = $data['areasid'];
         $barcode = $data['barcode'];

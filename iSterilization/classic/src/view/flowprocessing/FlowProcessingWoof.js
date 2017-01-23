@@ -18,7 +18,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingWoof', {
         'iSterilization.view.flowprocessing.SearchSterilizationType'
     ],
 
-    width: 850,
+    width: 700,
     modal: true,
     header: false,
     resizable: false,
@@ -35,7 +35,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingWoof', {
     },
 
     buildItems: function () {
-        var me = this;
+        var me = this,
+            isDisabled = function (view, rowIdx, colIdx, item, rec) {
+                return rowIdx == 0;
+            };
 
         me.items = [
             {
@@ -73,9 +76,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingWoof', {
                         name: 'version'
                     }, {
                         xtype: 'hiddenfield',
-                        name: 'flowtype'
-                    }, {
-                        xtype: 'hiddenfield',
                         name: 'dataflowstep'
                     }, {
                         xtype: 'container',
@@ -87,7 +87,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingWoof', {
                         items: [
                             {
                                 flex: 4,
-                                text: 'Iniciar Novo Kit (tecidos)'
+                                text: 'Iniciar Novo Kit (avulso)'
                             }, {
                                 flex: 1,
                                 name: 'countitems',
@@ -151,7 +151,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingWoof', {
                             flex: 1,
                             allowBlank: false,
                             hideTrigger: true,
-                            // useReadColor: false,
                             fieldCls: 'smart-field-style-action'
                         },
                         items: [
@@ -185,7 +184,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingWoof', {
                                     beforequery: 'onBeforeQueryMaterialWoof'
                                 }
                             }, {
-                                // pageSize: 0,
                                 margin: '0 0 0 5',
                                 useReadColor: true,
                                 fieldLabel: 'Fluxo e prioridade',
@@ -248,28 +246,57 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingWoof', {
                             {
                                 fieldLabel: 'Consulta',
                                 useUpperCase: true,
-                                name: 'materialboxname'
-                                // listeners: {
-                                //     specialkey: 'onReaderMaterialBoxCiclo'
-                                // }
+                                name: 'materialboxname',
+                                listeners: {
+                                    specialkey: 'onReaderMaterialBoxWoof'
+                                }
                             }, {
                                 height: 200,
                                 xtype: 'gridpanel',
                                 cls: 'update-grid',
-                                store: Ext.create('Ext.data.Store', {
-                                    storeId: 'simpsonsStore',
-                                    fields:[ 'name', 'email', 'phone'],
-                                    data: [
-                                        { name: 'Lisa', email: 'lisa@simpsons.com', phone: '555-111-1224' },
-                                        { name: 'Bart', email: 'bart@simpsons.com', phone: '555-222-1234' },
-                                        { name: 'Homer', email: 'homer@simpsons.com', phone: '555-222-1244' },
-                                        { name: 'Marge', email: 'marge@simpsons.com', phone: '555-222-1254' }
-                                    ]
-                                }),
+
+                                url: '../iSterilization/business/Calls/Heart/HeartFlowProcessing.php',
+
+                                params: {
+                                    action: 'select',
+                                    method: 'selectMaterialBoxWoof'
+                                },
+
+                                fields: [
+                                    {
+                                        name: 'materialid',
+                                        type: 'int'
+                                    }, {
+                                        name: 'barcode',
+                                        type: 'auto'
+                                    }, {
+                                        name: 'materialname',
+                                        type: 'auto'
+                                    }
+                                ],
+
                                 columns: [
-                                    { text: 'Name', dataIndex: 'name' },
-                                    { text: 'Email', dataIndex: 'email', flex: 1 },
-                                    { text: 'Phone', dataIndex: 'phone' }
+                                    {
+                                        dataIndex: 'barcode',
+                                        width: 160
+                                    }, {
+                                        dataIndex: 'materialname',
+                                        flex: 1
+                                    }, {
+                                        width: 40,
+                                        align: 'center',
+                                        sortable: false,
+                                        dataIndex: 'haspending',
+                                        xtype: 'actioncolumn',
+                                        handler: 'setDeleteWoofItem',
+                                        getTip: function (v, meta, rec, rowIdx, colIdx ) {
+                                            return rowIdx == 0 ? '' : 'Remover material da lista!';
+                                        },
+                                        getClass: function (v, meta, rec, rowIdx, colIdx ) {
+                                            return rowIdx == 0 ? '' : "fa fa-minus-circle action-delete-color-font";
+                                        },
+                                        isDisabled: isDisabled
+                                    }
                                 ]
                             }
                         ]
@@ -287,7 +314,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingWoof', {
             text: 'Confirmar',
             showSmartTheme: 'blue',
             listeners: {
-                click: 'insertFlow'
+                click: 'insertWoof'
             }
         }, {
             scale: 'medium',
