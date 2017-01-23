@@ -3495,7 +3495,10 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				) s
                 cross apply (
                     select
-						coalesce(ta.name,tb.name) as materialname
+						case a.flowtype
+							when '001' then coalesce(ta.name,tb.name)
+							when '002' then dbo.getEnum('boxtype',a.boxtype)
+						end as materialname
                     from
 						flowprocessing a
                         inner join flowprocessingstep b on ( b.flowprocessingid = a.id and b.id = fps.id )
