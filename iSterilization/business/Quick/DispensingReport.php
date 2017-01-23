@@ -34,6 +34,7 @@ class dispensingreport extends Report {
                 q.materialboxcode,
                 q.materialboxname,
                 t.proprietaryname,
+                dbo.getEnum('boxtype',fp.boxtype) as boxtypedescription,                
                 dbo.getEnum('outputtype',ami.outputtype) as outputtypedescription,
 				t.items
             from
@@ -97,7 +98,6 @@ class dispensingreport extends Report {
 
         $this->SetFont('Arial', '', 9);
         $this->SetFillColor(255, 255, 255);
-//        $this->SetFillColor(245, 242, 198);
 
         $this->Cell($sw * 0.7,7,utf8_decode('Processo'),'B',0,'C',1);
         $this->Cell($sw * 3.3,7,utf8_decode('Kit / Material'),'B',0,'L',1);
@@ -250,6 +250,7 @@ class dispensingreport extends Report {
             $materialboxcode = $item['materialboxcode'];
             $materialboxname = $item['materialboxname'];
             $proprietaryname = $item['proprietaryname'];
+            $boxtypedescription = $item['boxtypedescription'];
             $outputtypedescription = $item['outputtypedescription'];
 
             $lineColor = ($lineColor == 0) ? 1 : 0;
@@ -259,7 +260,8 @@ class dispensingreport extends Report {
             }
 
             if(strlen($materialboxcode) != 0) {
-                if((strlen($barcode) != 0)) {
+                if((strlen($barcode) != 0 || strlen($boxtypedescription) != 0)) {
+                    $materialboxname = $boxtypedescription || $materialboxname;
                     $this->Cell($sw * 0.7, 5, $newbarcode, 0, 0, 'C', $lineColor);
                     $this->SetFont('LucidaSans-Typewriter', '', 9);
                     $this->Cell($sw * 3.3, 5, "$materialboxname - $items item(s)", 'L', 0, 'L', $lineColor);
