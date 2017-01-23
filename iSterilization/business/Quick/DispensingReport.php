@@ -259,7 +259,7 @@ class dispensingreport extends Report {
                 $barcode = $newbarcode;
             }
 
-            if(strlen($materialboxcode) != 0) {
+            if(strlen($materialboxcode) != 0 || strlen($boxtypedescription) != 0) {
                 if((strlen($barcode) != 0 || strlen($boxtypedescription) != 0)) {
                     $materialboxname = $boxtypedescription || $materialboxname;
                     $this->Cell($sw * 0.7, 5, $newbarcode, 0, 0, 'C', $lineColor);
