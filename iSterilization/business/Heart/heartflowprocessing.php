@@ -2039,6 +2039,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
 			foreach ($rows as $item) {
 				$item = self::encodeUTF8($item);
+				$item['flowtype'] = '001';
 				$item['username'] = $username;
 				$hasexception = $item['hasexception'];
 				$data = array("query"=>self::arrayToJson($item),"hasTran"=>0);
