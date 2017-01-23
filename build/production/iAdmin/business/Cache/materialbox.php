@@ -103,8 +103,8 @@ class materialbox extends \Smart\Data\Cache {
 			select
                 mb.*,
                 dbo.getEnum('statusbox',mb.statusbox) as statusboxdescription,
-				i.materialboxitems,
 				i.proprietaryname,
+				i.barcodematerial,
                 colorschema = (
                     select stuff
                         (
@@ -119,23 +119,27 @@ class materialbox extends \Smart\Data\Cache {
                                 for xml path ('')
                             ) ,1,1,''
                         )                
-                )
+                ),
+				materialboxitems = (
+					select count(*) from materialboxitem where materialboxid = mb.id
+				)
 			from
 				materialbox mb
 				outer apply (
 					select
-						p.name as proprietaryname,
-						count(mbi.materialboxid) as materialboxitems
+						mbi.materialboxid,
+						ib.barcode as barcodematerial,
+						p.name as proprietaryname
 					from
 						materialboxitem mbi
 						inner join itembase ib on ( ib.id = mbi.materialid )
 						inner join proprietary p on ( p.id = ib.proprietaryid )
 					where mbi.materialboxid = mb.id
-					group by p.name
 				) i
 			where mb.barcode = @barcode
 			   or mb.name COLLATE Latin1_General_CI_AI LIKE @name 
-			   or i.proprietaryname COLLATE Latin1_General_CI_AI LIKE @name;";
+			   or i.proprietaryname COLLATE Latin1_General_CI_AI LIKE @name
+			   or i.barcodematerial = @barcode;";
 
         try {
 

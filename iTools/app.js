@@ -17,7 +17,8 @@ Ext.Loader.setConfig({
         'iAdmin.store.helper': '../iAdmin/app/store/helper',
         'iAdmin.model.helper': '../iAdmin/app/model/helper',
 
-        'iAdmin.view.helper.cmeareas': '../iAdmin/classic/src/view/helper/areas'
+        'iAdmin.view.helper.cmeareas': '../iAdmin/classic/src/view/helper/areas',
+        'iAdmin.view.helper.printserver': '../iAdmin/classic/src/view/helper/printserver'
     }
 });
 

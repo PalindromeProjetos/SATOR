@@ -23,7 +23,7 @@ Ext.define( 'iTools.view.main.MainController', {
             storage = me.getHubStorage(),
             areasid = view.down('hiddenfield[name=areasid]'),
             cmesubareassearch = view.down('cmesubareassearch'),
-            printlocate = view.down('textfield[name=printlocate]');
+            printlocate = view.down('printserversearch');
 
         cmesubareassearch.focus(false, 200);
 
@@ -37,7 +37,7 @@ Ext.define( 'iTools.view.main.MainController', {
             if(result || result.length != 0) {
                 workstation = Ext.decode(result);
                 areasid.setValue(workstation.areasid);
-                printlocate.setValue(workstation.printlocate);
+                printlocate.setRawValue(workstation.printlocate);
                 cmesubareassearch.setRawValue(workstation.areasname);
             }
         })['catch'](function (result) {
@@ -52,7 +52,7 @@ Ext.define( 'iTools.view.main.MainController', {
             storage = me.getHubStorage(),
             areasid = view.down('hiddenfield[name=areasid]'),
             cmesubareassearch = view.down('cmesubareassearch'),
-            printlocate = view.down('textfield[name=printlocate]');
+            printlocate = view.down('printserversearch');
 
         if(!view.isValid()) {
             return false;
@@ -64,7 +64,7 @@ Ext.define( 'iTools.view.main.MainController', {
 
         workstation = {
             areasid: areasid.getValue(),
-            printlocate: printlocate.getValue(),
+            printlocate: printlocate.getRawValue(),
             areasname: cmesubareassearch.getRawValue()
         };
 

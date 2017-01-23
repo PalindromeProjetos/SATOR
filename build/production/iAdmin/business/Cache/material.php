@@ -86,12 +86,26 @@ class material extends \Smart\Data\Cache {
                 dbo.getEnum('itemsize',m.itemsize) as itemsizedescription,
                 dbo.getEnum('itemgroup',ib.itemgroup) as itemgroupdescription,
                 a.materialboxname,
-                a.colorschema,
                 m.*,
                 dbo.getEnum('materialstatus',m.materialstatus) as materialstatusdescription,
                 pk.name as packingname,
                 pt.name as proprietaryname,
-                mf.name as manufacturername
+                mf.name as manufacturername,
+                colorschema = (
+                    select stuff
+                        (
+                            (
+                                select
+                                    ',#' + tc.colorschema + '|#' + tc.colorstripe
+                                from
+                                    materialboxtarge mbt
+                                    inner join targecolor tc on ( tc.id = mbt.targecolorid )
+                                where mbt.materialboxid = a.materialboxid
+                                order by mbt.targeorderby asc
+                                for xml path ('')
+                            ) ,1,1,''
+                        )                
+                )
             FROM
                 itembase ib
                 inner join material m on ( m.id = ib.id )
@@ -100,27 +114,11 @@ class material extends \Smart\Data\Cache {
                 inner join manufacturer mf on ( mf.id = ib.manufacturerid )
                 outer apply (
                     SELECT
-                        mb.name as materialboxname,
-                        colorschema = (
-                            select stuff
-                                (
-                                    (
-                                        select
-                                            ',#' + tc.colorschema + '|#' + tc.colorstripe
-                                        from
-                                            materialboxtarge mbt
-                                            inner join targecolor tc on ( tc.id = mbt.targecolorid )
-                                        where mbt.materialboxid = mb.id
-                                        order by mbt.targeorderby asc
-                                        for xml path ('')
-                                    ) ,1,1,''
-                                )                
-                        )
-                    FROM
+                        mb.id as materialboxid,
+						mb.name as materialboxname
+					FROM
                         materialbox mb
-                    inner join materialboxitem mbi on ( 
-                                    mbi.materialboxid = mb.id
-                                AND mbi.materialid = m.id )
+                    inner join materialboxitem mbi on ( mbi.materialboxid = mb.id AND mbi.materialid = m.id )
                     inner join itembase ibt on ( ibt.id = mbi.materialid )
                 ) a
             WHERE ib.barcode = @barcode

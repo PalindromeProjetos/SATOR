@@ -11,7 +11,8 @@ Ext.define( 'iTools.view.main.Main', {
         'Ext.plugin.Viewport',
         'Smart.ux.main.MainModuleSearch',
         'iTools.view.main.MainController',
-        'iAdmin.view.helper.areas.CMESubAreasSearch'
+        'iAdmin.view.helper.areas.CMESubAreasSearch',
+        'iAdmin.view.helper.printserver.PrintServerSearch'
     ],
 
     plugins: 'viewport',
@@ -113,8 +114,21 @@ Ext.define( 'iTools.view.main.Main', {
                                     '</tpl>'
                                 ]
                             }, {
+                                pageSize: 5,
+                                editable: false,
+                                allowBlank: true,
                                 name: 'printlocate',
-                                fieldLabel: 'Impressora'
+                                cls: 'workstation',
+                                fieldLabel: 'Impressora',
+                                xtype: 'printserversearch',
+                                hiddenNameId: 'printlocateid',
+                                tpl: [
+                                    '<tpl for=".">',
+                                        '<div class="x-boundlist-item">',
+                                            '<div style="font-size: 22px; line-height: 38px;">{printlocate}</div>',
+                                        '</div>',
+                                    '</tpl>'
+                                ]
                             }, {
                                 cls: 'workstation',
                                 fieldLabel: 'Retornar',
