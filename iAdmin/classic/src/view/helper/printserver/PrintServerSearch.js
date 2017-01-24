@@ -5,7 +5,8 @@ Ext.define( 'iAdmin.view.helper.printserver.PrintServerSearch', {
     xtype: 'printserversearch',
 
     requires: [
-        'Smart.form.field.ComboSearch'
+        'Smart.form.field.ComboSearch',
+        'iAdmin.store.helper.PrintServer'
     ],
 
     displayField: 'printlocate',

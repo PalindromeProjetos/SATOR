@@ -28,7 +28,9 @@ class cmesubareas extends \Smart\Data\Cache {
                 areas a
                 inner join cmesubareas sa on ( sa.id = a.id )
             WHERE a.areastype = 'S'
-              and ( " . implode(' OR ', $p) . " )";
+              and ( " . implode(' OR ', $p) . " )
+              and a.isactive = 1
+            order by a.name";
 
         try {
             $pdo = $proxy->prepare($sql);

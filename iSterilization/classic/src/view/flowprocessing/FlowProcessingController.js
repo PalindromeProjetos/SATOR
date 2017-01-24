@@ -194,7 +194,6 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         storeView.each(function (item) {
 
             if (item) {
-                console.info(item);
                 var rec = store.findRecord('id', item.get('id'));
 
                 if (!rec) {
