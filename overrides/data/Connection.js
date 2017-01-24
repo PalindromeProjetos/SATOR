@@ -2,6 +2,8 @@
 Ext.define( 'Ext.overrides.data.Connection', {
     override: 'Ext.data.Connection',
 
+    // timeout: 30000,
+
     constructor: function () {
         var me = this;
 

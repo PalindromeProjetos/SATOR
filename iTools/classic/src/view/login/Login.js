@@ -10,5 +10,5 @@ Ext.define( 'iTools.view.login.Login', {
         'Smart.ux.login.Login',
         'iTools.view.login.LoginController'
     ]
-
+    
 });
