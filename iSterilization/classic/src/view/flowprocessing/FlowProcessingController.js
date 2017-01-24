@@ -191,11 +191,15 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             Smart.ion.sound.play("button_tiny");
         }
 
-        storeView.each(function (record) {
-            var rec = store.findRecord('id',record.get('id'));
+        storeView.each(function (item) {
 
-            if(!rec) {
-                storeView.remove(record);
+            if (item) {
+                console.info(item);
+                var rec = store.findRecord('id', item.get('id'));
+
+                if (!rec) {
+                    storeView.remove(item);
+                }
             }
         });
 
