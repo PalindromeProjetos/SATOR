@@ -630,7 +630,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                 a.id,
                 a.name,
                 fps.id as stepsource,
-                fps.typechoice,
+                --fps.typechoice,
                 fps.stepchoice,
                 fps.flowbreach,
                 fps.flowchoice,
