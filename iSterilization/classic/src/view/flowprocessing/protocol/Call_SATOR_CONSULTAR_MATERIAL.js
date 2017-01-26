@@ -263,6 +263,14 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                             newCard.down('gridpanel').getStore().removeAll();
                                             newCard.down('gridpanel').getStore().load({params: params});
                                         }
+                                        if(newCard.tabIndex == 4 && store.getCount() != 0) {
+                                            var record = store.getAt(0),
+                                                params = {
+                                                    query: record.get('id')
+                                                };
+                                            newCard.down('gridpanel').getStore().removeAll();
+                                            newCard.down('gridpanel').getStore().load({params: params});
+                                        }
                                     }
                                 },
                                 items: [
@@ -379,7 +387,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                 name: 'flowprocessing',
                                                 params: {
                                                     action: 'select',
-                                                    method: 'selectByMaterial'
+                                                    method: 'selectByMaterialProcesso'
                                                 },
 
                                                 url: '../iSterilization/business/Calls/flowprocessingstepmaterial.php',
@@ -436,7 +444,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                             return (readValue.length != 0) ? readValue: value;
                                                         }
                                                     }, {
-                                                        width: 160,
+                                                        width: 210,
                                                         sortable: false,
                                                         dataIndex: 'flowstatusdescription',
                                                         text: 'Status'
@@ -561,6 +569,70 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                                 tagprinterdescription = (stepsettings) ? Ext.decode(stepsettings).tagprinterdescription : "";
                                                             return tagprinterdescription;
                                                         }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }, {
+                                        tabIndex: 4,
+                                        title: 'Movimentos',
+                                        xtype: 'panel',
+                                        layout: 'fit',
+                                        items: [
+                                            {
+                                                xtype: 'gridpanel',
+                                                cls: 'update-grid',
+                                                hideHeaders: false,
+                                                headerBorders: false,
+                                                name: 'flowprocessingmovement',
+                                                params: {
+                                                    action: 'select',
+                                                    method: 'selectByMaterialMovimento'
+                                                },
+
+                                                url: '../iSterilization/business/Calls/flowprocessingstepmaterial.php',
+
+                                                fields: [
+                                                    {
+                                                        name: 'id',
+                                                        type: 'int'
+                                                    }, {
+                                                        name: 'barcode',
+                                                        type: 'auto'
+                                                    }, {
+                                                        name: 'movementdate',
+                                                        type: 'auto'
+                                                    }, {
+                                                        name: 'movementtypedescription',
+                                                        type: 'auto'
+                                                    }, {
+                                                        name: 'releasestypedescription',
+                                                        type: 'auto'
+                                                    }
+                                                ],
+
+                                                columns: [
+                                                    {
+                                                        flex: 1,
+                                                        align: 'left',
+                                                        sortable: false,
+                                                        dataIndex: 'movementtypedescription',
+                                                        text: 'Movimento'
+                                                    }, {
+                                                        width: 120,
+                                                        align: 'center',
+                                                        sortable: false,
+                                                        dataIndex: 'movementdate',
+                                                        text: 'Data',
+                                                        renderer: function (value) {
+                                                            var readValue = Ext.util.Format.date(Ext.Date.parse(value.substring(0, 10),'Y-m-d'),'d/m/Y');
+                                                            return (readValue.length != 0) ? readValue: value;
+                                                        }
+                                                    }, {
+                                                        width: 210,
+                                                        sortable: false,
+                                                        dataIndex: 'releasestypedescription',
+                                                        text: 'Status'
                                                     }
                                                 ]
                                             }

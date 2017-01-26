@@ -195,7 +195,7 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
 						inner join flowprocessingchargeitem b on ( b.flowprocessingstepid = a.id )
 						inner join flowprocessingcharge c on ( c.id = b.flowprocessingchargeid and c.chargeflag in ('001','002','003','005','006') )
                     where a.flowprocessingid = fp.id
-                      and a.areasid in (@areasid, Null)
+                      and a.areasid in (@areasid, null)
                     order by c.chargedate desc
                 ) b
             where fpm.materialid = @materialid
@@ -220,6 +220,144 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
         return self::getResultToJson();
     }
 
+    public function selectByMaterialProcesso(array $data) {
+        $query = $data['query'];
+        $areasid = $data['areasid'];
+        $proxy = $this->getStore()->getProxy();
+
+        $sql = "
+			SET XACT_ABORT ON
+			SET NOCOUNT ON
+			SET ANSI_NULLS ON
+			SET ANSI_WARNINGS ON       
+        
+            declare
+                @areasid int = :areasid,
+                @materialid int = :materialid;
+                            
+			if object_id('tempdb.dbo.#tmp') is not null drop table #tmp
+
+            select top 10
+                fp.id, 
+                fp.barcode,
+                fp.flowstatus,
+                fp.dateof,
+                dbo.getEnum('flowstatus',fp.flowstatus) as flowstatusdescription,
+				fps.id as flowprocessingstepid
+				into #tmp
+            from
+                flowprocessingstepmaterial fpsm
+                inner join flowprocessingstep fps on ( fps.id = fpsm.flowprocessingstepid )
+                inner join flowprocessing fp on ( fp.id = fps.flowprocessingid and fp.areasid = fps.areasid )
+            where fpsm.materialid = @materialid
+            order by fp.dateof desc
+
+			select
+                id, 
+                barcode,
+                flowstatus,
+                dateof,
+                flowstatusdescription,
+				case row_number() over (order by id desc)
+					when 1 then (
+						select
+							c.id
+						from
+							flowprocessingstep a
+							inner join flowprocessingchargeitem b on ( b.flowprocessingstepid = a.id )
+							inner join flowprocessingcharge c on ( c.id = b.flowprocessingchargeid )
+						where a.flowprocessingid = #tmp.id
+						  and a.areasid = @areasid
+					)
+					else flowprocessingstepid
+				end as flowprocessingstepid
+			from
+				#tmp";
+
+        try {
+            $pdo = $proxy->prepare($sql);
+
+            $pdo->bindValue(":areasid", $areasid, \PDO::PARAM_INT);
+            $pdo->bindValue(":materialid", $query, \PDO::PARAM_INT);
+
+            $pdo->execute();
+            $rows = $pdo->fetchAll();
+
+            self::_setRows($rows);
+
+        } catch ( \PDOException $e ) {
+            self::_setSuccess(false);
+            self::_setText($e->getMessage());
+        }
+
+        return self::getResultToJson();
+    }
+
+    public function selectByMaterialMovimento(array $data) {
+        $query = $data['query'];
+        $proxy = $this->getStore()->getProxy();
+
+        $sql = "
+			SET XACT_ABORT ON
+			SET NOCOUNT ON
+			SET ANSI_NULLS ON
+			SET ANSI_WARNINGS ON       
+        
+            declare
+                @materialid int = :materialid;
+                            
+			if object_id('tempdb.dbo.#tmp') is not null drop table #tmp
+
+            select distinct top 10
+                am.id, 
+                am.movementuser, 
+                am.movementdate, 
+                am.movementtype,
+                am.releasestype
+                into #tmp
+            from
+                armorymovement am
+                inner join armorymovementitem ami on ( ami.armorymovementid = am.id )
+                inner join flowprocessingstep fps on ( fps.id = ami.flowprocessingstepid )
+                inner join flowprocessing fp on ( fp.id = fps.flowprocessingid )
+                cross apply (
+                    select top 1
+                        s.elementname
+                    from
+                        flowprocessingstep s
+                        inner join flowprocessingstepmaterial m on ( m.flowprocessingstepid = s.id )
+                    where s.areasid = fp.areasid
+                      and m.materialid = @materialid
+                ) t
+            order by am.movementdate desc
+            
+            select
+                id,
+                movementuser,
+                movementdate,
+                dbo.getEnum('releasestype',releasestype) as releasestypedescription,
+                dbo.getEnum('movementtype',movementtype) as movementtypedescription
+            from
+                #tmp";
+
+        try {
+            $pdo = $proxy->prepare($sql);
+            
+            $pdo->bindValue(":materialid", $query, \PDO::PARAM_INT);
+
+            $pdo->execute();
+            $rows = $pdo->fetchAll();
+
+            self::_setRows($rows);
+
+        } catch ( \PDOException $e ) {
+            self::_setSuccess(false);
+            self::_setText($e->getMessage());
+        }
+
+        return self::getResultToJson();
+    }
+
     public function selectByMaterialLote(array $data) {
         $query = $data['query'];
         $proxy = $this->getStore()->getProxy();
@@ -228,7 +366,7 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
             declare
                 @materialid int = :materialid;
                             
-            select top 4
+            select top 10
                 fpc.id,
                 fpc.barcode,
 				fpc.chargeflag,
