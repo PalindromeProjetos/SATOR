@@ -135,11 +135,14 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             Smart.ion.sound.play("button_tiny");
         }
 
-        storeView.each(function (record) {
-            var rec = store.findRecord('id',record.get('id'));
+        storeView.each(function (item) {
 
-            if(!rec) {
-                storeView.remove(record);
+            if (item) {
+                var rec = store.findRecord('id', item.get('id'));
+
+                if (!rec) {
+                    storeView.remove(item);
+                }
             }
         });
 
@@ -257,11 +260,14 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             Smart.ion.sound.play("button_tiny");
         }
 
-        storeView.each(function (record) {
-            var rec = store.findRecord('id',record.get('id'));
+        storeView.each(function (item) {
 
-            if(!rec) {
-                storeView.remove(record);
+            if (item) {
+                var rec = store.findRecord('id', item.get('id'));
+
+                if (!rec) {
+                    storeView.remove(item);
+                }
             }
         });
 
@@ -4625,6 +4631,9 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
             htmlLines = '<div class="portrait-label">{0}</div><div class="colorpallet float-l">{1}</div>';
 
         if(portrait) {
+
+            portrait.update('');
+
             Ext.Ajax.request({
                 scope: me,
                 url: record.store.getUrl(),
@@ -4652,12 +4661,34 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                 }
             });
 
-            colorpallet = colorpallet.replace(/width: 25px;/g, "width: 40px;");
-            colorpallet = colorpallet.replace(/float: left;/g, "float: right;");
-            colorpallet = colorpallet.replace(/height: 25px;/g, "height: 100%;");
+            if(colorpallet) {
+                colorpallet = colorpallet.replace(/width: 25px;/g, "width: 40px;");
+                colorpallet = colorpallet.replace(/float: left;/g, "float: right;");
+                colorpallet = colorpallet.replace(/height: 25px;/g, "height: 100%;");
 
-            portrait.update(Ext.String.format(htmlLines, record.get('materialname'), colorpallet));
+                portrait.update(Ext.String.format(htmlLines, record.get('materialname'), colorpallet));
+            }
         }
+    },
+
+    setSelectFilterType: function(grid, rowIndex, colIndex) {
+        var me = this,
+            view = me.getView(),
+            record = grid.getStore().getAt(rowIndex);
+
+        view.down('materialsearchfilter').setValue(record.get('name'));
+        view.down('hiddenfield[name=filterid]').setValue(record.get('id'));
+        view.down('hiddenfield[name=filtertype]').setValue(record.get('filtertype'));
+
+        view.down('materialsearchfilter').collapse();
+    },
+
+    showClear: function (field, eOpts) {
+        var me = this,
+            view = me.getView();
+
+        view.down('hiddenfield[name=filterid]').reset();
+        view.down('hiddenfield[name=filtertype]').reset();
     },
 
     onItemDblClickMaterial: function ( viewView, record, item, index, e, eOpts ) {

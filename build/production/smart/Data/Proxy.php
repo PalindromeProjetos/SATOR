@@ -45,7 +45,6 @@ class Proxy extends \PDO {
              * @author: https://www.drupal.org/node/1540686
              */
             if($this->driverName == 'sqlsrv') {
-//                $this->setAttribute( \PDO::SQLSRV_ATTR_ENCODING, \PDO::SQLSRV_ENCODING_UTF8);
                 $this->setAttribute( \PDO::SQLSRV_ATTR_ENCODING, \PDO::SQLSRV_ENCODING_SYSTEM);
             }
 
@@ -53,6 +52,21 @@ class Proxy extends \PDO {
             self::_setSuccess(false);
             self::_setText('Não foi possível acessar a base de dados!');
 			echo self::getResultToJson();
+        }
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getDriverName()
+    {
+        return $this->driverName;
+    }
+
+    public function setEncodingUTF8()
+    {
+        if($this->driverName == 'sqlsrv') {
+            $this->setAttribute( \PDO::SQLSRV_ATTR_ENCODING, \PDO::SQLSRV_ENCODING_UTF8);
         }
     }
 

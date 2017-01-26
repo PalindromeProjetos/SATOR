@@ -169,8 +169,6 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
                 dbo.getEnum('flowstatus',fp.flowstatus) as flowstatusdescription,
                 a.stepsettings,
                 coalesce(b.chargeid,a.flowprocessingstepid) as flowprocessingstepid,
-                --a.flowprocessingstepid as flowprocessingstepid,
-                --b.chargeid,
                 b.barcode as charge,
 				b.chargeflag,
 				dbo.getEnum('chargeflag',b.chargeflag) as chargeflagdescription

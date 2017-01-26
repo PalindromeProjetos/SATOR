@@ -136,6 +136,7 @@ class flowprocessing extends \Smart\Data\Cache {
               )";
 
         try {
+            $proxy->setEncodingUTF8();
             $pdo = $proxy->prepare($sql);
             $pdo->bindValue(":barcode", $query, \PDO::PARAM_STR);
             $pdo->bindValue(":name", "{$query}%", \PDO::PARAM_STR);
@@ -153,19 +154,250 @@ class flowprocessing extends \Smart\Data\Cache {
         return self::getResultToJson();
     }
 
+    public function selectBox(array $data) {
+        $query = $data['query'];
+        $start = $data['start'];
+        $limit = $data['limit'];
+        $proxy = $this->getStore()->getProxy();
+        $materialboxid = isset($data['filterid']) ? $data['filterid'] : null;
+        $sql = "
+            declare
+                @name varchar(60) = :name,
+                @barcode varchar(20) = :barcode,
+                @materialboxid int = :materialboxid;
+
+            SELECT
+                ib.name,
+                ib.description,
+                ib.barcode,
+                ib.itembasetype,
+                ib.proprietaryid,
+                ib.manufacturerid,
+                ib.dateacquisition,
+                ib.patrimonialcode,
+                ib.registrationanvisa,
+                ib.isactive,
+                ib.itemgroup,
+                dbo.getEnum('itemsize',m.itemsize) as itemsizedescription,
+                dbo.getEnum('itemgroup',ib.itemgroup) as itemgroupdescription,
+                a.materialboxname,
+                a.colorschema,
+                m.*,
+                --ms.name as materialstatusname,
+                dbo.getEnum('materialstatus',m.materialstatus) as materialstatusdescription,
+                pk.name as packingname,
+                pt.name as proprietaryname,
+                mf.name as manufacturername
+            FROM
+                itembase ib
+                inner join material m on ( m.id = ib.id )
+                --inner join materialstatus ms on ( ms.id = m.materialstatusid )
+                inner join packing pk on ( pk.id = m.packingid )
+                inner join proprietary pt on ( pt.id = ib.proprietaryid )
+                inner join manufacturer mf on ( mf.id = ib.manufacturerid )
+                inner join materialboxitem mbi on ( mbi.materialid = m.id and mbi.materialboxid = @materialboxid )
+                outer apply (
+                    SELECT
+                        mb.name as materialboxname,
+                        colorschema = (
+                            select stuff
+                                (
+                                    (
+                                        select
+                                            ',#' + tc.colorschema + '|#' + tc.colorstripe
+                                        from
+                                            materialboxtarge mbt
+                                            inner join targecolor tc on ( tc.id = mbt.targecolorid )
+                                        where mbt.materialboxid = mb.id
+                                        order by mbt.targeorderby asc
+                                        for xml path ('')
+                                    ) ,1,1,''
+                                )                
+                        )
+                    FROM
+                        materialbox mb
+                    inner join materialboxitem mbi on ( 
+                                    mbi.materialboxid = mb.id
+                                AND mbi.materialid = m.id )
+                    inner join itembase ibt on ( ibt.id = mbi.materialid )
+                ) a
+            WHERE ib.barcode = @barcode
+               OR ib.name COLLATE Latin1_General_CI_AI LIKE @name;";
+
+        try {
+            $proxy->setEncodingUTF8();
+            $pdo = $proxy->prepare($sql);
+
+            $pdo->bindValue(":name", "{$query}%", \PDO::PARAM_STR);
+            $pdo->bindValue(":barcode", $query, \PDO::PARAM_STR);
+            $pdo->bindValue(":materialboxid", $materialboxid, \PDO::PARAM_INT);
+
+            $pdo->execute();
+            $rows = $pdo->fetchAll();
+
+            self::_setRows($rows);
+            self::_setPage($start,$limit);
+
+        } catch ( \PDOException $e ) {
+            self::_setSuccess(false);
+            self::_setText($e->getMessage());
+        }
+
+        return self::getResultToJson();
+    }
+
+    public function selectProprietary(array $data) {
+        $query = $data['query'];
+        $start = $data['start'];
+        $limit = $data['limit'];
+        $proxy = $this->getStore()->getProxy();
+        $proprietaryid = isset($data['filterid']) ? $data['filterid'] : null;
+        $sql = "
+            declare
+                @name varchar(60) = :name,
+                @barcode varchar(20) = :barcode,
+                @proprietaryid int = :proprietaryid;
+
+            SELECT
+                ib.name,
+                ib.description,
+                ib.barcode,
+                ib.itembasetype,
+                ib.proprietaryid,
+                ib.manufacturerid,
+                ib.dateacquisition,
+                ib.patrimonialcode,
+                ib.registrationanvisa,
+                ib.isactive,
+                ib.itemgroup,
+                dbo.getEnum('itemsize',m.itemsize) as itemsizedescription,
+                dbo.getEnum('itemgroup',ib.itemgroup) as itemgroupdescription,
+                a.materialboxname,
+                a.colorschema,
+                m.*,
+                --ms.name as materialstatusname,
+                dbo.getEnum('materialstatus',m.materialstatus) as materialstatusdescription,
+                pk.name as packingname,
+                pt.name as proprietaryname,
+                mf.name as manufacturername
+            FROM
+                itembase ib
+                inner join material m on ( m.id = ib.id )
+                --inner join materialstatus ms on ( ms.id = m.materialstatusid )
+                inner join packing pk on ( pk.id = m.packingid )
+                inner join proprietary pt on ( pt.id = ib.proprietaryid and ib.proprietaryid = @proprietaryid )
+                inner join manufacturer mf on ( mf.id = ib.manufacturerid )
+                left join materialboxitem mbi on ( mbi.materialid = m.id )
+                outer apply (
+                    SELECT
+                        mb.name as materialboxname,
+                        colorschema = (
+                            select stuff
+                                (
+                                    (
+                                        select
+                                            ',#' + tc.colorschema + '|#' + tc.colorstripe
+                                        from
+                                            materialboxtarge mbt
+                                            inner join targecolor tc on ( tc.id = mbt.targecolorid )
+                                        where mbt.materialboxid = mb.id
+                                        order by mbt.targeorderby asc
+                                        for xml path ('')
+                                    ) ,1,1,''
+                                )                
+                        )
+                    FROM
+                        materialbox mb
+                    inner join materialboxitem mbi on ( 
+                                    mbi.materialboxid = mb.id
+                                AND mbi.materialid = m.id )
+                    inner join itembase ibt on ( ibt.id = mbi.materialid )
+                ) a
+            WHERE ib.barcode = @barcode
+               OR ib.name COLLATE Latin1_General_CI_AI LIKE @name;";
+
+        try {
+            $proxy->setEncodingUTF8();
+            $pdo = $proxy->prepare($sql);
+
+            $pdo->bindValue(":name", "%{$query}%", \PDO::PARAM_STR);
+            $pdo->bindValue(":barcode", $query, \PDO::PARAM_STR);
+            $pdo->bindValue(":proprietaryid", $proprietaryid, \PDO::PARAM_INT);
+
+            $pdo->execute();
+            $rows = $pdo->fetchAll();
+
+            self::_setRows($rows);
+            self::_setPage($start,$limit);
+
+        } catch ( \PDOException $e ) {
+            self::_setSuccess(false);
+            self::_setText($e->getMessage());
+        }
+
+        return self::getResultToJson();
+    }
+
     public function getAvailableForProcessing(array $data) {
         $query = $data['query'];
+        $materialid = $data['materialid'];
         $proxy = $this->getStore()->getProxy();
 
         $sql = "
+			SET XACT_ABORT ON
+			SET NOCOUNT ON
+			SET ANSI_NULLS ON
+			SET ANSI_WARNINGS ON
+        
             declare
-                @barcode varchar(20) = :barcode;
-                
-            exec dbo.getAvailableForProcessing @barcode";
+                @barcode varchar(20) = :barcode,               
+                @materialid int = :materialid,
+				@areavailable int,
+				@message varchar(250);
+
+			if object_id('tempdb.dbo.#tblTemp') is not null drop table #tblTemp;
+
+			create table #tblTemp ( areavailable int, message varchar(250) );
+		
+			insert into #tblTemp ( areavailable, message ) exec dbo.getAvailableForProcessing @barcode;                        
+
+			select
+				@areavailable = areavailable,
+				@message = message
+			from
+				#tblTemp;
+ 
+			if(@areavailable = 1)
+			begin
+				select top 1
+					@areavailable as areavailable, 
+					@message as message,
+					am.closedby,
+					am.closeddate,
+					amo.barcode,
+					amo.surgicalwarning,
+					amo.surgicalroom,
+					amo.patientname,
+					amo.surgical
+				from
+					flowprocessingstepmaterial fpm
+					inner join flowprocessingstep fps on ( fps.id = fpm.flowprocessingstepid )
+					inner join flowprocessing fp on ( fp.id = fps.flowprocessingid )
+					inner join armorymovementitem ami on ( ami.flowprocessingstepid = fps.id )
+					inner join armorymovementoutput amo on ( amo.id = ami.armorymovementid )
+					inner join armorymovement am on ( am.id = amo.id and am.releasestype = 'E' )
+				where fpm.materialid = @materialid
+				order by fp.dateof desc, am.closeddate desc
+			end
+			else
+			begin
+				select areavailable, message from #tblTemp;
+			end";
 
         try {
             $pdo = $proxy->prepare($sql);
             $pdo->bindValue(":barcode", $query, \PDO::PARAM_STR);
+            $pdo->bindValue(":materialid", $materialid, \PDO::PARAM_INT);
             $pdo->execute();
             $rows = $pdo->fetchAll();
 

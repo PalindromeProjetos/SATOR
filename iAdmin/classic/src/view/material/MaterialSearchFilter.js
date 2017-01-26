@@ -45,12 +45,12 @@ Ext.define( 'iAdmin.view.material.MaterialSearchFilter', {
                             {
                                 inputValue: 1,
                                 boxLabel: 'Kit',
-                                name: 'filtertype',
-                                checked: true
+                                name: 'filtertype'
                             }, {
                                 inputValue: 2,
                                 boxLabel: 'Proprietário',
-                                name: 'filtertype'
+                                name: 'filtertype',
+                                checked: true
                             }
                         ],
                         listeners: {

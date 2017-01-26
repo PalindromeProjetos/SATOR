@@ -9,10 +9,11 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
         'Ext.form.Panel',
         'Smart.plugins.*',
         'Ext.window.Window',
+        'iAdmin.view.material.MaterialSearchFilter',
         'iSterilization.view.flowprocessing.FlowProcessingController'
     ],
 
-    width: 950,
+    width: 1150,
     modal: true,
     layout: 'fit',
     header: false,
@@ -31,15 +32,18 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
         var view = this,
             portrait = view.down('portrait'),
             searchmaterial = view.down('searchmaterial'),
+            materialarmory = view.down('container[name=materialarmory]'),
             materialdetail = view.down('container[name=materialdetail]'),
-            materialmessage = view.down('container[name=materialmessage]');
+            materialmessage = view.down('panel[name=materialmessage]');
 
         view.down('tabpanel').setActiveTab(0);
 
+        materialarmory.update('');
+        materialdetail.update('');
+        materialmessage.update('');
+
         if (!record) {
             portrait.beFileData();
-            materialdetail.update('');
-            materialmessage.update('');
             searchmaterial.getStore().removeAll();
             view.down('gridpanel[name=materialbox]').getStore().removeAll();
             view.down('gridpanel[name=flowprocessing]').getStore().removeAll();
@@ -58,6 +62,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
             params: {
                 action: 'select',
                 method: 'getAvailableForProcessing',
+                materialid: record.get('id'),
                 query: record.get('barcode')
             },
             callback: function (options, success, response) {
@@ -67,6 +72,11 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                     Smart.Msg.showToast(result.text,'error');
                     return false;
                 }
+
+                if(result.rows.length != 0 && result.rows[0].areavailable == 1) {
+                    materialarmory.update(result.rows[0]);
+                }
+
                 materialmessage.update(result.rows[0]);
 
                 searchmaterial.selectText();
@@ -126,47 +136,93 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                         ]
                     }, {
                         margin: '20 0 0 0',
-                        selectOnFocus: true,
-                        name: 'materialname',
-                        xtype: 'searchmaterial',
-                        hiddenNameId: 'materialid',
-                        configStoreListeners: {
-                            load: function (store, records, successful, operation, eOpts) {
-                                var searchmaterial = me.down('searchmaterial');
-                                if (store.getCount() == 1) {
-                                    var record = store.getAt(0);
-                                    searchmaterial.setRawValue(record.get('name'));
-                                    searchmaterial.fireEvent('select',searchmaterial, record, eOpts);
-                                }
-                                if (store.getCount() >= 2) {
-                                    searchmaterial.expand();
-                                }
-                                if (store.getCount() == 0) {
-                                    me.showData();
-                                }
-                            }
+                        layout: 'hbox',
+                        xtype: 'container',
+                        defaults: {
+                            fieldCls: 'smart-field-style-action'
                         },
-                        listeners: {
-                            showclear: function (combo) {
-                                var view = combo.up('window');
-                                combo.reset();
-                                view.showData();
-                            },
-                            select: function (combo,record,eOpts) {
-                                var view = combo.up('window');
-                                view.showData(record);
+                        items: [
+                            {
+                                flex: 3,
+                                margin: '0 5 0 0',
+                                selectOnFocus: true,
+                                name: 'materialname',
+                                xtype: 'searchmaterial',
+                                hiddenNameId: 'materialid',
+                                configStoreListeners: {
+                                    load: function (store, records, successful, operation, eOpts) {
+                                        var searchmaterial = me.down('searchmaterial');
+                                        if (store.getCount() == 1) {
+                                            var record = store.getAt(0);
+                                            searchmaterial.setRawValue(record.get('name'));
+                                            searchmaterial.fireEvent('select',searchmaterial, record, eOpts);
+                                        }
+                                        if (store.getCount() >= 2) {
+                                            searchmaterial.expand();
+                                        }
+                                        if (store.getCount() == 0) {
+                                            me.showData();
+                                        }
+                                    },
+                                    beforeload: function  ( store, operation, eOpts ) {
+                                        var params = {method: 'selectOpenMaterial'},
+                                            filterid = me.down('hiddenfield[name=filterid]'),
+                                            filtertype = me.down('hiddenfield[name=filtertype]');
+
+                                        if(filtertype.getValue()) {
+                                            params.filterid = filterid.getValue();
+                                            params.method = (filtertype.getValue() == 1) ? 'selectBox' : 'selectProprietary';
+                                        }
+
+                                        // params: {
+                                        //     param: 'C',
+                                        //         action: 'select',
+                                        //         method: 'selectOpenMaterial'
+                                        // },
+
+                                        store.setParams(params);
+                                    }
+                                },
+                                listeners: {
+                                    showclear: function (combo) {
+                                        var view = combo.up('window');
+                                        combo.reset();
+                                        view.showData();
+                                    },
+                                    select: function (combo,record,eOpts) {
+                                        var view = combo.up('window');
+                                        view.showData(record);
+                                    }
+                                }
+                            }, {
+                                xtype: 'hiddenfield',
+                                name: 'filtertype'
+                            }, {
+                                xtype: 'hiddenfield',
+                                name: 'filterid'
+                            }, {
+                                flex: 2,
+                                showClear: true,
+                                margin: '0 0 0 5',
+                                xtype: 'materialsearchfilter',
+                                listeners: {
+                                    showclear: 'showClear'
+                                }
                             }
-                        }
+                        ]
                     }, {
                         height: 10,
                         xtype: 'container'
                     }, {
+                        height: 500,
                         xtype: 'panel',
-                        layout: 'hbox',
+                        layout: {
+                            type: 'hbox',
+                            align: 'stretch'
+                        },
                         items: [
                             {
                                 flex: 3,
-                                height: 400,
                                 plain: true,
                                 cls: 'consulta',
                                 xtype: 'tabpanel',
@@ -225,23 +281,27 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                 name: 'materialdetail',
                                                 tpl: [
                                                     '<div class="movement consulta">',
-                                                    '<div class="movement-title"><b>{name}</b></div>',
-                                                    '<div class="movement-title"><b>Kit:</b> {materialboxname} <b>{materialboxitemstext}</b></div>',
-                                                    '<div class="movement-title"><b>Status:</b> {materialstatusdescription}</div>',
-                                                    '<div><b>Código de Barras: {barcode}</b></div>',
-                                                    '<div><b>Grupo:</b> {itemgroupdescription}</div>',
-                                                    '<div><b>Embalagem:</b> {packingname}</div>',
-                                                    '<div><b style="color: red;">Proprietario:</b> {proprietaryname}</div>',
+                                                        '<div class="movement-title"><b>{name}</b></div>',
+                                                        '<div class="movement-title"><b>Kit:</b> {materialboxname} <b>{materialboxitemstext}</b></div>',
+                                                        '<div class="movement-title"><b>Status:</b> {materialstatusdescription}</div>',
+                                                        '<div><b>Código de Barras: {barcode}</b></div>',
+                                                        '<div><b>Grupo:</b> {itemgroupdescription}</div>',
+                                                        '<div><b>Embalagem:</b> {packingname}</div>',
+                                                        '<div><b style="color: red;">Proprietario:</b> {proprietaryname}</div>',
                                                     '</div>'
                                                 ]
                                             }, {
-                                                height: 120,
+                                                height: 250,
                                                 xtype: 'container',
-                                                name: 'materialmessage',
+                                                name: 'materialarmory',
                                                 tpl: [
                                                     '<div class="movement consulta">',
-                                                        '<div class="movement-title"><b>Localização:</b></div>',
-                                                        '<div><b style="color: red;">{message}</b></div>',
+                                                        '<div class="movement-title"><b>Movimentação:</b></div>',
+                                                        '<div><b style="color: red;">{surgicalwarning} {patientname}</b></div>',
+                                                        '<div><b>Local: </b>{surgicalroom}</div>',
+                                                        '<div><b>Procedimento: </b>{surgical}</div>',
+                                                        '<div><b>Operador: </b>{closedby} {closeddate}</div>',
+                                                        '<div><b>Code: </b>{barcode}</div>',
                                                     '</div>'
                                                 ]
                                             }
@@ -475,7 +535,7 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                             return (readValue.length != 0) ? readValue: value;
                                                         }
                                                     }, {
-                                                        width: 110,
+                                                        width: 210,
                                                         sortable: false,
                                                         dataIndex: 'chargeflagdescription',
                                                         text: 'Status'
@@ -510,9 +570,27 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                 xtype: 'splitter'
                             }, {
                                 flex: 2,
-                                height: 400,
                                 hideButtons: true,
-                                xtype: 'portrait'
+                                xtype: 'portrait',
+                                dockedItems: [
+                                    {
+                                        height: 150,
+                                        dock: 'bottom',
+                                        xtype: 'panel',
+                                        cls: 'consulta-location',
+                                        name: 'materialmessage',
+                                        tpl: [
+                                            '<div class="movement consulta">',
+                                                '<div class="movement-title"><b>Localização:</b></div>',
+                                                '<i><b style="color: red; word-wrap: break-word;">{message}</b></i>',
+                                            '</div>'
+                                        ]
+                                    }, {
+                                        height: 10,
+                                        dock: 'bottom',
+                                        xtype: 'container'
+                                    }
+                                ]
                             }
                         ]
                     }
