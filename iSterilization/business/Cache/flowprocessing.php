@@ -372,13 +372,15 @@ class flowprocessing extends \Smart\Data\Cache {
 				select top 1
 					@areavailable as areavailable, 
 					@message as message,
+					dbo.getLeftPad(8,'0',am.id) as id,
 					am.closedby,
 					am.closeddate,
 					amo.barcode,
 					amo.surgicalwarning,
 					amo.surgicalroom,
 					amo.patientname,
-					amo.surgical
+					amo.surgical,
+					c.name as clientname
 				from
 					flowprocessingstepmaterial fpm
 					inner join flowprocessingstep fps on ( fps.id = fpm.flowprocessingstepid )
@@ -386,6 +388,7 @@ class flowprocessing extends \Smart\Data\Cache {
 					inner join armorymovementitem ami on ( ami.flowprocessingstepid = fps.id )
 					inner join armorymovementoutput amo on ( amo.id = ami.armorymovementid )
 					inner join armorymovement am on ( am.id = amo.id and am.releasestype = 'E' )
+					inner join client c on ( c.id = amo.clientid )
 				where fpm.materialid = @materialid
 				order by fp.dateof desc, am.closeddate desc
 			end

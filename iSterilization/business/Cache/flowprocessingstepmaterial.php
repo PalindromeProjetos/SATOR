@@ -161,7 +161,7 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
                 @areasid int = :areasid,
                 @materialid int = :materialid;
                             
-            select distinct
+            select distinct top 4
                 fp.id, 
                 fp.barcode,
                 fp.flowstatus,
@@ -228,7 +228,7 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
             declare
                 @materialid int = :materialid;
                             
-            select
+            select top 4
                 fpc.id,
                 fpc.barcode,
 				fpc.chargeflag,

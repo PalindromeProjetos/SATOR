@@ -296,12 +296,13 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                 name: 'materialarmory',
                                                 tpl: [
                                                     '<div class="movement consulta">',
-                                                        '<div class="movement-title"><b>Movimentação:</b></div>',
+                                                        '<div class="movement-title"><b>Rastreabilidade / Movimentação:</b></div>',
+                                                        '<div><b style="color: red;">{clientname}</b></div>',
                                                         '<div><b style="color: red;">{surgicalwarning} {patientname}</b></div>',
                                                         '<div><b>Local: </b>{surgicalroom}</div>',
                                                         '<div><b>Procedimento: </b>{surgical}</div>',
                                                         '<div><b>Operador: </b>{closedby} {closeddate}</div>',
-                                                        '<div><b>Code: </b>{barcode}</div>',
+                                                        '<div><b>Code: </b>{barcode}#{id}</div>',
                                                     '</div>'
                                                 ]
                                             }
