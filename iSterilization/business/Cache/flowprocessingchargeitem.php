@@ -18,7 +18,11 @@ class flowprocessingchargeitem extends \Smart\Data\Cache {
             select
                 fpci.*,
                 fp.barcode,
-                coalesce(ta.name,tb.name) as materialname,
+                --coalesce(ta.name,tb.name) as materialname,
+                case fp.flowtype
+                    when '001' then coalesce(ta.name,tb.name)
+                    when '002' then dbo.getEnum('boxtype',fp.boxtype)
+                end as materialname,
 				countitems = ( 
 					select
 						count(fpsm.id)
