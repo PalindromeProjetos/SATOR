@@ -100,11 +100,11 @@ class materialbox extends \Smart\Data\Cache {
                 @name varchar(60) = :name,
                 @barcode varchar(20) = :barcode;
 
-			select
+			select distinct
                 mb.*,
                 dbo.getEnum('statusbox',mb.statusbox) as statusboxdescription,
 				i.proprietaryname,
-				i.barcodematerial,
+				--i.barcodematerial,
                 colorschema = (
                     select stuff
                         (
