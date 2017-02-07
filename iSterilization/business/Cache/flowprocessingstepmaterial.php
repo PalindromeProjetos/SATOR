@@ -234,7 +234,7 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
             declare
                 @areasid int = :areasid,
                 @materialid int = :materialid;
-                            
+/*
 			if object_id('tempdb.dbo.#tmp') is not null drop table #tmp
 
             select top 10
@@ -242,6 +242,14 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
                 fp.barcode,
                 fp.flowstatus,
                 fp.dateof,
+				stepsettings = (
+					select
+						stepsettings
+					from
+						flowprocessingstep
+					where areasid = @areasid
+					  and flowprocessingid = fp.id
+				),
                 dbo.getEnum('flowstatus',fp.flowstatus) as flowstatusdescription,
 				fps.id as flowprocessingstepid
 				into #tmp
@@ -257,22 +265,64 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
                 barcode,
                 flowstatus,
                 dateof,
+				stepsettings,
                 flowstatusdescription,
 				case row_number() over (order by id desc)
 					when 1 then (
 						select
-							c.id
+							--c.id
+							coalesce(c.id,a.id) as id
 						from
 							flowprocessingstep a
 							inner join flowprocessingchargeitem b on ( b.flowprocessingstepid = a.id )
 							inner join flowprocessingcharge c on ( c.id = b.flowprocessingchargeid )
 						where a.flowprocessingid = #tmp.id
-						  and a.areasid = @areasid
+						  --and a.areasid = @areasid
 					)
 					else flowprocessingstepid
 				end as flowprocessingstepid
 			from
-				#tmp";
+				#tmp
+*/
+            select distinct top 4
+                fp.id, 
+                fp.barcode,
+                fp.flowstatus,
+                fp.dateof,
+                dbo.getEnum('flowstatus',fp.flowstatus) as flowstatusdescription,
+                a.stepsettings,
+                coalesce(b.chargeid,a.flowprocessingstepid) as flowprocessingstepid,
+                b.barcode as charge,
+				b.chargeflag,
+				dbo.getEnum('chargeflag',b.chargeflag) as chargeflagdescription
+            from
+                flowprocessingstepmaterial fpm
+                inner join flowprocessingstep fps on ( fps.id = fpm.flowprocessingstepid )
+                inner join flowprocessing fp on ( fp.id = fps.flowprocessingid )
+                outer apply (
+                    select
+                        a.stepsettings,
+                        a.id as flowprocessingstepid
+                    from
+                        flowprocessingstep a
+                    where a.flowprocessingid = fp.id
+                      and a.areasid = @areasid
+                ) a
+				outer apply (
+                    select top 1
+                        c.id as chargeid,
+                        c.barcode,
+						c.chargeflag
+                    from
+                        flowprocessingstep a
+						inner join flowprocessingchargeitem b on ( b.flowprocessingstepid = a.id )
+						inner join flowprocessingcharge c on ( c.id = b.flowprocessingchargeid and c.chargeflag in ('001','002','003','005','006') )
+                    where a.flowprocessingid = fp.id
+                      and a.areasid in (@areasid, null)
+                    order by c.chargedate desc
+                ) b
+            where fpm.materialid = @materialid
+            order by fp.dateof desc";
 
         try {
             $pdo = $proxy->prepare($sql);
