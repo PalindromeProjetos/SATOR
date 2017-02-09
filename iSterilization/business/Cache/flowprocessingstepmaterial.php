@@ -356,39 +356,21 @@ class flowprocessingstepmaterial extends \Smart\Data\Cache {
             declare
                 @materialid int = :materialid;
                             
-			if object_id('tempdb.dbo.#tmp') is not null drop table #tmp
-
-            select distinct top 10
-                am.id, 
+			select top 10
+                am.id,
+				fp.barcode,
                 am.movementuser, 
-                am.movementdate, 
-                am.movementtype,
-                am.releasestype
-                into #tmp
-            from
-                armorymovement am
-                inner join armorymovementitem ami on ( ami.armorymovementid = am.id )
-                inner join flowprocessingstep fps on ( fps.id = ami.flowprocessingstepid )
-                inner join flowprocessing fp on ( fp.id = fps.flowprocessingid )
-                cross apply (
-                    select top 1
-                        s.elementname
-                    from
-                        flowprocessingstep s
-                        inner join flowprocessingstepmaterial m on ( m.flowprocessingstepid = s.id )
-                    where s.areasid = fp.areasid
-                      and m.materialid = @materialid
-                ) t
-            order by am.movementdate desc
-            
-            select
-                id,
-                movementuser,
-                movementdate,
-                dbo.getEnum('releasestype',releasestype) as releasestypedescription,
-                dbo.getEnum('movementtype',movementtype) as movementtypedescription
-            from
-                #tmp";
+                am.movementdate,
+				dbo.getEnum('releasestype',am.releasestype) as releasestypedescription,
+				dbo.getEnum('movementtype',am.movementtype) as movementtypedescription
+			from
+				flowprocessingstepmaterial fpsm
+				inner join flowprocessingstep fps on ( fps.id = fpsm.flowprocessingstepid )
+				inner join armorymovementitem ami on ( ami.flowprocessingstepid = fps.id )
+				inner join armorymovement am on ( am.id = ami.armorymovementid )
+				inner join flowprocessing fp on ( fp.id = fps.flowprocessingid ) 
+			where fpsm.materialid = @materialid
+			order by am.closeddate desc";
 
         try {
             $pdo = $proxy->prepare($sql);

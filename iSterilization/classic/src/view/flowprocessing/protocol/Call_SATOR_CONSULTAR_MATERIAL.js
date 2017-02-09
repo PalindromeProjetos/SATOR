@@ -616,6 +616,12 @@ Ext.define( 'iSterilization.view.flowprocessing.protocol.Call_SATOR_CONSULTAR_MA
                                                         flex: 1,
                                                         align: 'left',
                                                         sortable: false,
+                                                        dataIndex: 'barcode',
+                                                        text: 'Código'
+                                                    }, {
+                                                        flex: 1,
+                                                        align: 'left',
+                                                        sortable: false,
                                                         dataIndex: 'movementtypedescription',
                                                         text: 'Movimento'
                                                     }, {
