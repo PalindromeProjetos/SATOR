@@ -93,7 +93,11 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 
     public function newFlowView(array $data) {
 		$query = self::jsonToObject($data['query']);
+		$loads = isset($query->loads) ? $query->loads : 0;
+		$items = isset($query->items) ? $query->items : 0;
 		$hasTran = isset($data['hasTran']) ? intval($data['hasTran']) : 1;
+		$flowprocessingscreeningid = isset($query->flowprocessingscreeningid) ? $query->flowprocessingscreeningid : null;
+
 
 		try {
 
@@ -112,6 +116,7 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 			$coach->getStore()->getModel()->set('materialid',$query->materialid);
 			$coach->getStore()->getModel()->set('prioritylevel',$query->prioritylevel);
 			$coach->getStore()->getModel()->set('sterilizationtypeid',$query->sterilizationtypeid);
+			$coach->getStore()->getModel()->set('flowprocessingscreeningid',$flowprocessingscreeningid);
 
 			if(isset($query->materialboxid) && strlen($query->materialboxid) != 0) {
 				$coach->getStore()->getModel()->set('materialboxid',$query->materialboxid);
@@ -140,9 +145,12 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				throw new \PDOException(self::$FAILURE_STATEMENT . '<br/>' . $resultStep->text);
 			}
 
-			$step = array();
-
-			$step['flowprocessingid'] = $result->rows->id;
+			$step = array(
+				"loads"=>$loads,
+				"items"=>$items,
+				"flowprocessingid"=>$result->rows->id,
+				"flowprocessingscreeningid"=>$flowprocessingscreeningid || 0
+			);
 
 			$resultStep = self::jsonToObject($this->newFlowStep($step));
 
@@ -314,8 +322,10 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 	}
 
 	public function newFlowStep(array $step) {
-        $flowprocessingid = $step['flowprocessingid'];
-        $woof = isset($step['woof']) ? $step['woof'] : null;
+		$flowprocessingid = $step['flowprocessingid'];
+		$woof = isset($step['woof']) ? $step['woof'] : null;
+		$loads = isset($step['loads']) ? intval($step['loads']) : 0;
+		$items = isset($step['items']) ? intval($step['items']) : 0;
 
 		$sql = "
 			declare
@@ -402,17 +412,25 @@ class heartflowprocessing extends \Smart\Data\Proxy {
                     if($woof) {
                         // Kit Tecidos
                         $data['woof'] = $woof;
-                        $resultItem = self::arrayToObject($this->newWoofItem($data));
-                        if(!$resultItem->success) {
+                        $resultWoof = self::arrayToObject($this->newWoofItem($data));
+                        if(!$resultWoof->success) {
                             throw new \PDOException(self::$FAILURE_STATEMENT);
                         }
                     } else {
                         // Material/Kit
-                        $resultItem = self::arrayToObject($this->newFlowItem($data));
-                        if(!$resultItem->success) {
+                        $resultFlow = self::arrayToObject($this->newFlowItem($data));
+                        if(!$resultFlow->success) {
                             throw new \PDOException(self::$FAILURE_STATEMENT);
                         }
                     }
+
+					// update Blue Status
+					if($loads != $items) {
+						$resultBlue = self::arrayToObject($this->updBlueItem($data));
+						if(!$resultBlue->success) {
+							throw new \PDOException(self::$FAILURE_STATEMENT);
+						}
+					}
 
 					break;
 				}
@@ -424,6 +442,56 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 		}
 
 		return self::getResultToJson();
+	}
+
+	public function updBlueItem(array $data) {
+		$id = $data['id'];
+
+		$sql = "
+			declare
+				@flowprocessingscreeningid int,
+				@flowprocessingstepid int = :id;
+						
+				select
+					@flowprocessingscreeningid = fp.flowprocessingscreeningid
+				from
+					flowprocessing fp
+					inner join flowprocessingstep fps on ( fps.flowprocessingid = fp.id )
+				where fps.id = @flowprocessingstepid;
+						
+				set @flowprocessingscreeningid = coalesce(@flowprocessingscreeningid,0);
+						
+				if(@flowprocessingscreeningid != 0)
+				begin
+					update fpsm
+						set
+							fpsm.unconformities = '010',
+							fpsm.dateto = getDate()
+					from
+						flowprocessingscreeningitem fpsi
+						inner join flowprocessingstepmaterial fpsm on ( fpsm.materialid = fpsi.materialid )
+					where fpsi.flowprocessingscreeningid = @flowprocessingscreeningid
+					  and fpsm.flowprocessingstepid = @flowprocessingstepid;
+				end";
+
+		try {
+			$pdo = $this->prepare($sql);
+			$pdo->bindValue(":id", $id, \PDO::PARAM_INT);
+
+			$callback = $pdo->execute();
+
+			if(!$callback) {
+				throw new \PDOException(self::$FAILURE_STATEMENT);
+			}
+
+			self::_setSuccess(true);
+
+		} catch ( \PDOException $e ) {
+			self::_setSuccess(false);
+			self::_setText($e->getMessage());
+		}
+
+		return self::getResult();
 	}
 
     public function newWoofItem(array $data) {
@@ -2042,7 +2110,10 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				$item['flowtype'] = '001';
 				$item['username'] = $username;
 				$hasexception = $item['hasexception'];
-				$data = array("query"=>self::arrayToJson($item),"hasTran"=>0);
+				$data = array(
+					"hasTran"=>0,					
+					"query"=>self::arrayToJson($item)
+				);
 
 				$result = self::jsonToObject($this->newFlowView($data));
 

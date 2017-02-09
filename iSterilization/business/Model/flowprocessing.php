@@ -21,6 +21,12 @@ class flowprocessing extends \Smart\Data\Model {
     private $sterilizationtypeid;
 
     /**
+     * @Policy {"nullable":true}
+     * @Column {"description":"", "type":"integer", "policy":true, "logallow":true, "default":""}
+     */
+    private $flowprocessingscreeningid;
+
+    /**
      * @Policy {"nullable":false}
      * @Column {"description":"", "type":"integer", "policy":true, "logallow":true, "default":""}
      */
@@ -157,6 +163,22 @@ class flowprocessing extends \Smart\Data\Model {
      */
     public function setSterilizationtypeid($sterilizationtypeid) {
         $this->sterilizationtypeid = $sterilizationtypeid;
+        return $this;
+    }
+
+    /**
+     * @return type integer
+     */
+    public function getFlowprocessingscreeningid() {
+        return $this->flowprocessingscreeningid;
+    }
+
+    /**
+     * @param type $flowprocessingscreeningid
+     * @return \iSterilization\Model\flowprocessingscreeningid
+     */
+    public function setFlowprocessingscreeningid($flowprocessingscreeningid) {
+        $this->flowprocessingscreeningid = $flowprocessingscreeningid;
         return $this;
     }
 
