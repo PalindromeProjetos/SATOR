@@ -50,7 +50,7 @@ class Proxy extends \PDO {
 
         } catch ( \PDOException $e ) {
             self::_setSuccess(false);
-            self::_setText('Não foi possível acessar a base de dados!');
+            self::_setText($e->getMessage());
 			echo self::getResultToJson();
         }
     }

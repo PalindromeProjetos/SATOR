@@ -50,7 +50,7 @@ class Proxy extends \PDO {
 
         } catch ( \PDOException $e ) {
             self::_setSuccess(false);
-            self::_setText('Não foi possível acessar a base de dados!');
+            self::_setText($e->getMessage());
 			echo self::getResultToJson();
         }
     }
@@ -324,36 +324,3 @@ class Proxy extends \PDO {
     }
 
 }
-//
-//Pagging
-//http://stackoverflow.com/questions/13901342/pagination-in-pdo-php
-//$page  = 1;
-//$limit = 20;
-//$start = $page * $limit;
-//
-//$conn->setAttribute(PDO::ATTR_EMULATE_PREPARES, FALSE);
-//$sth = $conn->prepare("SELECT * FROM directory WHERE user_active LIMIT ?,?");
-//$sth->execute(array($start,$limit));
-//
-//declare
-//@start int = 0,
-//	@limit int = 10;
-//
-//SELECT
-//	id,
-//	sterilizationtypeid,
-//	areasid,
-//	materialid,
-//	clientid,
-//	username,
-//	prioritylevel,
-//	dateof,
-//	materialboxid,
-//	dateto,
-//	placeid, flowingid, instrumentatorid, surgicalwarning, patientname, healthinsurance, flowstatus, version, barcode, dataflowstep
-//FROM
-//[dbo].[flowprocessing]
-// ORDER BY id
-//
-//OFFSET @start*@limit ROWS		-- skip
-//FETCH NEXT @limit ROWS ONLY;	-- take

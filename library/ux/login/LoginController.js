@@ -132,7 +132,7 @@ Ext.define( 'Smart.ux.login.LoginController', {
 
         if(result.modulebuild != Ext.manifest.version) {
             Smart.Msg.showToast('Você está executando uma versão diferente da atualmente homolagada!','warning');
-            window.location.reload();
+            //window.location.reload();
         }
 
         localStorage.setItem(Ext.manifest.name + 'In', true);

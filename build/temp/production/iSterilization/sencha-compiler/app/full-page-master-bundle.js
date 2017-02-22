@@ -1,2 +1,2 @@
 // @tag full-page
-// @require C:\Palindrome\SATOR\iSterilization\app.js
+// @require C:\Users\samuc\Documents\Palindrome\Sator\iSterilization\app.js

@@ -125,6 +125,7 @@ class material extends \Smart\Data\Cache {
                OR ib.name COLLATE Latin1_General_CI_AI LIKE @name";
 
         try {
+            $proxy->setEncodingUTF8();
             $pdo = $proxy->prepare($sql);
 
             $pdo->bindValue(":barcode", $query, \PDO::PARAM_STR);
@@ -427,9 +428,10 @@ class material extends \Smart\Data\Cache {
                OR ib.name COLLATE Latin1_General_CI_AI LIKE @name;";
 
         try {
+            $proxy->setEncodingUTF8();
             $pdo = $proxy->prepare($sql);
 
-            $pdo->bindValue(":name", "%{$query}%", \PDO::PARAM_STR);
+            $pdo->bindValue(":name", "{$query}%", \PDO::PARAM_STR);
             $pdo->bindValue(":barcode", $query, \PDO::PARAM_STR);
             $pdo->bindValue(":materialboxid", $materialboxid, \PDO::PARAM_INT);
 
@@ -518,6 +520,7 @@ class material extends \Smart\Data\Cache {
                OR ib.name COLLATE Latin1_General_CI_AI LIKE @name;";
 
         try {
+            $proxy->setEncodingUTF8();
             $pdo = $proxy->prepare($sql);
 
             $pdo->bindValue(":name", "%{$query}%", \PDO::PARAM_STR);
