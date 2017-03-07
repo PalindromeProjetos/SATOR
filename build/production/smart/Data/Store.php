@@ -108,7 +108,7 @@ class Store {
 
         } catch ( \PDOException $e ) {
             self::_setSuccess(false);
-			self::_setRestart(!$have);
+//			self::_setRestart(!$have);
             self::_setText($e->getMessage());
         }
 

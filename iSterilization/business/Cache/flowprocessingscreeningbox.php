@@ -103,6 +103,7 @@ class flowprocessingscreeningbox extends \Smart\Data\Cache {
             
             select
                 fpsb.*,
+                c.name as clientname,
                 mb.barcode,
                 mb.name as materialname,
                 st.name as sterilizationtypename,
@@ -124,6 +125,7 @@ class flowprocessingscreeningbox extends \Smart\Data\Cache {
                 loads = ( select count(*) from flowprocessingscreeningitem where materialboxid = fpsb.materialboxid and flowprocessingscreeningid = fpsb.flowprocessingscreeningid )
             from
                 flowprocessingscreeningbox fpsb
+                left join client c on ( c.id = fpsb.clientid )
                 inner join materialbox mb on ( mb.id = fpsb.materialboxid )
                 inner join sterilizationtype st on ( st.id = fpsb.sterilizationtypeid )
             where fpsb.flowprocessingscreeningid = @flowprocessingscreeningid;";

@@ -9,21 +9,21 @@ class flowprocessingstepmaterial extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\flowprocessingstepmaterial $model
      */
-    public function preInsert( \iSterilization\Model\flowprocessingstepmaterial &$model ) {
+    public function preInsert( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingstepmaterial $model
      */
-    public function posInsert( \iSterilization\Model\flowprocessingstepmaterial &$model ) {
+    public function posInsert( &$model ) {
 
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingstepmaterial $model
      */
-    public function preUpdate( \iSterilization\Model\flowprocessingstepmaterial &$model ) {
+    public function preUpdate( &$model ) {
         Session::hasProfile('','');
 
         $dateto = date("Ymd H:i:s");
@@ -33,21 +33,21 @@ class flowprocessingstepmaterial extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\flowprocessingstepmaterial $model
      */
-    public function posUpdate( \iSterilization\Model\flowprocessingstepmaterial &$model ) {
+    public function posUpdate( &$model ) {
 
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingstepmaterial $model
      */
-    public function preDelete( \iSterilization\Model\flowprocessingstepmaterial &$model ) {
+    public function preDelete( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingstepmaterial $model
      */
-    public function posDelete( \iSterilization\Model\flowprocessingstepmaterial &$model ) {
+    public function posDelete( &$model ) {
 
     }
 

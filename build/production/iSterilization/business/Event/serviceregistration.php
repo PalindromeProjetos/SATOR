@@ -9,7 +9,7 @@ class serviceregistration extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\serviceregistration $model
      */
-    public function preInsert( \iSterilization\Model\serviceregistration &$model ) {
+    public function preInsert( &$model ) {
         $date = date('Y-m-d');
         $user = $this->getProxy()->session->username;
 
@@ -23,34 +23,34 @@ class serviceregistration extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\serviceregistration $model
      */
-    public function posInsert( \iSterilization\Model\serviceregistration &$model ) {
+    public function posInsert( &$model ) {
 
     }
 
     /**
      * @param \iSterilization\Model\serviceregistration $model
      */
-    public function preUpdate( \iSterilization\Model\serviceregistration &$model ) {
+    public function preUpdate( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\serviceregistration $model
      */
-    public function posUpdate( \iSterilization\Model\serviceregistration &$model ) {
+    public function posUpdate( &$model ) {
     }
 
     /**
      * @param \iSterilization\Model\serviceregistration $model
      */
-    public function preDelete( \iSterilization\Model\serviceregistration &$model ) {
+    public function preDelete( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\serviceregistration $model
      */
-    public function posDelete( \iSterilization\Model\serviceregistration &$model ) {
+    public function posDelete( &$model ) {
 
     }
 

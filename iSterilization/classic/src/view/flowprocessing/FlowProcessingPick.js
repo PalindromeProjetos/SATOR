@@ -157,16 +157,16 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingPick', {
                                 xtype: 'actioncolumn',
                                 items: [
                                     {
-                                    //    handler: 'getSelectScreening',
-                                    //    getTip: function(v, meta, rec) {
-                                    //        return 'Editar origem do material!';
-                                    //    },
-                                    //    getClass: function(v, meta, rec) {
-                                    //        return "fa fa-gratipay action-refresh-color-font";
-                                    //    }
-                                    //}, {
-                                    //    xtype: 'splitter'
-                                    //}, {
+                                       handler: 'setUpdateSourceLog',
+                                       getTip: function(v, meta, rec) {
+                                           return 'Editar origem do material!';
+                                       },
+                                       getClass: function(v, meta, rec) {
+                                           return "fa fa-gratipay action-refresh-color-font";
+                                       }
+                                    }, {
+                                       xtype: 'splitter'
+                                    }, {
                                         handler: 'getSelectScreening',
                                         getTip: function(v, meta, rec) {
                                             return rec.data.materialboxid != null ? 'Editar exceções do fluxo!' : '';

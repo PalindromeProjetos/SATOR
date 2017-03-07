@@ -9,21 +9,21 @@ class flowprocessingstepaction extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\flowprocessingstepaction $model
      */
-    public function preInsert( \iSterilization\Model\flowprocessingstepaction &$model ) {
+    public function preInsert( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingstepaction $model
      */
-    public function posInsert( \iSterilization\Model\flowprocessingstepaction &$model ) {
+    public function posInsert( &$model ) {
 
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingstepaction $model
      */
-    public function preUpdate( \iSterilization\Model\flowprocessingstepaction &$model ) {
+    public function preUpdate( &$model ) {
         Session::hasProfile('','');
 
         $isactive = $model->getIsactive();
@@ -105,20 +105,20 @@ class flowprocessingstepaction extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\flowprocessingstepaction $model
      */
-    public function posUpdate( \iSterilization\Model\flowprocessingstepaction &$model ) {
+    public function posUpdate( &$model ) {
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingstepaction $model
      */
-    public function preDelete( \iSterilization\Model\flowprocessingstepaction &$model ) {
+    public function preDelete( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingstepaction $model
      */
-    public function posDelete( \iSterilization\Model\flowprocessingstepaction &$model ) {
+    public function posDelete( &$model ) {
 
     }
 

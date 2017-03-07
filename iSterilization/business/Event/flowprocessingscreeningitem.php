@@ -6,7 +6,7 @@ use Smart\Utils\Session;
 
 class flowprocessingscreeningitem extends \Smart\Data\Event {
 
-    public function preInsertBeAvailable( \iSterilization\Model\flowprocessingscreeningitem &$model ) {
+    public function preInsertBeAvailable( &$model ) {
         $proxy = $this->getProxy();
         $id = $model->getFlowprocessingscreeningid();
 
@@ -42,7 +42,7 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
      * @param \iSterilization\Model\flowprocessingscreeningitem $model
      * @return bool
      */
-    public function preInsert( \iSterilization\Model\flowprocessingscreeningitem &$model ) {
+    public function preInsert( &$model ) {
         Session::hasProfile('','');
 
         //$this->preInsertBeAvailable($model);
@@ -71,9 +71,11 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
         $data = self::jsonToObject($box->getStore()->getCache()->getBoxCount(array("query"=>$materialboxid, "id"=>$flowprocessingscreeningid)));
 
         if($data->rows->loads == 0) {
+            $clientid = $model->getSubmit()->getRowValue('clientid');
             $box->getStore()->getModel()->set('items', $data->rows->items);
             $box->getStore()->getModel()->set('dataflowstep', $dataflowstep);
             $box->getStore()->getModel()->set('hasexception', $hasexception);
+            $box->getStore()->getModel()->set('clientid', $clientid);
             $box->getStore()->getModel()->set('materialid', $materialid);
             $box->getStore()->getModel()->set('materialboxid', $materialboxid);
             $box->getStore()->getModel()->set('sterilizationtypeid', $sterilizationtypeid);
@@ -90,24 +92,24 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\flowprocessingscreeningitem $model
      */
-    public function posInsert( \iSterilization\Model\flowprocessingscreeningitem &$model ) {
+    public function posInsert( &$model ) {
 
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingscreeningitem $model
      */
-    public function preUpdate( \iSterilization\Model\flowprocessingscreeningitem &$model ) {
+    public function preUpdate( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingscreeningitem $model
      */
-    public function posUpdate( \iSterilization\Model\flowprocessingscreeningitem &$model ) {
+    public function posUpdate( &$model ) {
     }
 
-    public function preDeleteBeAvailable( \iSterilization\Model\flowprocessingscreeningitem &$model ) {
+    public function preDeleteBeAvailable( &$model ) {
         $proxy = $this->getProxy();
         $id = $model->getId();
 
@@ -144,7 +146,7 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
      * @param \iSterilization\Model\flowprocessingscreeningitem $model
      * @return bool
      */
-    public function preDelete( \iSterilization\Model\flowprocessingscreeningitem &$model ) {
+    public function preDelete( &$model ) {
         Session::hasProfile('','');
 
         //$this->preDeleteBeAvailable($model);
@@ -182,7 +184,7 @@ class flowprocessingscreeningitem extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\flowprocessingscreeningitem $model
      */
-    public function posDelete( \iSterilization\Model\flowprocessingscreeningitem &$model ) {
+    public function posDelete( &$model ) {
 
     }
 

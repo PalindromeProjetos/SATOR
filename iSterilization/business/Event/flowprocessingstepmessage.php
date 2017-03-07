@@ -9,41 +9,41 @@ class flowprocessingstepmessage extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\flowprocessingstepmessage $model
      */
-    public function preInsert( \iSterilization\Model\flowprocessingstepmessage &$model ) {
+    public function preInsert( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingstepmessage $model
      */
-    public function posInsert( \iSterilization\Model\flowprocessingstepmessage &$model ) {
+    public function posInsert( &$model ) {
 
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingstepmessage $model
      */
-    public function preUpdate( \iSterilization\Model\flowprocessingstepmessage &$model ) {
+    public function preUpdate( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingstepmessage $model
      */
-    public function posUpdate( \iSterilization\Model\flowprocessingstepmessage &$model ) {
+    public function posUpdate( &$model ) {
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingstepmessage $model
      */
-    public function preDelete( \iSterilization\Model\flowprocessingstepmessage &$model ) {
+    public function preDelete( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingstepmessage $model
      */
-    public function posDelete( \iSterilization\Model\flowprocessingstepmessage &$model ) {
+    public function posDelete( &$model ) {
 
     }
 

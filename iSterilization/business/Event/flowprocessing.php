@@ -9,7 +9,7 @@ class flowprocessing extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\flowprocessing $model
      */
-    public function preInsert( \iSterilization\Model\flowprocessing &$model ) {
+    public function preInsert( &$model ) {
         Session::hasProfile('','');
 
         $proxy = $this->getProxy();
@@ -82,33 +82,33 @@ class flowprocessing extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\flowprocessing $model
      */
-    public function posInsert( \iSterilization\Model\flowprocessing &$model ) {
+    public function posInsert( &$model ) {
     }
 
     /**
      * @param \iSterilization\Model\flowprocessing $model
      */
-    public function preUpdate( \iSterilization\Model\flowprocessing &$model ) {
+    public function preUpdate( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\flowprocessing $model
      */
-    public function posUpdate( \iSterilization\Model\flowprocessing &$model ) {
+    public function posUpdate( &$model ) {
     }
 
     /**
      * @param \iSterilization\Model\flowprocessing $model
      */
-    public function preDelete( \iSterilization\Model\flowprocessing &$model ) {
+    public function preDelete( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\flowprocessing $model
      */
-    public function posDelete( \iSterilization\Model\flowprocessing &$model ) {
+    public function posDelete( &$model ) {
     }
 
 }

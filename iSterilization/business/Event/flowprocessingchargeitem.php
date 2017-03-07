@@ -6,7 +6,7 @@ use Smart\Utils\Session;
 
 class flowprocessingchargeitem extends \Smart\Data\Event {
 
-	public function preInsertBeAvailable( \iSterilization\Model\flowprocessingchargeitem &$model ) {
+	public function preInsertBeAvailable( &$model ) {
 		$proxy = $this->getProxy();
 		$id = $model->getFlowprocessingchargeid();
 
@@ -28,20 +28,20 @@ class flowprocessingchargeitem extends \Smart\Data\Event {
 		$rows = $pdo->fetchAll();
 
 		if(count($rows) == 0) {
-			throw new \PDOException('O Documento não foi encontrado na base de dados!');
+			throw new \PDOException('O Documento nï¿½o foi encontrado na base de dados!');
 		}
 
 		if($rows[0]['chargeflag'] != '001') {
 			$cyclefinaluser = $rows[0]['cyclefinaluser'];
 			$chargeflagdescription = $rows[0]['chargeflagdescription'];
-			throw new \PDOException("O Documento <b>não pode</b> mais receber modificações! <br/>{$cyclefinaluser}: {$chargeflagdescription}");
+			throw new \PDOException("O Documento <b>nï¿½o pode</b> mais receber modificaï¿½ï¿½es! <br/>{$cyclefinaluser}: {$chargeflagdescription}");
 		}
 	}
 
     /**
      * @param \iSterilization\Model\flowprocessingchargeitem $model
      */
-    public function preInsert( \iSterilization\Model\flowprocessingchargeitem &$model ) {
+    public function preInsert( &$model ) {
         Session::hasProfile('','');
 		
 		//$this->preInsertBeAvailable($model);
@@ -50,24 +50,24 @@ class flowprocessingchargeitem extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\flowprocessingchargeitem $model
      */
-    public function posInsert( \iSterilization\Model\flowprocessingchargeitem &$model ) {
+    public function posInsert( &$model ) {
 
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingchargeitem $model
      */
-    public function preUpdate( \iSterilization\Model\flowprocessingchargeitem &$model ) {
+    public function preUpdate( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingchargeitem $model
      */
-    public function posUpdate( \iSterilization\Model\flowprocessingchargeitem &$model ) {
+    public function posUpdate( &$model ) {
     }
 
-	public function preDeleteBeAvailable( \iSterilization\Model\flowprocessingchargeitem &$model ) {
+	public function preDeleteBeAvailable( &$model ) {
 		$proxy = $this->getProxy();
 		$id = $model->getId();
 
@@ -90,20 +90,20 @@ class flowprocessingchargeitem extends \Smart\Data\Event {
 		$rows = $pdo->fetchAll();
 
 		if(count($rows) == 0) {
-			throw new \PDOException('O Documento não foi encontrado na base de dados!');
+			throw new \PDOException('O Documento nï¿½o foi encontrado na base de dados!');
 		}
 
 		if($rows[0]['chargeflag'] != '001') {
 			$cyclefinaluser = $rows[0]['cyclefinaluser'];
 			$chargeflagdescription = $rows[0]['chargeflagdescription'];
-			throw new \PDOException("O Documento <b>não pode</b> mais receber modificações! <br/>{$cyclefinaluser}: {$chargeflagdescription}");
+			throw new \PDOException("O Documento <b>nï¿½o pode</b> mais receber modificaï¿½ï¿½es! <br/>{$cyclefinaluser}: {$chargeflagdescription}");
 		}
 	}
 
     /**
      * @param \iSterilization\Model\flowprocessingchargeitem $model
      */
-    public function preDelete( \iSterilization\Model\flowprocessingchargeitem &$model ) {
+    public function preDelete( &$model ) {
         Session::hasProfile('','');
 		
 		//$this->preDeleteBeAvailable($model);
@@ -112,7 +112,7 @@ class flowprocessingchargeitem extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\flowprocessingchargeitem $model
      */
-    public function posDelete( \iSterilization\Model\flowprocessingchargeitem &$model ) {
+    public function posDelete( &$model ) {
 
     }
 

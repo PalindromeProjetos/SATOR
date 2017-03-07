@@ -17,6 +17,8 @@ function doVerify() {
   var jws = new KJUR.jws.JWS();
   var result = 0;
 
+    jws.generateJWSByKey()
+
   try {
     result = jws.verifyJWSByNE(sJWS, hN, hE);
   } catch (ex) {

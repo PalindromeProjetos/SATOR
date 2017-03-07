@@ -9,7 +9,7 @@ class armorymovement extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\armorymovement $model
      */
-    public function preInsert( \iSterilization\Model\armorymovement &$model ) {
+    public function preInsert( &$model ) {
         Session::hasProfile('','');
 
         $movementdate = date("Ymd H:i:s");
@@ -56,14 +56,14 @@ class armorymovement extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\armorymovement $model
      */
-    public function posInsert( \iSterilization\Model\armorymovement &$model ) {
+    public function posInsert( &$model ) {
 
     }
 
     /**
      * @param \iSterilization\Model\armorymovement $model
      */
-    public function preUpdate( \iSterilization\Model\armorymovement &$model ) {
+    public function preUpdate( &$model ) {
         Session::hasProfile('','');
         
         $this->setUpdate($model);
@@ -220,20 +220,20 @@ class armorymovement extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\armorymovement $model
      */
-    public function posUpdate( \iSterilization\Model\armorymovement &$model ) {
+    public function posUpdate( &$model ) {
     }
 
     /**
      * @param \iSterilization\Model\armorymovement $model
      */
-    public function preDelete( \iSterilization\Model\armorymovement &$model ) {
+    public function preDelete( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\armorymovement $model
      */
-    public function posDelete( \iSterilization\Model\armorymovement &$model ) {
+    public function posDelete( &$model ) {
 
     }
 

@@ -6,7 +6,7 @@ use Smart\Utils\Session;
 
 class armorymovementitem extends \Smart\Data\Event {
 
-	public function preInsertBeAvailable( \iSterilization\Model\armorymovementitem &$model ) {
+	public function preInsertBeAvailable( &$model ) {
 		$proxy = $this->getProxy();
 		$id = $model->getArmorymovementid();
 
@@ -28,21 +28,20 @@ class armorymovementitem extends \Smart\Data\Event {
 		$rows = $pdo->fetchAll();
 
 		if(count($rows) == 0) {
-			throw new \PDOException('O Documento não foi encontrado na base de dados!');
+			throw new \PDOException('O Documento nï¿½o foi encontrado na base de dados!');
 		}
 
 		if($rows[0]['releasestype'] != '001') {
 			$closedby = $rows[0]['closedby'];
 			$releasestypedescription = $rows[0]['releasestypedescription'];
-			throw new \PDOException("O Documento <b>não pode</b> mais receber modificações! <br/>{$closedby}: {$releasestypedescription}");
+			throw new \PDOException("O Documento <b>nï¿½o pode</b> mais receber modificaï¿½ï¿½es! <br/>{$closedby}: {$releasestypedescription}");
 		}
 	}
-
 
     /**
      * @param \iSterilization\Model\armorymovementitem $model
      */
-    public function preInsert( \iSterilization\Model\armorymovementitem &$model ) {
+    public function preInsert( &$model ) {
         Session::hasProfile('','');
 		
 		//$this->preInsertBeAvailable($model);
@@ -51,24 +50,24 @@ class armorymovementitem extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\armorymovementitem $model
      */
-    public function posInsert( \iSterilization\Model\armorymovementitem &$model ) {
+    public function posInsert( &$model ) {
 
     }
 
     /**
      * @param \iSterilization\Model\armorymovementitem $model
      */
-    public function preUpdate( \iSterilization\Model\armorymovementitem &$model ) {
+    public function preUpdate( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\armorymovementitem $model
      */
-    public function posUpdate( \iSterilization\Model\armorymovementitem &$model ) {
+    public function posUpdate( &$model ) {
     }
 
-	public function preDeleteBeAvailable( \iSterilization\Model\armorymovementitem &$model ) {
+	public function preDeleteBeAvailable( &$model ) {
 		$proxy = $this->getProxy();
 		$id = $model->getArmorymovementid();
 
@@ -91,20 +90,20 @@ class armorymovementitem extends \Smart\Data\Event {
 		$rows = $pdo->fetchAll();
 
 		if(count($rows) == 0) {
-			throw new \PDOException('O Documento não foi encontrado na base de dados!');
+			throw new \PDOException('O Documento nï¿½o foi encontrado na base de dados!');
 		}
 
 		if($rows[0]['releasestype'] != '001') {
 			$closedby = $rows[0]['closedby'];
 			$releasestypedescription = $rows[0]['releasestypedescription'];
-			throw new \PDOException("O Documento <b>não pode</b> mais receber modificações! <br/>{$closedby}: {$releasestypedescription}");
+			throw new \PDOException("O Documento <b>nï¿½o pode</b> mais receber modificaï¿½ï¿½es! <br/>{$closedby}: {$releasestypedescription}");
 		}
 	}
 
     /**
      * @param \iSterilization\Model\armorymovementitem $model
      */
-    public function preDelete( \iSterilization\Model\armorymovementitem &$model ) {
+    public function preDelete( &$model ) {
         Session::hasProfile('','');
 		
 		//$this->preDeleteBeAvailable($model);
@@ -113,7 +112,7 @@ class armorymovementitem extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\armorymovementitem $model
      */
-    public function posDelete( \iSterilization\Model\armorymovementitem &$model ) {
+    public function posDelete( &$model ) {
 
     }
 

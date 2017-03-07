@@ -9,7 +9,7 @@ class armorymovementoutput extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\armorymovementoutput $model
      */
-    public function preInsert( \iSterilization\Model\armorymovementoutput &$model ) {
+    public function preInsert( &$model ) {
         Session::hasProfile('','');
 
         $surgicalwarning = $model->get('surgicalwarning');
@@ -50,34 +50,34 @@ class armorymovementoutput extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\armorymovementoutput $model
      */
-    public function posInsert( \iSterilization\Model\armorymovementoutput &$model ) {
+    public function posInsert( &$model ) {
 
     }
 
     /**
      * @param \iSterilization\Model\armorymovementoutput $model
      */
-    public function preUpdate( \iSterilization\Model\armorymovementoutput &$model ) {
+    public function preUpdate( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\armorymovementoutput $model
      */
-    public function posUpdate( \iSterilization\Model\armorymovementoutput &$model ) {
+    public function posUpdate( &$model ) {
     }
 
     /**
      * @param \iSterilization\Model\armorymovementoutput $model
      */
-    public function preDelete( \iSterilization\Model\armorymovementoutput &$model ) {
+    public function preDelete( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\armorymovementoutput $model
      */
-    public function posDelete( \iSterilization\Model\armorymovementoutput &$model ) {
+    public function posDelete( &$model ) {
 
     }
 

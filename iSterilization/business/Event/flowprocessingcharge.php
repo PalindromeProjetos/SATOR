@@ -9,7 +9,7 @@ class flowprocessingcharge extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\flowprocessingcharge $model
      */
-    public function preInsert( \iSterilization\Model\flowprocessingcharge &$model ) {
+    public function preInsert( &$model ) {
         Session::hasProfile('','');
 
         $utimestamp = microtime(true);
@@ -24,34 +24,34 @@ class flowprocessingcharge extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\flowprocessingcharge $model
      */
-    public function posInsert( \iSterilization\Model\flowprocessingcharge &$model ) {
+    public function posInsert( &$model ) {
 
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingcharge $model
      */
-    public function preUpdate( \iSterilization\Model\flowprocessingcharge &$model ) {
+    public function preUpdate( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingcharge $model
      */
-    public function posUpdate( \iSterilization\Model\flowprocessingcharge &$model ) {
+    public function posUpdate( &$model ) {
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingcharge $model
      */
-    public function preDelete( \iSterilization\Model\flowprocessingcharge &$model ) {
+    public function preDelete( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingcharge $model
      */
-    public function posDelete( \iSterilization\Model\flowprocessingcharge &$model ) {
+    public function posDelete( &$model ) {
 
     }
 

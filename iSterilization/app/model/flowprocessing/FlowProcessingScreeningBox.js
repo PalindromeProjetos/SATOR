@@ -59,6 +59,12 @@ Ext.define( 'iSterilization.model.flowprocessing.FlowProcessingScreeningBox', {
         }, {
             name: 'hasexception',
             type: 'auto'
+        }, {
+            name: 'clientid',
+            type: 'int'
+        }, {
+            name: 'clientname',
+            type: 'auto'
         }
     ]
 

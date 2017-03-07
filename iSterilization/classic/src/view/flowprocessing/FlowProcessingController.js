@@ -2613,6 +2613,7 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
 
                     store.insert(0, {
                         barcode: result.rows.barcode,
+                        clientid: result.rows.clientid,
                         clientname: result.rows.clientname,
                         materialid: result.rows.materialid,
                         colorschema: result.rows.colorschema,
@@ -4767,6 +4768,50 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
         });
     },
 
+    setUpdateSourceLog: function(grid, rowIndex, colIndex) {
+        var me = this,
+            view = me.getView(),
+            store = grid.getStore(),
+            record = store.getAt(rowIndex);
+
+        Ext.widget('call_SATOR_LOTE_TRIAGEM_ITENS').show(null, function () {
+            this.master = view;
+            this.down('form').loadRecord(record);
+        });
+    },
+
+    setSelectTargetLog: function () {
+        var me = this,
+            view = me.getView(),
+            form = view.down('form'),
+            values = form.getValues(),
+            record = form.getRecord();
+
+        if(!form.isValid()) {
+            Smart.ion.sound.play("computer_error");
+            Smart.Msg.showToast('Favor selecionar o Cliente/Origem!', 'error');
+            return false;
+        }
+
+        values.clientname = form.down('clientsearch').getRawValue();
+        record.set(values);
+
+        record.store.sync({
+            callback: function (batch, options) {
+                var operations = batch.getOperations()[0];
+
+                if(!operations.success) {
+                    Smart.ion.sound.play("computer_error");
+                    Smart.Msg.showToast(operations.error,'error');
+                    return false;
+                }
+
+                Smart.ion.sound.play("button_tiny");
+                view.close();
+            }
+        });
+    },
+
     setUpdateScreening: function(grid, rowIndex, colIndex) {
         var me = this,
             view = me.getView(),
@@ -4829,10 +4874,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingController', {
                                 return false;
                             }
 
-                            var materialboxid = record.get('materialboxid');
-                            if(materialboxid && materialboxid.length != 1) {
+                            // var materialboxid = record.get('materialboxid');
+                            // if(materialboxid && materialboxid.length != 1) {
                                 Ext.getStore('flowprocessingscreeningbox').load();
-                            }
+                            // }
                         }
                     });
                     view.down('textfield[name=materialboxname]').focus(false,200);

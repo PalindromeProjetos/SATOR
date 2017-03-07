@@ -9,7 +9,7 @@ class flowprocessingscreening extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\flowprocessingscreening $model
      */
-    public function preInsert( \iSterilization\Model\flowprocessingscreening &$model ) {
+    public function preInsert( &$model ) {
         Session::hasProfile('','');
 
         $screeningdate = date("Ymd H:i:s");
@@ -20,34 +20,34 @@ class flowprocessingscreening extends \Smart\Data\Event {
     /**
      * @param \iSterilization\Model\flowprocessingscreening $model
      */
-    public function posInsert( \iSterilization\Model\flowprocessingscreening &$model ) {
+    public function posInsert( &$model ) {
 
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingscreening $model
      */
-    public function preUpdate( \iSterilization\Model\flowprocessingscreening &$model ) {
+    public function preUpdate( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingscreening $model
      */
-    public function posUpdate( \iSterilization\Model\flowprocessingscreening &$model ) {
+    public function posUpdate( &$model ) {
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingscreening $model
      */
-    public function preDelete( \iSterilization\Model\flowprocessingscreening &$model ) {
+    public function preDelete( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
      * @param \iSterilization\Model\flowprocessingscreening $model
      */
-    public function posDelete( \iSterilization\Model\flowprocessingscreening &$model ) {
+    public function posDelete( &$model ) {
 
     }
 
