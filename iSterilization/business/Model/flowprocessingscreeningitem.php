@@ -56,6 +56,18 @@ class flowprocessingscreeningitem extends \Smart\Data\Model {
 	private $hasexception;
 
     /**
+     * @Policy {"nullable":false}
+     * @Column {"description":"", "type":"integer", "policy":true, "logallow":true, "default":""}
+     */
+    private $clientid;
+
+    /**
+     * @Policy {"nullable":true}
+     * @Column {"description":"", "type":"formula", "policy":false, "logallow":true, "default":"getNameSearch,clientid,client"}
+     */
+    private $clientname;
+
+    /**
      * @return type integer
      */
     public function getId() {
@@ -182,5 +194,21 @@ class flowprocessingscreeningitem extends \Smart\Data\Model {
 		$this->hasexception = $hasexception;
 		return $this;
 	}
+
+    /**
+     * @return type integer
+     */
+    public function getClientid() {
+        return $this->clientid;
+    }
+
+    /**
+     * @param type $clientid
+     * @return \iSterilization\Model\flowprocessingscreeningitem
+     */
+    public function setClientid($clientid) {
+        $this->clientid = $clientid;
+        return $this;
+    }
 
 }

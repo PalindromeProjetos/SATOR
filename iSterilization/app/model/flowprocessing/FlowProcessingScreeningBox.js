@@ -61,7 +61,9 @@ Ext.define( 'iSterilization.model.flowprocessing.FlowProcessingScreeningBox', {
             type: 'auto'
         }, {
             name: 'clientid',
-            type: 'int'
+            type: 'int',
+            persist: true,
+            critical: true
         }, {
             name: 'clientname',
             type: 'auto'

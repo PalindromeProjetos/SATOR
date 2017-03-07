@@ -2037,7 +2037,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				fpsi.hasexception,
 				st.version,
 				mtf.prioritylevel,
-				amo.clientid,
+				--amo.clientid,
+				fpsi.clientid,				
 				c.clienttype,
 				amo.patientname,
 				amo.surgicalwarning,
@@ -2046,9 +2047,9 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				flowprocessingscreening fps
 				inner join flowprocessingscreeningitem fpsi on ( fpsi.flowprocessingscreeningid = fps.id )
 				inner join sterilizationtype st on ( st.id = fpsi.sterilizationtypeid )
-				inner join materialtypeflow mtf on ( mtf.materialid = fpsi.materialid and mtf.prioritylevel = 'N')
+				inner join materialtypeflow mtf on ( mtf.materialid = fpsi.materialid and mtf.prioritylevel = 'N' )
 				inner join armorymovementoutput amo on ( amo.id = fpsi.armorymovementoutputid )
-				inner join client c on ( c.id = amo.clientid )
+				left join client c on ( c.id = fpsi.clientid )
 			where fps.id = @id
 			  and fpsi.materialboxid is null
 			  and fps.screeningflag = '001'
@@ -2066,7 +2067,8 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				fpsb.hasexception,
 				st.version,
 				mtf.prioritylevel,
-				amo.clientid,
+				--amo.clientid,
+				fpsb.clientid,				
 				c.clienttype,
 				amo.patientname,
 				amo.surgicalwarning,
@@ -2075,14 +2077,14 @@ class heartflowprocessing extends \Smart\Data\Proxy {
 				flowprocessingscreening fps
 				inner join flowprocessingscreeningbox fpsb on ( fpsb.flowprocessingscreeningid = fps.id )
 				inner join sterilizationtype st on ( st.id = fpsb.sterilizationtypeid )
-				inner join materialtypeflow mtf on ( mtf.materialid = fpsb.materialid and mtf.prioritylevel = 'N')
+				inner join materialtypeflow mtf on ( mtf.materialid = fpsb.materialid and mtf.prioritylevel = 'N' )
 				inner join flowprocessingscreeningitem fpsi on ( 
 								fpsi.materialid = fpsb.materialid
 							and fpsi.materialboxid = fpsb.materialboxid
 							and fpsi.flowprocessingscreeningid = fpsb.flowprocessingscreeningid
 							)
 				inner join armorymovementoutput amo on ( amo.id = fpsi.armorymovementoutputid )
-				inner join client c on ( c.id = amo.clientid )
+				left join client c on ( c.id = fpsb.clientid )
 			where fps.id = @id
 			  and fps.screeningflag = '001'";
 

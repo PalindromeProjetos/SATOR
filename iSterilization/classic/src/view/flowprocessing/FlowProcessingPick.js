@@ -169,10 +169,10 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingPick', {
                                     }, {
                                         handler: 'getSelectScreening',
                                         getTip: function(v, meta, rec) {
-                                            return rec.data.materialboxid != null ? 'Editar exceções do fluxo!' : '';
+                                            return 'Editar exceções do fluxo!';
                                         },
                                         getClass: function(v, meta, rec) {
-                                            return rec.data.materialboxid != null ? "fa fa-info-circle action-select-color-font" : '';
+                                            return "fa fa-info-circle action-select-color-font";
                                         },
                                         isDisabled: isDisabledBox
                                     }, {
@@ -251,16 +251,17 @@ Ext.define( 'iSterilization.view.flowprocessing.FlowProcessingPick', {
                                 xtype: 'actioncolumn',
                                 items: [
                                     {
-                                    //    getTip: function(v, meta, rec) {
-                                    //        return rec.data.materialboxid == null ? 'Editar origem do material!' : '';
-                                    //    },
-                                    //    getClass: function(v, meta, rec) {
-                                    //        return rec.data.materialboxid == null ? "fa fa-gratipay action-refresh-color-font" : '';
-                                    //    },
-                                    //    isDisabled: isDisabledMat
-                                    //}, {
-                                    //    xtype: 'splitter'
-                                    //}, {
+                                        handler: 'setUpdateSourceLog',
+                                        getTip: function(v, meta, rec) {
+                                            return rec.data.materialboxid == null ? 'Editar origem do material!' : '';
+                                        },
+                                       getClass: function(v, meta, rec) {
+                                           return rec.data.materialboxid == null ? "fa fa-gratipay action-refresh-color-font" : '';
+                                       },
+                                       isDisabled: isDisabledMat
+                                    }, {
+                                        xtype: 'splitter'
+                                    }, {
                                         handler: 'getSelectScreening',
                                         getTip: function(v, meta, rec) {
                                             return rec.data.materialboxid == null ? 'Editar exceções do fluxo!' : '';

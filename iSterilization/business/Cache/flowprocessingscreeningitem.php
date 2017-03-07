@@ -37,6 +37,7 @@ class flowprocessingscreeningitem extends \Smart\Data\Cache {
                 )
             from
                 flowprocessingscreeningitem fpsi
+                left join client c on ( c.id = fpsb.clientid )
                 inner join itembase ib on ( ib.id = fpsi.materialid )
                 inner join armorymovementoutput amo on ( amo.id = fpsi.armorymovementoutputid )
                 inner join client c on ( c.id = amo.clientid )
