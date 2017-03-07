@@ -7,23 +7,23 @@ use Smart\Utils\Session;
 class areas extends \Smart\Data\Event {
 
     /**
-     * @param \iAdmin\Model\areas $model
+     * @param  $model
      */
-    public function preInsert( \iAdmin\Model\areas &$model ) {
+    public function preInsert( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
-     * @param \iAdmin\Model\areas $model
+     * @param  $model
      */
-    public function posInsert( \iAdmin\Model\areas &$model ) {
+    public function posInsert( &$model ) {
 
     }
 
     /**
-     * @param \iAdmin\Model\areas $model
+     * @param  $model
      */
-    public function preUpdate( \iAdmin\Model\areas &$model ) {
+    public function preUpdate( &$model ) {
         Session::hasProfile('','');
 
         if($model->getWorkstation() == 'update') {
@@ -73,22 +73,22 @@ class areas extends \Smart\Data\Event {
     }
 
     /**
-     * @param \iAdmin\Model\areas $model
+     * @param  $model
      */
-    public function posUpdate( \iAdmin\Model\areas &$model ) {
+    public function posUpdate( &$model ) {
     }
 
     /**
-     * @param \iAdmin\Model\areas $model
+     * @param  $model
      */
-    public function preDelete( \iAdmin\Model\areas &$model ) {
+    public function preDelete( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
-     * @param \iAdmin\Model\areas $model
+     * @param  $model
      */
-    public function posDelete( \iAdmin\Model\areas &$model ) {
+    public function posDelete( &$model ) {
 
     }
 

@@ -7,43 +7,43 @@ use Smart\Utils\Session;
 class cmeareasstock extends \Smart\Data\Event {
 
     /**
-     * @param \iAdmin\Model\cmeareasstock $model
+     * @param $model
      */
-    public function preInsert( \iAdmin\Model\cmeareasstock &$model ) {
+    public function preInsert( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
-     * @param \iAdmin\Model\cmeareasstock $model
+     * @param $model
      */
-    public function posInsert( \iAdmin\Model\cmeareasstock &$model ) {
+    public function posInsert( &$model ) {
 
     }
 
     /**
-     * @param \iAdmin\Model\cmeareasstock $model
+     * @param $model
      */
-    public function preUpdate( \iAdmin\Model\cmeareasstock &$model ) {
+    public function preUpdate( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
-     * @param \iAdmin\Model\cmeareasstock $model
+     * @param $model
      */
-    public function posUpdate( \iAdmin\Model\cmeareasstock &$model ) {
+    public function posUpdate( &$model ) {
     }
 
     /**
-     * @param \iAdmin\Model\cmeareasstock $model
+     * @param $model
      */
-    public function preDelete( \iAdmin\Model\cmeareasstock &$model ) {
+    public function preDelete( &$model ) {
         Session::hasProfile('','');
     }
 
     /**
-     * @param \iAdmin\Model\cmeareasstock $model
+     * @param $model
      */
-    public function posDelete( \iAdmin\Model\cmeareasstock &$model ) {
+    public function posDelete( &$model ) {
 
     }
 
