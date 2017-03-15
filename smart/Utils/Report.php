@@ -2,7 +2,7 @@
 
 namespace Smart\Utils;
 
-use \fpdf\FPDF;
+use fpdf\FPDF;
 use Smart\Data\Proxy;
 use Smart\Setup\Start;
 use Smart\Utils\Session;

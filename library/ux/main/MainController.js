@@ -167,13 +167,13 @@ Ext.define( 'Smart.ux.main.MainController', {
             ct = view.down('panel[name=westpage]');
 
         treelist.setExpanderFirst(!pressed);
-        treelist.setUi(pressed ? 'nav' : null);
-        treelist.setHighlightPath(pressed);
-        ct[pressed ? 'addCls' : 'removeCls']('treelist-with-nav');
-
-        if (Ext.isIE8) {
-            this.repaintList(treelist);
-        }
+        // treelist.setUi(pressed ? 'nav' : null);
+        // treelist.setHighlightPath(pressed);
+        // ct[pressed ? 'addCls' : 'removeCls']('treelist-with-nav');
+        //
+        // if (Ext.isIE8) {
+        //     this.repaintList(treelist);
+        // }
     },
 
     repaintList: function(treelist, microMode) {

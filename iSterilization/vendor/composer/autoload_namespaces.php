@@ -7,5 +7,4 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'fpdf' => array($vendorDir . '/itbz/fpdf/src'),
-    'PHPExcel' => array($vendorDir . '/phpoffice/phpexcel/Classes'),
 );

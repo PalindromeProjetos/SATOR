@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "a8c85105922e3fbace952ed9107532aa",
+    "content-hash": "a586bbc126900013eac71f30f49afbf8",
     "packages": [
         {
             "name": "endroid/qrcode",
-            "version": "1.9.0",
+            "version": "1.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/endroid/QrCode.git",
-                "reference": "6ab302bf3f5058fb218fa1f441e97cdb20f2b6f9"
+                "reference": "ab09b42778ad67cfe850f9c23165f8d08b756680"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/endroid/QrCode/zipball/6ab302bf3f5058fb218fa1f441e97cdb20f2b6f9",
-                "reference": "6ab302bf3f5058fb218fa1f441e97cdb20f2b6f9",
+                "url": "https://api.github.com/repos/endroid/QrCode/zipball/ab09b42778ad67cfe850f9c23165f8d08b756680",
+                "reference": "ab09b42778ad67cfe850f9c23165f8d08b756680",
                 "shasum": ""
             },
             "require": {
@@ -64,20 +64,20 @@
                 "qrcode",
                 "symfony"
             ],
-            "time": "2017-01-01T15:16:38+00:00"
+            "time": "2017-01-03T11:02:14+00:00"
         },
         {
             "name": "itbz/fpdf",
-            "version": "dev-master",
+            "version": "1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanneskod/fpdf.git",
-                "reference": "63340096907ef7525a9002d1ae3d0fd1ff376a6d"
+                "reference": "18b59e51e7a892e6173b5b44d14fb9345b6ea71c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanneskod/fpdf/zipball/63340096907ef7525a9002d1ae3d0fd1ff376a6d",
-                "reference": "63340096907ef7525a9002d1ae3d0fd1ff376a6d",
+                "url": "https://api.github.com/repos/hanneskod/fpdf/zipball/18b59e51e7a892e6173b5b44d14fb9345b6ea71c",
+                "reference": "18b59e51e7a892e6173b5b44d14fb9345b6ea71c",
                 "shasum": ""
             },
             "require": {
@@ -90,25 +90,22 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "no usage restriction"
-            ],
             "description": "Unofficial PSR-0 compliant version of the FPDF library",
             "homepage": "http://www.fpdf.org/",
-            "time": "2016-05-27 09:02:54"
+            "time": "2012-05-13T01:38:25+00:00"
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v5.2.21",
+            "version": "v5.2.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "1d51856b76c06fc687fcd9180efa7a0bed0d761e"
+                "reference": "b18cb98131bd83103ccb26a888fdfe3177b8a663"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/1d51856b76c06fc687fcd9180efa7a0bed0d761e",
-                "reference": "1d51856b76c06fc687fcd9180efa7a0bed0d761e",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/b18cb98131bd83103ccb26a888fdfe3177b8a663",
+                "reference": "b18cb98131bd83103ccb26a888fdfe3177b8a663",
                 "shasum": ""
             },
             "require": {
@@ -155,77 +152,20 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2016-12-28T15:35:48+00:00"
-        },
-        {
-            "name": "phpoffice/phpexcel",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/PHPOffice/PHPExcel.git",
-                "reference": "049e85ae98a90869e1bc83087f755010e9223091"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/049e85ae98a90869e1bc83087f755010e9223091",
-                "reference": "049e85ae98a90869e1bc83087f755010e9223091",
-                "shasum": ""
-            },
-            "require": {
-                "ext-xml": "*",
-                "ext-xmlwriter": "*",
-                "php": ">=5.2.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "PHPExcel": "Classes/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL"
-            ],
-            "authors": [
-                {
-                    "name": "Maarten Balliauw",
-                    "homepage": "http://blog.maartenballiauw.be"
-                },
-                {
-                    "name": "Mark Baker"
-                },
-                {
-                    "name": "Franck Lefevre",
-                    "homepage": "http://blog.rootslabs.net"
-                },
-                {
-                    "name": "Erik Tilt"
-                }
-            ],
-            "description": "PHPExcel - OpenXML - Read, Create and Write Spreadsheet documents in PHP - Spreadsheet engine",
-            "homepage": "http://phpexcel.codeplex.com",
-            "keywords": [
-                "OpenXML",
-                "excel",
-                "php",
-                "spreadsheet",
-                "xls",
-                "xlsx"
-            ],
-            "time": "2015-05-05 00:10:25"
+            "time": "2017-01-09T09:33:47+00:00"
         },
         {
             "name": "symfony/options-resolver",
-            "version": "v3.2.1",
+            "version": "v3.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/options-resolver.git",
-                "reference": "45940bcad6388b3b6058107eca67ced738d205bb"
+                "reference": "56e3d0a41313f8a54326851f10690d591e62a24c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/45940bcad6388b3b6058107eca67ced738d205bb",
-                "reference": "45940bcad6388b3b6058107eca67ced738d205bb",
+                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/56e3d0a41313f8a54326851f10690d591e62a24c",
+                "reference": "56e3d0a41313f8a54326851f10690d591e62a24c",
                 "shasum": ""
             },
             "require": {
@@ -266,16 +206,13 @@
                 "configuration",
                 "options"
             ],
-            "time": "2016-05-13T18:13:23+00:00"
+            "time": "2017-02-21T09:12:04+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "itbz/fpdf": 20,
-        "phpoffice/phpexcel": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

@@ -5,10 +5,10 @@
   ],
 
   "require": {
-    "itbz/fpdf": "dev-master",
+    "itbz/fpdf": "1.7",
     "endroid/qrcode": "^1.7",
-    "phpmailer/phpmailer": "~5.2",
-	"phpoffice/phpexcel": "dev-master"
+    "phpmailer/phpmailer": "~5.2"
+
   },
 
   "autoload": {
