@@ -89,6 +89,8 @@ Ext.define( 'iAdmin.view.quick.QuickReport', {
 
     buttons: [
         {
+            name: 'print',
+            disabled: true,
             text: 'Imprimir',
             handler: 'printerPanel'
         }, {

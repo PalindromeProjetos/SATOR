@@ -17,8 +17,11 @@ Ext.define( 'iAdmin.view.quick.QuickReportController', {
 
         panel.removeAll();
 
+        view.down('button[name=print]').setDisabled(true);
+
         if(record.data.panels) {
             panel.add({ xtype: record.data.panels});
+            view.down('button[name=print]').setDisabled(false);
         }
     },
 
