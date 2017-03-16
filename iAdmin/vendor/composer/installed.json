@@ -59,24 +59,132 @@
         ]
     },
     {
-        "name": "symfony/options-resolver",
-        "version": "v3.2.1",
-        "version_normalized": "3.2.1.0",
+        "name": "itbz/fpdf",
+        "version": "1.7.0",
+        "version_normalized": "1.7.0.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/symfony/options-resolver.git",
-            "reference": "45940bcad6388b3b6058107eca67ced738d205bb"
+            "url": "https://github.com/hanneskod/fpdf.git",
+            "reference": "18b59e51e7a892e6173b5b44d14fb9345b6ea71c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/options-resolver/zipball/45940bcad6388b3b6058107eca67ced738d205bb",
-            "reference": "45940bcad6388b3b6058107eca67ced738d205bb",
+            "url": "https://api.github.com/repos/hanneskod/fpdf/zipball/18b59e51e7a892e6173b5b44d14fb9345b6ea71c",
+            "reference": "18b59e51e7a892e6173b5b44d14fb9345b6ea71c",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2012-05-13T01:38:25+00:00",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-0": {
+                "fpdf": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "description": "Unofficial PSR-0 compliant version of the FPDF library",
+        "homepage": "http://www.fpdf.org/"
+    },
+    {
+        "name": "phpmailer/phpmailer",
+        "version": "v5.2.23",
+        "version_normalized": "5.2.23.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/PHPMailer/PHPMailer.git",
+            "reference": "7115df4a6f76281109ebe352900c42403b728bb4"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/7115df4a6f76281109ebe352900c42403b728bb4",
+            "reference": "7115df4a6f76281109ebe352900c42403b728bb4",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.0.0"
+        },
+        "require-dev": {
+            "doctrine/annotations": "1.2.*",
+            "jms/serializer": "0.16.*",
+            "phpdocumentor/phpdocumentor": "2.*",
+            "phpunit/phpunit": "4.8.*",
+            "symfony/debug": "2.8.*",
+            "symfony/filesystem": "2.8.*",
+            "symfony/translation": "2.8.*",
+            "symfony/yaml": "2.8.*",
+            "zendframework/zend-cache": "2.5.1",
+            "zendframework/zend-config": "2.5.1",
+            "zendframework/zend-eventmanager": "2.5.1",
+            "zendframework/zend-filter": "2.5.1",
+            "zendframework/zend-i18n": "2.5.1",
+            "zendframework/zend-json": "2.5.1",
+            "zendframework/zend-math": "2.5.1",
+            "zendframework/zend-serializer": "2.5.*",
+            "zendframework/zend-servicemanager": "2.5.*",
+            "zendframework/zend-stdlib": "2.5.1"
+        },
+        "suggest": {
+            "league/oauth2-google": "Needed for Google XOAUTH2 authentication"
+        },
+        "time": "2017-03-15T19:32:56+00:00",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "classmap": [
+                "class.phpmailer.php",
+                "class.phpmaileroauth.php",
+                "class.phpmaileroauthgoogle.php",
+                "class.smtp.php",
+                "class.pop3.php",
+                "extras/EasyPeasyICS.php",
+                "extras/ntlm_sasl_client.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "LGPL-2.1"
+        ],
+        "authors": [
+            {
+                "name": "Jim Jagielski",
+                "email": "jimjag@gmail.com"
+            },
+            {
+                "name": "Marcus Bointon",
+                "email": "phpmailer@synchromedia.co.uk"
+            },
+            {
+                "name": "Andy Prevost",
+                "email": "codeworxtech@users.sourceforge.net"
+            },
+            {
+                "name": "Brent R. Matzelle"
+            }
+        ],
+        "description": "PHPMailer is a full-featured email creation and transfer class for PHP"
+    },
+    {
+        "name": "symfony/options-resolver",
+        "version": "v3.2.6",
+        "version_normalized": "3.2.6.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/options-resolver.git",
+            "reference": "56e3d0a41313f8a54326851f10690d591e62a24c"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/options-resolver/zipball/56e3d0a41313f8a54326851f10690d591e62a24c",
+            "reference": "56e3d0a41313f8a54326851f10690d591e62a24c",
             "shasum": ""
         },
         "require": {
             "php": ">=5.5.9"
         },
-        "time": "2016-05-13T18:13:23+00:00",
+        "time": "2017-02-21T09:12:04+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -116,17 +224,17 @@
     },
     {
         "name": "endroid/qrcode",
-        "version": "1.9.0",
-        "version_normalized": "1.9.0.0",
+        "version": "1.9.1",
+        "version_normalized": "1.9.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/endroid/QrCode.git",
-            "reference": "6ab302bf3f5058fb218fa1f441e97cdb20f2b6f9"
+            "reference": "ab09b42778ad67cfe850f9c23165f8d08b756680"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/endroid/QrCode/zipball/6ab302bf3f5058fb218fa1f441e97cdb20f2b6f9",
-            "reference": "6ab302bf3f5058fb218fa1f441e97cdb20f2b6f9",
+            "url": "https://api.github.com/repos/endroid/QrCode/zipball/ab09b42778ad67cfe850f9c23165f8d08b756680",
+            "reference": "ab09b42778ad67cfe850f9c23165f8d08b756680",
             "shasum": ""
         },
         "require": {
@@ -141,7 +249,7 @@
             "symfony/framework-bundle": "^2.3|^3.0",
             "symfony/http-kernel": "^2.3|^3.0"
         },
-        "time": "2017-01-01T15:16:38+00:00",
+        "time": "2017-01-03T11:02:14+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -175,100 +283,5 @@
             "qrcode",
             "symfony"
         ]
-    },
-    {
-        "name": "phpmailer/phpmailer",
-        "version": "v5.2.21",
-        "version_normalized": "5.2.21.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/PHPMailer/PHPMailer.git",
-            "reference": "1d51856b76c06fc687fcd9180efa7a0bed0d761e"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/1d51856b76c06fc687fcd9180efa7a0bed0d761e",
-            "reference": "1d51856b76c06fc687fcd9180efa7a0bed0d761e",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.0.0"
-        },
-        "require-dev": {
-            "phpdocumentor/phpdocumentor": "*",
-            "phpunit/phpunit": "4.7.*"
-        },
-        "suggest": {
-            "league/oauth2-google": "Needed for Google XOAUTH2 authentication"
-        },
-        "time": "2016-12-28T15:35:48+00:00",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "classmap": [
-                "class.phpmailer.php",
-                "class.phpmaileroauth.php",
-                "class.phpmaileroauthgoogle.php",
-                "class.smtp.php",
-                "class.pop3.php",
-                "extras/EasyPeasyICS.php",
-                "extras/ntlm_sasl_client.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "LGPL-2.1"
-        ],
-        "authors": [
-            {
-                "name": "Jim Jagielski",
-                "email": "jimjag@gmail.com"
-            },
-            {
-                "name": "Marcus Bointon",
-                "email": "phpmailer@synchromedia.co.uk"
-            },
-            {
-                "name": "Andy Prevost",
-                "email": "codeworxtech@users.sourceforge.net"
-            },
-            {
-                "name": "Brent R. Matzelle"
-            }
-        ],
-        "description": "PHPMailer is a full-featured email creation and transfer class for PHP"
-    },
-    {
-        "name": "itbz/fpdf",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/hanneskod/fpdf.git",
-            "reference": "63340096907ef7525a9002d1ae3d0fd1ff376a6d"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/hanneskod/fpdf/zipball/63340096907ef7525a9002d1ae3d0fd1ff376a6d",
-            "reference": "63340096907ef7525a9002d1ae3d0fd1ff376a6d",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.0"
-        },
-        "time": "2016-05-27T09:02:54+00:00",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "psr-0": {
-                "fpdf": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "no usage restriction"
-        ],
-        "description": "Unofficial PSR-0 compliant version of the FPDF library",
-        "homepage": "http://www.fpdf.org/"
     }
 ]
