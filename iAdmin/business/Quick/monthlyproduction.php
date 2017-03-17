@@ -127,12 +127,12 @@ class monthlyproduction extends Report {
         $this->squareWidth = intval($this->getInternalW() / 6);
 
         $this->configStyleHeader(11);
-        $this->Cell($this->squareWidth,5, utf8_decode("HAM - MATERIAIS PROCESSADOS NA ESTERILIZAÇÃO - {$year}/{$month}"),0,1,'L',false);
+		$this->Cell($this->squareWidth,5, utf8_decode("HAM - CME - MATERIAIS PROCESSADOS - {$year}/{$month}"),0,1,'L',false);
         $this->configStyleHeader(10);
 
         $this->SetLineWidth(.2);
         $this->Cell($this->getInternalW(),3, '','B',1,'C');
-        $this->Ln(4);
+		$this->Ln(10);
     }
 
     public function getHeaderColumns() {
@@ -141,11 +141,18 @@ class monthlyproduction extends Report {
         $this->SetFont('Arial', '', 9);
         $this->SetFillColor(255, 255, 255);
 
-        $this->Cell($sw * 0.7,7,utf8_decode('Código'),'B',0,'C',1);
-        $this->Cell($sw * 3.8,7,utf8_decode('Cliente'),'B',0,'L',1);
-        $this->Cell($sw * 0.5,7,utf8_decode('Produção'),'B',0,'R',1);
-        $this->Cell($sw * 0.5,7,utf8_decode('Retornos'),'B',0,'R',1);
-        $this->Cell($sw * 0.5,7,utf8_decode('Saldo'),'B',1,'R',1);
+		$this->SetLineWidth(.2);
+		$this->Cell($this->getInternalW(),1, '','B',1,'C');
+		
+		$this->Cell($sw * 0.7,10,utf8_decode('Código'),'R',0,'C',0);
+		$this->Cell($sw * 3.8,10,utf8_decode('Setor'),'R',0,'L',0);
+		$this->Cell($sw * 1.5,5,utf8_decode('Totais'),'B',1,'C',0);
+		$this->SetFont('Arial', '', 7);
+		$this->Cell($sw * 4.5,5,'','',0,'C',0);
+		$this->Cell($sw * 0.5,5,utf8_decode('Dispensado'),'R',0,'C',0);
+		$this->Cell($sw * 0.5,5,utf8_decode('Retorno'),'R',0,'C',0);
+		$this->Cell($sw * 0.5,5,utf8_decode('Produzido'),'',1,'C',0);
+		$this->Cell($this->getInternalW(),1, '','T',1,'C');	
     }
 
     public function nullIf($value,$char) {
@@ -165,9 +172,9 @@ class monthlyproduction extends Report {
             $lineColor = ($lineColor == 0) ? 1 : 0;
 
             $this->configStyleDetail();
-            $this->SetFont('LucidaSans-Typewriter', '', 8);
+			$this->SetFont('LucidaSans-Typewriter', '', 7);
 
-            $this->Cell($sw * 0.7,5, $code,0,0,'C',$lineColor);
+			$this->Cell($sw * 0.7,5, $code,'',0,'C',$lineColor);
             $this->Cell($sw * 3.8,5, $name,'L',0,'L',$lineColor);
             $this->Cell($sw * 0.5,5, $target,'L',0,'R',$lineColor);
             $this->Cell($sw * 0.5,5, $source,'L',0,'R',$lineColor);
@@ -176,7 +183,7 @@ class monthlyproduction extends Report {
 
         $this->SetLineWidth(.2);
         $this->Cell($this->getInternalW(),3, '','T',1,'C');
-
+		
         $this->Ln(20);
         $this->SetFont('Arial', '', 7);
         $this->Cell($sw * 2.0,4, utf8_decode("Conferido por 01"),'T',0,'C');
