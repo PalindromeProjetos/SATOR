@@ -166,6 +166,9 @@ class monthlyproduction extends Report {
 
         $this->getHeaderColumns();
 
+		$targetSum = 0;
+		$sourceSum = 0;
+		
         while(list(, $item) = each($this->rows)) {
             extract($item);
 
@@ -173,6 +176,9 @@ class monthlyproduction extends Report {
 
             $this->configStyleDetail();
 			$this->SetFont('LucidaSans-Typewriter', '', 7);
+
+			$targetSum += intval($target);
+			$sourceSum += intval($source);
 
 			$this->Cell($sw * 0.7,5, $code,'',0,'C',$lineColor);
             $this->Cell($sw * 3.8,5, $name,'L',0,'L',$lineColor);
@@ -182,7 +188,14 @@ class monthlyproduction extends Report {
         }
 
         $this->SetLineWidth(.2);
-        $this->Cell($this->getInternalW(),3, '','T',1,'C');
+		$this->Cell($this->getInternalW(),1, '','T',1,'C');
+
+		//Totais
+		$this->SetFont('Arial', '', 10);
+		$this->Cell($sw * 4.5,5,utf8_decode("Totais"),'',0,'R',0);
+		$this->Cell($sw * 0.5,5, $targetSum,0,0,'R',0);
+		$this->Cell($sw * 0.5,5, $sourceSum,0,0,'R',0);
+		$this->Cell($sw * 0.5,5, intval($targetSum)-intval($sourceSum),0,1,'R',0);
 		
         $this->Ln(20);
         $this->SetFont('Arial', '', 7);
