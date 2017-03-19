@@ -129,6 +129,7 @@ class monthlyproduction extends Report {
         $sw = $this->squareWidth;
 
         $this->SetFont('Arial', '', 9);
+        $this->SetTextColor(179,134,0);
         $this->Cell($sw * 4.3,5, utf8_decode("O primeiro hospital do Amazonas"),0,1,'R',false);
         $this->Cell($sw * 4.3,4, utf8_decode("certificado pela Organização Nacional de Acreditação"),0,1,'R',false);
 
@@ -140,6 +141,7 @@ class monthlyproduction extends Report {
 
         $this->Ln(4);
         $this->SetFont('Arial', '', 14);
+        $this->SetTextColor(0,0,0);
         $this->Cell($this->getInternalW(),5, utf8_decode("CME - MATERIAIS PROCESSADOS"),0,1,'C',false);
         $this->SetFont('Arial', '', 10);
         $this->Cell($this->getInternalW(),5, "{$monthTrans}/{$year}",0,1,'C',false);
@@ -157,14 +159,14 @@ class monthlyproduction extends Report {
 		
 		$this->Cell($sw * 0.5,10,utf8_decode('Código'),'R',0,'C',0);
 		$this->Cell($sw * 3.8,10,utf8_decode('Setor'),'R',0,'L',0);
-		$this->Cell($sw * 1.7,5,utf8_decode('Totais'),'B',1,'C',0);
+		$this->Cell($sw * 1.7,5,utf8_decode('T O T A I S'),'B',1,'C',0);
 		$this->SetFont('Arial', '', 7);
 		$this->Cell($sw * 4.3,5,'','',0,'C',0);
 		$this->Cell($sw * 0.5,5,utf8_decode('Dispensado'),'R',0,'C',0);
 		$this->Cell($sw * 0.4,5,utf8_decode('Retorno'),0,0,'C',0);
         $this->Cell($sw * 0.3,5,utf8_decode('%'),'R',0,'C',0);
 		$this->Cell($sw * 0.5,5,utf8_decode('Produzido'),'',1,'C',0);
-		$this->Cell($this->getInternalW(),1, '','T',1,'C');	
+		$this->Cell($this->getInternalW(),0.3, '','T',1,'C');
     }
 
     public function nullIf($value,$char) {
@@ -192,14 +194,14 @@ class monthlyproduction extends Report {
 			$sourceSum += intval($source);
             $perc = $target == 0 ? 0.00 : ($source*100)/$target;
 
-			$perc = number_format((float)$perc, 2, '.', '');
+			$perc = number_format((float)$perc, 2, ',', '');
 
 			$this->Cell($sw * 0.5,5, $code,'',0,'C',$lineColor);
             $this->Cell($sw * 3.8,5, $name,'L',0,'L',$lineColor);
-            $this->Cell($sw * 0.5,5, $target,'L',0,'R',$lineColor);
-            $this->Cell($sw * 0.4,5, $source,'L',0,'R',$lineColor);
-            $this->Cell($sw * 0.3,5, $perc,'L',0,'R',$lineColor);
-            $this->Cell($sw * 0.5,5, $this->nullIf(intval($target)-intval($source),0),'L',1,'R',$lineColor);
+            $this->Cell($sw * 0.5,5, $this->nullIf(number_format($target,0,'','.'),0),'L',0,'R',$lineColor);
+            $this->Cell($sw * 0.4,5, $this->nullIf(number_format($source,0,'','.'),0),'L',0,'R',$lineColor);
+            $this->Cell($sw * 0.3,5, $this->nullIf($perc,0),'L',0,'R',$lineColor);
+            $this->Cell($sw * 0.5,5, $this->nullIf(number_format($target-$source,0,'','.'),0),'L',1,'R',$lineColor);
         }
 
         $this->SetLineWidth(.2);
@@ -207,15 +209,15 @@ class monthlyproduction extends Report {
 
         $perc = $targetSum == 0 ? 0.00 : ($sourceSum*100)/$targetSum;
 
-        $perc = number_format((float)$perc, 2, '.', '');
+        $perc = number_format((float)$perc, 2, ',', '');
 
 		//Totais
-		$this->SetFont('Arial', '', 10);
-		$this->Cell($sw * 4.3,5, utf8_decode("Totais"),'',0,'R',0);
-		$this->Cell($sw * 0.5,5, $targetSum,0,0,'R',0);
-		$this->Cell($sw * 0.7,5, $sourceSum,0,0,'R',0);
-//        $this->Cell($sw * 0.3,5, $perc,0,0,'R',0);
-		$this->Cell($sw * 0.5,5, intval($targetSum)-intval($sourceSum),0,1,'R',0);
+		$this->SetFont('Arial', 'B', 8);
+		$this->Cell($sw * 4.3,5, utf8_decode("TOTAL GERAL"),'',0,'R',0);
+		$this->Cell($sw * 0.5,5, number_format($targetSum,0,'','.'),0,0,'R',0);
+		$this->Cell($sw * 0.4,5, number_format($sourceSum,0,'','.'),0,0,'R',0);
+        $this->Cell($sw * 0.3,5, $perc,0,0,'R',0);
+		$this->Cell($sw * 0.5,5, number_format(intval($targetSum)-intval($sourceSum),0,'','.'),0,1,'R',0);
 		
         $this->Ln(20);
         $this->SetFont('Arial', '', 7);
