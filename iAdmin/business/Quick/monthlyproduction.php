@@ -48,7 +48,7 @@ class monthlyproduction extends Report {
                                     where fpsm.flowprocessingstepid = a.id
                                 ) m
                             where a.flowprocessingid = fp.id
-                                and ( a.stepflaglist like '%001%' or a.stepflaglist like '%019%' )
+                              and ( a.stepflaglist like '%001%' or a.stepflaglist like '%019%' )
                             group by m.items
                         ) t
                     where year(am.closeddate) = @year
@@ -99,7 +99,7 @@ class monthlyproduction extends Report {
                                     where fpsm.flowprocessingstepid = a.id
                                 ) m
                             where a.flowprocessingid = fp.id
-                                and ( a.stepflaglist like '%001%' or a.stepflaglist like '%019%' )
+                              and ( a.stepflaglist like '%001%' or a.stepflaglist like '%019%' )
                             group by m.items
                         ) o
             
@@ -125,14 +125,25 @@ class monthlyproduction extends Report {
         $year = $this->post->year;
         $month = $this->post->month;
         $this->squareWidth = intval($this->getInternalW() / 6);
+        $monthTrans = utf8_decode($this->getTranslate('monthly',$month));
+        $sw = $this->squareWidth;
 
-        $this->configStyleHeader(11);
-		$this->Cell($this->squareWidth,5, utf8_decode("HAM - CME - MATERIAIS PROCESSADOS - {$year}/{$month}"),0,1,'L',false);
-        $this->configStyleHeader(10);
+        $this->SetFont('Arial', '', 9);
+        $this->Cell($sw * 4.3,5, utf8_decode("O primeiro hospital do Amazonas"),0,1,'R',false);
+        $this->Cell($sw * 4.3,4, utf8_decode("certificado pela Organização Nacional de Acreditação"),0,1,'R',false);
+
+        $this->Image(__DIR__ . "/../../../resources/images/sator/HAM.png",12,7,17,0,"PNG");
+        $this->Image(__DIR__ . "/../../../resources/images/acreditacao.png",148,5,50,0,"PNG");
 
         $this->SetLineWidth(.2);
-        $this->Cell($this->getInternalW(),3, '','B',1,'C');
-		$this->Ln(10);
+        $this->Cell($this->getInternalW(),3,'','B',1,'C');
+
+        $this->Ln(4);
+        $this->SetFont('Arial', '', 14);
+        $this->Cell($this->getInternalW(),5, utf8_decode("CME - MATERIAIS PROCESSADOS"),0,1,'C',false);
+        $this->SetFont('Arial', '', 10);
+        $this->Cell($this->getInternalW(),5, "{$monthTrans}/{$year}",0,1,'C',false);
+		$this->Ln(2);
     }
 
     public function getHeaderColumns() {
@@ -144,13 +155,14 @@ class monthlyproduction extends Report {
 		$this->SetLineWidth(.2);
 		$this->Cell($this->getInternalW(),1, '','B',1,'C');
 		
-		$this->Cell($sw * 0.7,10,utf8_decode('Código'),'R',0,'C',0);
+		$this->Cell($sw * 0.5,10,utf8_decode('Código'),'R',0,'C',0);
 		$this->Cell($sw * 3.8,10,utf8_decode('Setor'),'R',0,'L',0);
-		$this->Cell($sw * 1.5,5,utf8_decode('Totais'),'B',1,'C',0);
+		$this->Cell($sw * 1.7,5,utf8_decode('Totais'),'B',1,'C',0);
 		$this->SetFont('Arial', '', 7);
-		$this->Cell($sw * 4.5,5,'','',0,'C',0);
+		$this->Cell($sw * 4.3,5,'','',0,'C',0);
 		$this->Cell($sw * 0.5,5,utf8_decode('Dispensado'),'R',0,'C',0);
-		$this->Cell($sw * 0.5,5,utf8_decode('Retorno'),'R',0,'C',0);
+		$this->Cell($sw * 0.4,5,utf8_decode('Retorno'),0,0,'C',0);
+        $this->Cell($sw * 0.3,5,utf8_decode('%'),'R',0,'C',0);
 		$this->Cell($sw * 0.5,5,utf8_decode('Produzido'),'',1,'C',0);
 		$this->Cell($this->getInternalW(),1, '','T',1,'C');	
     }
@@ -163,12 +175,11 @@ class monthlyproduction extends Report {
         $sw = $this->squareWidth;
 
         $lineColor = 1;
-
-        $this->getHeaderColumns();
-
 		$targetSum = 0;
 		$sourceSum = 0;
-		
+
+        $this->getHeaderColumns();
+	
         while(list(, $item) = each($this->rows)) {
             extract($item);
 
@@ -179,22 +190,31 @@ class monthlyproduction extends Report {
 
 			$targetSum += intval($target);
 			$sourceSum += intval($source);
+            $perc = $target == 0 ? 0.00 : ($source*100)/$target;
 
-			$this->Cell($sw * 0.7,5, $code,'',0,'C',$lineColor);
+			$perc = number_format((float)$perc, 2, '.', '');
+
+			$this->Cell($sw * 0.5,5, $code,'',0,'C',$lineColor);
             $this->Cell($sw * 3.8,5, $name,'L',0,'L',$lineColor);
             $this->Cell($sw * 0.5,5, $target,'L',0,'R',$lineColor);
-            $this->Cell($sw * 0.5,5, $source,'L',0,'R',$lineColor);
+            $this->Cell($sw * 0.4,5, $source,'L',0,'R',$lineColor);
+            $this->Cell($sw * 0.3,5, $perc,'L',0,'R',$lineColor);
             $this->Cell($sw * 0.5,5, $this->nullIf(intval($target)-intval($source),0),'L',1,'R',$lineColor);
         }
 
         $this->SetLineWidth(.2);
 		$this->Cell($this->getInternalW(),1, '','T',1,'C');
 
+        $perc = $targetSum == 0 ? 0.00 : ($sourceSum*100)/$targetSum;
+
+        $perc = number_format((float)$perc, 2, '.', '');
+
 		//Totais
 		$this->SetFont('Arial', '', 10);
-		$this->Cell($sw * 4.5,5,utf8_decode("Totais"),'',0,'R',0);
+		$this->Cell($sw * 4.3,5, utf8_decode("Totais"),'',0,'R',0);
 		$this->Cell($sw * 0.5,5, $targetSum,0,0,'R',0);
-		$this->Cell($sw * 0.5,5, $sourceSum,0,0,'R',0);
+		$this->Cell($sw * 0.7,5, $sourceSum,0,0,'R',0);
+//        $this->Cell($sw * 0.3,5, $perc,0,0,'R',0);
 		$this->Cell($sw * 0.5,5, intval($targetSum)-intval($sourceSum),0,1,'R',0);
 		
         $this->Ln(20);
