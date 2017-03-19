@@ -140,6 +140,7 @@ class Report extends FPDF {
 
     public function posConstruct() {
         $this->setAllMarginPage($this->margin);
+        $this->AddFont('ArialNarrow','','ARIALN.php');
         $this->AddFont('LucidaSans-Typewriter','','LTYPE.php');
         $this->AliasNbPages();
         $this->AddPage();

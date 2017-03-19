@@ -134,7 +134,7 @@ class monthlyproduction extends Report {
         $this->Cell($sw * 4.3,15,'','R',0,'');
 
         $this->SetY(10.0);
-        $this->SetFont('Arial', '', 9);
+        $this->SetFont('ArialNarrow', '', 9);
         $this->SetTextColor(179,134,0);
         $this->Cell($sw * 4.3,5, utf8_decode("O primeiro hospital do Amazonas"),0,1,'R',false);
         $this->Cell($sw * 4.3,4, utf8_decode("certificado pela Organização Nacional de Acreditação"),0,1,'R',false);

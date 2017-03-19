@@ -18,6 +18,20 @@ class Report extends FPDF {
     public $stash = null;
 
     protected $translate = array(
+        'month'=>array(
+            1=>'jan',
+            2=>'feb',
+            3=>'mar',
+            4=>'apr',
+            5=>'may',
+            6=>'jun',
+            7=>'jul',
+            8=>'aug',
+            9=>'sep',
+            10=>'oct',
+            11=>'nov',
+            12=>'dec'
+        ),
         'monthly'=>array(
             'jan'=>'Janeiro',
             'feb'=>'Fevereiro',
@@ -42,6 +56,11 @@ class Report extends FPDF {
             'sat'=>'Sábado'
         )
     );
+
+    public function getTranslate($type,$index) {
+        $month = $this->translate['month'][$index];
+        return $this->translate[$type][$month];
+    }
 
     protected function weekInMonth($month, $year) {
         $start = mktime(0, 0, 0, $month, 1, $year);
@@ -121,6 +140,7 @@ class Report extends FPDF {
 
     public function posConstruct() {
         $this->setAllMarginPage($this->margin);
+        $this->AddFont('ArialNarrow','','ARIALN.php');
         $this->AddFont('LucidaSans-Typewriter','','LTYPE.php');
         $this->AliasNbPages();
         $this->AddPage();
@@ -285,7 +305,7 @@ class Report extends FPDF {
         $this->SetFont('Arial','',6);
         $this->SetLineWidth(.2);
         $this->Cell($internalW,3, '','B',1,'C');
-        $this->Cell(0,4, "impresso em $date, $passport",0,0,'L');
+        $this->Cell(0,4, "Sistema CME - impresso em $date, $passport",0,0,'L');
         $this->Cell(0,4, utf8_decode("página $pageNo de {nb}"),0,0,'R');
     }
 
