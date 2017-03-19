@@ -162,7 +162,6 @@ class monthlyproduction extends Report {
 
 		$this->SetLineWidth(.2);
 		$this->Cell($this->getInternalW(),1, '','B',1,'C');
-		
 		$this->Cell($sw * 0.5,10,utf8_decode('Código'),'R',0,'C',0);
 		$this->Cell($sw * 3.8,10,utf8_decode('Setor'),'R',0,'L',0);
 		$this->Cell($sw * 1.7,5,utf8_decode('T O T A I S'),'B',1,'C',0);
