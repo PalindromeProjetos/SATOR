@@ -304,7 +304,7 @@ class Report extends FPDF {
         $this->SetFont('Arial','',6);
         $this->SetLineWidth(.2);
         $this->Cell($internalW,3, '','B',1,'C');
-        $this->Cell(0,4, "impresso em $date, $passport",0,0,'L');
+        $this->Cell(0,4, "Sistema CME - impresso em $date, $passport",0,0,'L');
         $this->Cell(0,4, utf8_decode("página $pageNo de {nb}"),0,0,'R');
     }
 
