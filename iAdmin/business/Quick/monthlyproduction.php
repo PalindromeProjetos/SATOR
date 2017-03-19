@@ -128,6 +128,12 @@ class monthlyproduction extends Report {
         $monthTrans = utf8_decode($this->getTranslate('monthly',$month));
         $sw = $this->squareWidth;
 
+        $this->SetY(5.0);
+        $this->SetDrawColor(179,134,0);
+        $this->SetLineWidth(.2);
+        $this->Cell($sw * 4.3,15,'','R',0,'');
+
+        $this->SetY(10.0);
         $this->SetFont('Arial', '', 9);
         $this->SetTextColor(179,134,0);
         $this->Cell($sw * 4.3,5, utf8_decode("O primeiro hospital do Amazonas"),0,1,'R',false);
@@ -136,7 +142,7 @@ class monthlyproduction extends Report {
         $this->Image(__DIR__ . "/../../../resources/images/sator/HAM.png",12,7,17,0,"PNG");
         $this->Image(__DIR__ . "/../../../resources/images/acreditacao.png",148,5,50,0,"PNG");
 
-        $this->SetLineWidth(.2);
+        $this->SetDrawColor(0,0,0);
         $this->Cell($this->getInternalW(),3,'','B',1,'C');
 
         $this->Ln(4);
@@ -196,11 +202,14 @@ class monthlyproduction extends Report {
 
 			$perc = number_format((float)$perc, 2, ',', '');
 
+            $this->SetLineWidth(.2);
 			$this->Cell($sw * 0.5,5, $code,'',0,'C',$lineColor);
             $this->Cell($sw * 3.8,5, $name,'L',0,'L',$lineColor);
             $this->Cell($sw * 0.5,5, $this->nullIf(number_format($target,0,'','.'),0),'L',0,'R',$lineColor);
             $this->Cell($sw * 0.4,5, $this->nullIf(number_format($source,0,'','.'),0),'L',0,'R',$lineColor);
+            $this->SetLineWidth(.1);
             $this->Cell($sw * 0.3,5, $this->nullIf($perc,0),'L',0,'R',$lineColor);
+            $this->SetLineWidth(.2);
             $this->Cell($sw * 0.5,5, $this->nullIf(number_format($target-$source,0,'','.'),0),'L',1,'R',$lineColor);
         }
 
