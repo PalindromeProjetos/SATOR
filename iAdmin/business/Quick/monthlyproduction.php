@@ -110,6 +110,7 @@ class monthlyproduction extends Report {
                 )
             from
                 client m
+			where m.clienttype != '003'
             order by m.name";
 
         $pdo = $this->getProxy()->prepare($sql);
@@ -139,7 +140,7 @@ class monthlyproduction extends Report {
         $this->Cell($sw * 4.3,5, utf8_decode("O primeiro hospital do Amazonas"),0,1,'R',false);
         $this->Cell($sw * 4.3,4, utf8_decode("certificado pela Organização Nacional de Acreditação"),0,1,'R',false);
 
-        $this->Image(__DIR__ . "/../../../resources/images/sator/HAM.png",12,7,17,0,"PNG");
+        $this->Image(__DIR__ . "/../../../resources/images/sator/HAM_ALTA.png",12,7,40,0,"PNG");
         $this->Image(__DIR__ . "/../../../resources/images/acreditacao.png",148,5,50,0,"PNG");
 
         $this->SetDrawColor(0,0,0);
@@ -148,7 +149,7 @@ class monthlyproduction extends Report {
         $this->Ln(4);
         $this->SetFont('Arial', '', 14);
         $this->SetTextColor(0,0,0);
-        $this->Cell($this->getInternalW(),5, utf8_decode("CME - MATERIAIS PROCESSADOS"),0,1,'C',false);
+		$this->Cell($this->getInternalW(),5, utf8_decode("CME - Materiais Processados"),0,1,'C',false);
         $this->SetFont('Arial', '', 10);
         $this->Cell($this->getInternalW(),5, "{$monthTrans}/{$year}",0,1,'C',false);
 		$this->Ln(2);
