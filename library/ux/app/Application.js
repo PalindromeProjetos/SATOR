@@ -93,7 +93,7 @@ Ext.define( 'Smart.ux.app.Application', {
         Smart.workstation = workstation ? Ext.decode(workstation) : null;
 
         Ext.getBody().getById('preloader').hide();
-        Ext.getBody().getById('buildapp').update('v'+Ext.manifest.version);
+        // Ext.getBody().getById('buildapp').update('v'+Ext.manifest.version);
 
         // window.onbeforeunload = function () {
         //     Ext.Ajax.request({

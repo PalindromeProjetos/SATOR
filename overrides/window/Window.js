@@ -4,7 +4,7 @@ Ext.define( 'Ext.overrides.window.Window', {
 
     shadow: false,
 
-    showAnimate: false,
+    showAnimate: true,
 
     animateClsIn: 'animated jello',
 

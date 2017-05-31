@@ -9,7 +9,6 @@ Ext.define( 'iTools.view.main.Main', {
     requires: [
         'Smart.util.Message',
         'Smart.util.IonSound',
-
         'Ext.form.Panel',
         'Ext.plugin.Viewport',
         'Smart.ux.main.MainModuleSearch',

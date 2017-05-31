@@ -33,7 +33,7 @@ Ext.define( 'Smart.ux.app.ApplicationController', {
 
     },
 
-    setDefaultPage: function () {
+    setDefaultPage_: function () {
         var me = this,
             mainPage = me.getMainPage(),
             treeList = mainPage ? mainPage.up('app-main').down('treelist') : null;

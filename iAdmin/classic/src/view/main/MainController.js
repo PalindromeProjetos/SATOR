@@ -6,6 +6,7 @@ Ext.define( 'iAdmin.view.main.MainController', {
 
     requires: [
         'Smart.ux.main.MainController',
+        'iAdmin.view.quick.QuickReport',
         'iAdmin.view.module.ModuleEdit',
         'iAdmin.view.person.entity.EntityEdit',
         'iAdmin.view.person.client.ClientEdit',

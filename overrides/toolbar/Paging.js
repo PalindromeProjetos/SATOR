@@ -38,6 +38,10 @@ Ext.define( 'Ext.overrides.toolbar.Paging', {
         if(inputItem) {
             inputItem.on("specialkey", me.specialkeyInputItem, me);
         }
+
+        // if(inputItem) {
+        //     inputRefresh.on("click", me.clickRefresh, me);
+        // }
     },
 
     clickNext: Ext.emptyFn,
